@@ -7,6 +7,70 @@
 @source "../**/*.vue";
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-arabic: 'Amiri', serif;
+
+    /* Brand Primary Colors */
+    --color-brand-green: #2B923F;
+    --color-brand-green-dark: #176B2A;
+    --color-brand-green-light: #EAF6EC;
+    --color-brand-green-surface: #F4FAF5;
+
+    /* Islamic Emerald Palette (Matching Reference Layout) */
+    --color-brand-emerald: #0D6B57;
+    --color-brand-emerald-dark: #08493B;
+    --color-brand-emerald-deep: #063A2F;
+    --color-brand-emerald-light: #EAF4F1;
+    --color-brand-teal: #10846C;
+
+    /* Secondary / Tahfidz Program */
+    --color-brand-purple: #9376AE;
+    --color-brand-purple-dark: #684681;
+    --color-brand-purple-light: #F2EDF6;
+
+    /* Accent Gold / Prestasi / Buttons */
+    --color-brand-gold: #E7B52F;
+    --color-brand-gold-dark: #B58B17;
+    --color-brand-gold-light: #FEF9EC;
+    --color-brand-gold-btn: #EAA824;
+
+    /* Neutrals & Text */
+    --color-brand-dark: #202520;
+    --color-brand-muted: #6B746D;
+    --color-brand-border: #E4E9E5;
+    --color-brand-bg: #FFFFFF;
+    --color-brand-bg-soft: #F8FAF8;
+}
+
+:root {
+    --color-primary: #2B923F;
+    --color-primary-dark: #176B2A;
+    --color-primary-light: #EAF6EC;
+    --color-primary-surface: #F4FAF5;
+    --color-emerald: #0D6B57;
+    --color-emerald-dark: #08493B;
+    --color-secondary: #9376AE;
+    --color-secondary-dark: #684681;
+    --color-secondary-light: #F2EDF6;
+    --color-accent-gold: #E7B52F;
+    --color-accent-gold-dark: #B58B17;
+    --color-accent-gold-light: #FEF9EC;
+    --color-text-dark: #202520;
+    --color-text-muted: #6B746D;
+    --color-border: #E4E9E5;
+    --color-bg-soft: #F8FAF8;
+}
+
+/* Base Body Styles */
+body {
+    font-family: var(--font-sans);
+    color: var(--color-text-dark);
+    background-color: #FFFFFF;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Selection Highlight */
+::selection {
+    background-color: rgba(13, 107, 87, 0.25);
+    color: #08493B;
 }

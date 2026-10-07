@@ -9,6 +9,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 
 class PpdbRegistrationForm
@@ -17,189 +19,284 @@ class PpdbRegistrationForm
     {
         return $schema
             ->components([
-                Section::make('Informasi Registrasi & Status')
-                    ->collapsible()
-                    ->schema([
-                        Grid::make(3)->schema([
-                            TextInput::make('registration_number')
-                                ->label('Nomor Registrasi')
-                                ->disabled()
-                                ->dehydrated(false)
-                                ->placeholder('Dibuat otomatis oleh sistem'),
+                Tabs::make('Data Pendaftaran PPDB')
+                    ->columnSpanFull()
+                    ->tabs([
+                        // ==========================================
+                        // TAB 1: DATA CALON SISWA
+                        // ==========================================
+                        Tab::make('Data Calon Siswa')
+                            ->icon('heroicon-o-user')
+                            ->schema([
+                                Grid::make(12)->schema([
+                                    Section::make('Pas Foto Siswa')
+                                        ->columnSpan(['default' => 12, 'md' => 4])
+                                        ->schema([
+                                            FileUpload::make('student_photo_file')
+                                                ->label('Pas Foto Formal')
+                                                ->image()
+                                                ->disk('local')
+                                                ->visibility('private')
+                                                ->directory('ppdb/photos')
+                                                ->maxSize(2048)
+                                                ->helperText('Format JPG/PNG, rasio 3x4 atau 4x6, maks. 2MB'),
+                                        ]),
 
-                            TextInput::make('academic_year')
-                                ->label('Tahun Ajaran')
-                                ->default('2026/2027')
-                                ->required(),
+                                    Section::make('Identitas Utama')
+                                        ->columnSpan(['default' => 12, 'md' => 8])
+                                        ->schema([
+                                            TextInput::make('full_name')
+                                                ->label('Nama Lengkap Siswa')
+                                                ->required()
+                                                ->maxLength(255)
+                                                ->prefixIcon('heroicon-o-user'),
 
-                            Select::make('status')
-                                ->label('Status Pendaftaran')
-                                ->options([
-                                    'pending' => 'Pending (Menunggu Verifikasi)',
-                                    'verified' => 'Diverifikasi',
-                                    'accepted' => 'Lulus (Diterima)',
-                                    'rejected' => 'Tidak Lulus',
-                                ])
-                                ->default('pending')
-                                ->required(),
-                        ]),
+                                            Grid::make(2)->schema([
+                                                TextInput::make('origin_school')
+                                                    ->label('Asal Sekolah (SD/MI)')
+                                                    ->placeholder('Contoh: SDIT Al-Ihsan')
+                                                    ->prefixIcon('heroicon-o-academic-cap'),
 
-                        Textarea::make('verification_notes')
-                            ->label('Catatan Tim Verifikator')
-                            ->placeholder('Catatan atau alasan verifikasi/penolakan')
-                            ->columnSpanFull(),
-                    ]),
+                                                Select::make('gender')
+                                                    ->label('Jenis Kelamin')
+                                                    ->options([
+                                                        'L' => 'Laki-laki',
+                                                        'P' => 'Perempuan',
+                                                    ])
+                                                    ->required()
+                                                    ->native(false),
+                                            ]),
+                                        ]),
+                                ]),
 
-                Section::make('Data Pribadi Calon Siswa')
-                    ->description('Informasi identitas lengkap calon peserta didik')
-                    ->collapsible()
-                    ->schema([
-                        Grid::make(2)->schema([
-                            TextInput::make('full_name')
-                                ->label('Nama Lengkap')
-                                ->required()
-                                ->maxLength(255),
+                                Section::make('Data Kependudukan & Kelahiran')
+                                    ->schema([
+                                        Grid::make(4)->schema([
+                                            TextInput::make('nisn')
+                                                ->label('NISN (10 Digit)')
+                                                ->numeric()
+                                                ->length(10)
+                                                ->placeholder('Nomor Induk Siswa Nasional')
+                                                ->prefixIcon('heroicon-o-identification'),
 
-                            TextInput::make('origin_school')
-                                ->label('Asal Sekolah (SD/MI)')
-                                ->placeholder('Contoh: SDIT Al-Ihsan')
-                                ->maxLength(255),
+                                            TextInput::make('nik')
+                                                ->label('NIK Siswa (16 Digit)')
+                                                ->numeric()
+                                                ->length(16)
+                                                ->placeholder('Nomor Induk Kependudukan')
+                                                ->prefixIcon('heroicon-o-identification'),
 
-                            TextInput::make('nik')
-                                ->label('NIK Siswa (Nomor Induk Kependudukan)')
-                                ->numeric()
-                                ->length(16),
+                                            TextInput::make('birth_place')
+                                                ->label('Tempat Lahir')
+                                                ->required()
+                                                ->placeholder('Kota/Kabupaten Lahir'),
 
-                            TextInput::make('nisn')
-                                ->label('NISN (Nomor Induk Siswa Nasional)')
-                                ->numeric()
-                                ->length(10),
+                                            DatePicker::make('birth_date')
+                                                ->label('Tanggal Lahir')
+                                                ->required()
+                                                ->native(false)
+                                                ->displayFormat('d/m/Y'),
+                                        ]),
+                                    ]),
 
-                            TextInput::make('birth_place')
-                                ->label('Tempat Lahir')
-                                ->required(),
+                                Section::make('Kontak & Alamat Domisili')
+                                    ->schema([
+                                        Grid::make(3)->schema([
+                                            Select::make('religion')
+                                                ->label('Agama')
+                                                ->options([
+                                                    'Islam' => 'Islam',
+                                                    'Kristen' => 'Kristen',
+                                                    'Katolik' => 'Katolik',
+                                                    'Hindu' => 'Hindu',
+                                                    'Buddha' => 'Buddha',
+                                                    'Konghucu' => 'Konghucu',
+                                                ])
+                                                ->default('Islam')
+                                                ->required()
+                                                ->native(false),
 
-                            DatePicker::make('birth_date')
-                                ->label('Tanggal Lahir')
-                                ->required(),
+                                            TextInput::make('student_phone')
+                                                ->label('No. WhatsApp Siswa')
+                                                ->tel()
+                                                ->prefixIcon('heroicon-o-chat-bubble-left-ellipsis')
+                                                ->placeholder('Contoh: 6281234567890'),
 
-                            Select::make('gender')
-                                ->label('Jenis Kelamin')
-                                ->options([
-                                    'L' => 'Laki-laki',
-                                    'P' => 'Perempuan',
-                                ])
-                                ->required(),
+                                            TextInput::make('student_email')
+                                                ->label('Alamat Email Siswa')
+                                                ->email()
+                                                ->prefixIcon('heroicon-o-envelope')
+                                                ->placeholder('siswa@gmail.com'),
+                                        ]),
 
-                            Select::make('religion')
-                                ->label('Agama')
-                                ->options([
-                                    'Islam' => 'Islam',
-                                    'Kristen' => 'Kristen',
-                                    'Katolik' => 'Katolik',
-                                    'Hindu' => 'Hindu',
-                                    'Buddha' => 'Buddha',
-                                    'Konghucu' => 'Konghucu',
-                                ])
-                                ->default('Islam')
-                                ->required(),
+                                        Textarea::make('address')
+                                            ->label('Alamat Lengkap Domisili Siswa')
+                                            ->rows(3)
+                                            ->required()
+                                            ->placeholder('Nama Jalan, RT/RW, No. Rumah, Kelurahan, Kecamatan, Kota/Kabupaten, Kode Pos')
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
 
-                            TextInput::make('student_phone')
-                                ->label('Nomor WhatsApp Siswa')
-                                ->tel(),
+                        // ==========================================
+                        // TAB 2: DATA ORANG TUA & WALI
+                        // ==========================================
+                        Tab::make('Orang Tua & Wali')
+                            ->icon('heroicon-o-user-group')
+                            ->schema([
+                                Section::make('Data Orang Tua (Ayah / Ibu)')
+                                    ->description('Kontak utama penanggung jawab calon siswa')
+                                    ->schema([
+                                        Grid::make(3)->schema([
+                                            TextInput::make('parent_name')
+                                                ->label('Nama Lengkap Orang Tua')
+                                                ->required()
+                                                ->prefixIcon('heroicon-o-user')
+                                                ->placeholder('Nama Ayah atau Ibu'),
 
-                            TextInput::make('student_email')
-                                ->label('Alamat Email Siswa')
-                                ->email(),
-                        ]),
+                                            TextInput::make('parent_phone')
+                                                ->label('Nomor WhatsApp Orang Tua')
+                                                ->tel()
+                                                ->required()
+                                                ->prefixIcon('heroicon-o-phone')
+                                                ->placeholder('Contoh: 6281234567890')
+                                                ->helperText('Nomor aktif untuk verifikasi dan konfirmasi berkas'),
 
-                        Textarea::make('address')
-                            ->label('Alamat Domisili Lengkap')
-                            ->required()
-                            ->columnSpanFull(),
-                    ]),
+                                            TextInput::make('parent_job')
+                                                ->label('Pekerjaan Orang Tua')
+                                                ->prefixIcon('heroicon-o-briefcase')
+                                                ->placeholder('PNS / Swasta / Wiraswasta / dll.'),
+                                        ]),
 
-                Section::make('Data Orang Tua & Wali')
-                    ->description('Kontak dan identitas orang tua atau wali murid')
-                    ->collapsible()
-                    ->schema([
-                        Grid::make(2)->schema([
-                            TextInput::make('parent_name')
-                                ->label('Nama Orang Tua (Ayah/Ibu)')
-                                ->required(),
+                                        Textarea::make('parent_address')
+                                            ->label('Alamat Orang Tua (jika berbeda dari siswa)')
+                                            ->rows(2)
+                                            ->placeholder('Kosongkan jika alamat sama dengan tempat tinggal siswa')
+                                            ->columnSpanFull(),
+                                    ]),
 
-                            TextInput::make('parent_phone')
-                                ->label('Nomor WhatsApp Orang Tua')
-                                ->tel()
-                                ->required(),
+                                Section::make('Data Wali Murid (Opsional)')
+                                    ->description('Hanya diisi jika calon siswa tinggal bersama wali selain orang tua kandung')
+                                    ->collapsible()
+                                    ->schema([
+                                        Grid::make(3)->schema([
+                                            TextInput::make('guardian_name')
+                                                ->label('Nama Lengkap Wali')
+                                                ->prefixIcon('heroicon-o-user')
+                                                ->placeholder('Kosongkan jika tinggal bersama orang tua'),
 
-                            TextInput::make('parent_job')
-                                ->label('Pekerjaan Orang Tua'),
+                                            TextInput::make('guardian_phone')
+                                                ->label('Nomor WhatsApp Wali')
+                                                ->tel()
+                                                ->prefixIcon('heroicon-o-phone')
+                                                ->placeholder('Contoh: 6281234567890'),
 
-                            Textarea::make('parent_address')
-                                ->label('Alamat Orang Tua (jika berbeda)')
-                                ->placeholder('Kosongkan jika sama dengan calon siswa'),
-                        ]),
+                                            TextInput::make('guardian_relationship')
+                                                ->label('Hubungan dengan Siswa')
+                                                ->placeholder('Contoh: Paman, Kakek, Kakak Kandung'),
+                                        ]),
 
-                        Grid::make(2)->schema([
-                            TextInput::make('guardian_name')
-                                ->label('Nama Wali (Opsional)')
-                                ->helperText('Hanya diisi jika tinggal bersama wali selain orang tua'),
+                                        Textarea::make('guardian_address')
+                                            ->label('Alamat Lengkap Wali')
+                                            ->rows(2)
+                                            ->placeholder('Alamat domisili tempat tinggal wali')
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
 
-                            TextInput::make('guardian_phone')
-                                ->label('Nomor WhatsApp Wali (Opsional)')
-                                ->tel(),
+                        // ==========================================
+                        // TAB 3: BERKAS & DOKUMEN PERSYARATAN
+                        // ==========================================
+                        Tab::make('Berkas & Dokumen')
+                            ->icon('heroicon-o-document-duplicate')
+                            ->schema([
+                                Section::make('Dokumen Persyaratan Calon Siswa')
+                                    ->description('Unggah dokumen dalam format PDF atau Gambar (JPG/PNG). Maksimal 3MB - 5MB per dokumen.')
+                                    ->schema([
+                                        Grid::make(2)->schema([
+                                            FileUpload::make('family_card_file')
+                                                ->label('Kartu Keluarga (KK)')
+                                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
+                                                ->disk('local')
+                                                ->visibility('private')
+                                                ->directory('ppdb/kk')
+                                                ->maxSize(3072)
+                                                ->helperText('Format PDF atau JPG/PNG, maks. 3MB'),
 
-                            TextInput::make('guardian_relationship')
-                                ->label('Hubungan dengan Wali')
-                                ->placeholder('Contoh: Paman, Kakek, Kakak'),
+                                            FileUpload::make('birth_certificate_file')
+                                                ->label('Akta Kelahiran')
+                                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
+                                                ->disk('local')
+                                                ->visibility('private')
+                                                ->directory('ppdb/akta')
+                                                ->maxSize(3072)
+                                                ->helperText('Format PDF atau JPG/PNG, maks. 3MB'),
 
-                            Textarea::make('guardian_address')
-                                ->label('Alamat Wali'),
-                        ]),
-                    ]),
+                                            FileUpload::make('graduation_certificate_file')
+                                                ->label('Ijazah / SKL SD')
+                                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
+                                                ->disk('local')
+                                                ->visibility('private')
+                                                ->directory('ppdb/ijazah')
+                                                ->maxSize(3072)
+                                                ->helperText('Format PDF atau JPG/PNG, maks. 3MB'),
 
-                Section::make('Berkas & Dokumen Pelengkap')
-                    ->description('Lampiran file kartu keluarga, akta kelahiran, foto, dan ijazah (format PDF atau Gambar)')
-                    ->collapsible()
-                    ->schema([
-                        Grid::make(2)->schema([
-                            FileUpload::make('student_photo_file')
-                                ->label('Pas Foto Calon Siswa')
-                                ->image()
-                                ->directory('ppdb/photos')
-                                ->maxSize(2048)
-                                ->helperText('Format JPG/PNG, maksimal 2MB'),
+                                            FileUpload::make('achievement_certificate_file')
+                                                ->label('Piagam Prestasi / Sertifikat Kejuaraan (Opsional)')
+                                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
+                                                ->disk('local')
+                                                ->visibility('private')
+                                                ->directory('ppdb/prestasi')
+                                                ->maxSize(5120)
+                                                ->helperText('Piagam kejuaraan akademik, tahfidz, atau non-akademik (maks. 5MB)'),
+                                        ]),
+                                    ]),
+                            ]),
 
-                            FileUpload::make('family_card_file')
-                                ->label('Kartu Keluarga (KK)')
-                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
-                                ->directory('ppdb/kk')
-                                ->maxSize(3072)
-                                ->helperText('Format PDF atau JPG/PNG, maksimal 3MB'),
+                        // ==========================================
+                        // TAB 4: STATUS & HASIL VERIFIKASI
+                        // ==========================================
+                        Tab::make('Status & Verifikasi')
+                            ->icon('heroicon-o-clipboard-document-check')
+                            ->schema([
+                                Section::make('Informasi Status Pendaftaran')
+                                    ->description('Pengaturan kelulusan dan catatan verifikasi panitia')
+                                    ->schema([
+                                        Grid::make(3)->schema([
+                                            TextInput::make('registration_number')
+                                                ->label('Nomor Registrasi')
+                                                ->disabled()
+                                                ->dehydrated(false)
+                                                ->placeholder('Dibuat otomatis oleh sistem')
+                                                ->prefixIcon('heroicon-o-hashtag'),
 
-                            FileUpload::make('birth_certificate_file')
-                                ->label('Akta Kelahiran')
-                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
-                                ->directory('ppdb/akta')
-                                ->maxSize(3072)
-                                ->helperText('Format PDF atau JPG/PNG, maksimal 3MB'),
+                                            TextInput::make('academic_year')
+                                                ->label('Tahun Ajaran')
+                                                ->default('2026/2027')
+                                                ->required()
+                                                ->prefixIcon('heroicon-o-calendar'),
 
-                            FileUpload::make('graduation_certificate_file')
-                                ->label('Ijazah / SKL SD')
-                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
-                                ->directory('ppdb/ijazah')
-                                ->maxSize(3072)
-                                ->helperText('Format PDF atau JPG/PNG, maksimal 3MB'),
+                                            Select::make('status')
+                                                ->label('Status Hasil Seleksi')
+                                                ->options([
+                                                    'pending' => 'Pending (Menunggu Verifikasi)',
+                                                    'verified' => 'Diverifikasi (Berkas Valid)',
+                                                    'accepted' => 'Lulus (Diterima)',
+                                                    'rejected' => 'Tidak Lulus / Ditolak',
+                                                ])
+                                                ->default('pending')
+                                                ->required()
+                                                ->native(false),
+                                        ]),
 
-                            FileUpload::make('achievement_certificate_file')
-                                ->label('Piagam Prestasi / Sertifikat (Opsional)')
-                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
-                                ->directory('ppdb/prestasi')
-                                ->maxSize(5120)
-                                ->columnSpanFull()
-                                ->helperText('Dukungan PDF atau Gambar piagam lomba'),
-                        ]),
+                                        Textarea::make('verification_notes')
+                                            ->label('Catatan Panitia / Alasan Verifikasi')
+                                            ->rows(4)
+                                            ->placeholder('Tuliskan catatan berkas, informasi kelulusan, atau catatan revisi jika berkas belum lengkap...')
+                                            ->helperText('Catatan ini dapat dibaca oleh staf dan dijadikan rujukan saat konfirmasi WhatsApp ke wali murid')
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
                     ]),
             ]);
     }
