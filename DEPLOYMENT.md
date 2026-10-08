@@ -125,22 +125,50 @@ Masukkan nama, email, dan password admin Anda.
 
 ---
 
-## 4. Konfigurasi Domain & SSL (HTTPS di Internet)
+## 4. Konfigurasi Domain & Cloudflare (HTTPS di Internet)
 
-### Pilihan A: Menggunakan Cloudflare (Paling Mudah & Direkomendasikan)
-1. Arahkan DNS Domain (A Record) Anda di dashboard Cloudflare ke **IP Public VPS**.
-2. Aktifkan **Proxy status (Orange Cloud)**.
-3. Buka menu **SSL/TLS** di Cloudflare dan pilih mode **Full** atau **Flexible**.
-4. Website langsung aktif menggunakan HTTPS `https://domain-anda.com` tanpa perlu setup sertifikat manual di server!
+Berdasarkan server Anda yang sudah menjalankan **Cloudflare Tunnel (`cloudflare/cloudflared`)**, Anda dapat memilih salah satu cara berikut:
 
-### Pilihan B: Menggunakan Let's Encrypt (Certbot) di VPS
-Jika Anda ingin SSL langsung di host Linux:
+### Opsi 1: Menambahkan ke Cloudflare Tunnel yang Sudah Ada (Paling Mudah)
+Jika Anda sudah memiliki container `smart-cloudf` aktif di server:
+1. Buka dashboard [Cloudflare Zero Trust](https://one.dash.cloudflare.com/)
+2. Buka menu **Networks** &rarr; **Tunnels**.
+3. Pilih Tunnel Anda yang sedang aktif &rarr; klik **Configure**.
+4. Buka tab **Public Hostname** &rarr; klik **Add a public hostname**.
+5. Isi konfigurasi:
+   - **Subdomain / Domain**: Masukkan domain yang Anda inginkan (misal `smp.domainanda.com` atau domain utama).
+   - **Service Type**: `HTTP`
+   - **URL**: `localhost:8010` (atau `172.17.0.1:8010` jika dari dalam docker network).
+6. Klik **Save Hostname**.
+7. Website langsung aktif dengan HTTPS aman tanpa perlu buka port di firewall server!
 
-1. Install Certbot:
-   ```bash
-   sudo apt install -y certbot python3-certbot-nginx
+---
+
+### Opsi 2: Menggunakan Dedicated Cloudflare Tunnel Container
+Jika Anda ingin project ini memiliki container tunnel sendiri yang terisolasi:
+1. Di dashboard **Cloudflare Zero Trust** &rarr; **Networks** &rarr; **Tunnels** &rarr; klik **Create a tunnel**.
+2. Pilih tipe **Cloudflared**, beri nama (misal: `smpalmadinah-tunnel`).
+3. Pada halaman instalasi, salin **Tunnel Token** (panjang berupa karakter acak).
+4. Masukkan token tersebut ke file `.env`:
+   ```env
+   CLOUDFLARE_TUNNEL_TOKEN=eyJhIjoi...
    ```
-2. Atau pasang reverse proxy host seperti Nginx Proxy Manager / Caddy / Traefik yang mengarahkan port 80/443 ke container `web`.
+5. Pada tab **Public Hostname** di Cloudflare:
+   - Domain: `smp.domainanda.com`
+   - Service Type: `HTTP`
+   - URL: `web:80` *(karena container tunnel dan web berada di dalam satu docker network)*
+6. Jalankan container beserta tunnel-nya:
+   ```bash
+   docker compose --profile tunnel up -d
+   ```
+
+---
+
+### Opsi 3: Menggunakan DNS Proxy Standar (A Record Cloudflare)
+Jika Anda tidak menggunakan tunnel melainkan IP Public VPS:
+1. Di DNS Cloudflare, buat **A Record** mengarah ke IP Public VPS (Proxy status: ON / Awan Oranye).
+2. Di `.env`, ubah `APP_PORT=80` (pastikan port 80 VPS belum dipakai aplikasi lain).
+3. Jalankan `docker compose up -d`.
 
 ---
 
