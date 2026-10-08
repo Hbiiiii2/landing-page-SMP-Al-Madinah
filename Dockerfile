@@ -28,7 +28,8 @@ RUN composer install \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader \
-    --no-scripts
+    --no-scripts \
+    --ignore-platform-reqs
 
 # -------------------------------------------------------------
 # Stage 3: Production PHP-FPM Application
@@ -87,7 +88,7 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 # Setup entrypoint and directory permissions
 COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
-    && composer dump-autoload --optimize --no-dev --no-scripts \
+    && composer dump-autoload --optimize --no-dev --no-scripts --ignore-platform-reqs \
     && mkdir -p /var/www/html/storage/app/public \
                 /var/www/html/storage/framework/cache \
                 /var/www/html/storage/framework/sessions \
