@@ -62,7 +62,7 @@ class PpdbController extends Controller
             'student_photo_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2048'],
             'achievement_certificate_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
         ], [
-            'full_name.required' => 'Nama lengkap calon santri wajib diisi.',
+            'full_name.required' => 'Nama lengkap calon siswa wajib diisi.',
             'birth_place.required' => 'Tempat lahir wajib diisi.',
             'birth_date.required' => 'Tanggal lahir wajib diisi.',
             'gender.required' => 'Jenis kelamin wajib dipilih.',

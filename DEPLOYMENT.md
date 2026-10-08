@@ -1,0 +1,187 @@
+# Panduan Deploy Docker ke Internet - SMP Islam Al-Madinah BSD
+
+Panduan ini menjelaskan langkah demi langkah untuk mendeploy website **SMP Islam Al-Madinah BSD** ke server VPS (Virtual Private Server) di internet (misal: DigitalOcean, Linode, AWS Lightsail, Contabo, IdCloudHost, Biznet, dll) menggunakan **Docker & Docker Compose**.
+
+---
+
+## 1. Arsitektur Layanan Docker
+
+| Layanan | Komponen | Deskripsi |
+|---|---|---|
+| `web` | **Nginx (Alpine)** | Web server statis, reverse proxy FastCGI ke PHP-FPM, Gzip, caching asset, proteksi security headers, dan batas upload 50MB. |
+| `app` | **PHP 8.3-FPM + Laravel 12 + Filament** | Backend aplikasi, auto-wait database, auto-migrasi skema, auto-cache konfigurasi production, dan storage linking. |
+| `db` | **MySQL 8.0** | Database utama dengan volume persisten `db_data` (data aman tidak akan hilang saat container restart). |
+| `queue` | **Queue Worker** | Worker background processing untuk email & antrean tugas asynchronous. |
+| `scheduler`| **Cron Scheduler** | Eksekutor cron jobs otomatis Laravel (`schedule:work`). |
+
+---
+
+## 2. Persiapan Server VPS
+
+Pastikan Anda memiliki VPS berbasis Linux (direkomendasikan: **Ubuntu 22.04 LTS** atau **Ubuntu 24.04 LTS**).
+
+### A. Update Server & Install Docker
+Jalankan di terminal VPS Anda:
+
+```bash
+# 1. Update paket sistem
+sudo apt update && sudo apt upgrade -y
+
+# 2. Install dependensi umum & Git
+sudo apt install -y curl git ufw
+
+# 3. Install Docker Engine & Docker Compose Plugin
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# 4. Berikan izin non-root untuk user (opsional)
+sudo usermod -aG docker $USER
+newgrp docker
+
+# 5. Verifikasi instalasi
+docker --version
+docker compose version
+```
+
+### B. Konfigurasi Firewall VPS
+Buka port HTTP (80) dan HTTPS (443):
+
+```bash
+sudo ufw allow 22/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+```
+
+---
+
+## 3. Langkah Deploy Aplikasi
+
+### Langkah 1: Clone Repositori ke Server VPS
+Masuk ke direktori web server (misal `/var/www/`):
+
+```bash
+sudo mkdir -p /var/www
+cd /var/www
+git clone <URL_REPOSITORY_ANDA> smpalmadinah
+cd smpalmadinah
+```
+
+### Langkah 2: Buat & Sesuaikan File `.env`
+Salin template konfigurasi Docker:
+
+```bash
+cp .env.docker.example .env
+nano .env
+```
+
+Sesuaikan parameter penting berikut:
+- `APP_NAME`: `"SMP Islam Al-Madinah BSD"`
+- `APP_ENV`: `production`
+- `APP_DEBUG`: `false`
+- `APP_URL`: Masukkan domain Anda, contoh: `https://smpalmadinah.sch.id`
+- `DB_DATABASE`: `smp`
+- `DB_USERNAME`: `smp_user`
+- `DB_PASSWORD`: Buat password database yang kuat
+- `DB_ROOT_PASSWORD`: Buat password root database yang kuat
+- Konfigurasi email SMTP jika ingin mengirim notifikasi (opsional).
+
+Simpan dengan menekan `CTRL + O`, lalu `Enter`, dan keluar dengan `CTRL + X`.
+
+### Langkah 3: Build & Jalankan Container
+Jalankan perintah berikut:
+
+```bash
+docker compose up -d --build
+```
+
+Docker akan secara otomatis:
+1. Membuild aset frontend (Tailwind & Vite) via Node 22.
+2. Menginstall dependensi Composer production PHP 8.3.
+3. Menyalakan MySQL 8.0 dan menunggu hingga database siap menerima koneksi.
+4. Menjalankan migrasi database (`php artisan migrate --force`).
+5. Menghubungkan symlink penyimpanan (`php artisan storage:link`).
+6. Melakukan optimasi caching (`config:cache`, `route:cache`, `view:cache`).
+
+### Langkah 4: Generate Application Key
+Jika `APP_KEY` pada file `.env` masih kosong, jalankan:
+
+```bash
+docker compose exec app php artisan key:generate --force
+docker compose exec app php artisan config:cache
+```
+
+### Langkah 5: Buat Akun Admin Filament
+Untuk login ke dashboard admin Filament (`/admin`):
+
+```bash
+# Opsi 1: Jalankan Seeder awal (jika sudah ada seeder default)
+docker compose exec app php artisan db:seed --force
+
+# Opsi 2: Atau buat user admin baru secara interaktif
+docker compose exec app php artisan make:filament-user
+```
+Masukkan nama, email, dan password admin Anda.
+
+---
+
+## 4. Konfigurasi Domain & SSL (HTTPS di Internet)
+
+### Pilihan A: Menggunakan Cloudflare (Paling Mudah & Direkomendasikan)
+1. Arahkan DNS Domain (A Record) Anda di dashboard Cloudflare ke **IP Public VPS**.
+2. Aktifkan **Proxy status (Orange Cloud)**.
+3. Buka menu **SSL/TLS** di Cloudflare dan pilih mode **Full** atau **Flexible**.
+4. Website langsung aktif menggunakan HTTPS `https://domain-anda.com` tanpa perlu setup sertifikat manual di server!
+
+### Pilihan B: Menggunakan Let's Encrypt (Certbot) di VPS
+Jika Anda ingin SSL langsung di host Linux:
+
+1. Install Certbot:
+   ```bash
+   sudo apt install -y certbot python3-certbot-nginx
+   ```
+2. Atau pasang reverse proxy host seperti Nginx Proxy Manager / Caddy / Traefik yang mengarahkan port 80/443 ke container `web`.
+
+---
+
+## 5. Perintah Manajemen Operasional
+
+### Melihat Status & Log Container
+```bash
+# Cek semua container yang sedang berjalan
+docker compose ps
+
+# Cek log aplikasi Laravel secara live
+docker compose logs -f app
+
+# Cek log web server Nginx secara live
+docker compose logs -f web
+
+# Cek log database
+docker compose logs -f db
+```
+
+### Update Aplikasi / Redeploy Versi Terbaru
+Ketika Anda melakukan update kode atau commit baru:
+
+```bash
+cd /var/www/smpalmadinah
+git pull origin main
+docker compose up -d --build
+```
+*Catatan: Data di database MySQL dan file upload foto/brosur di storage tidak akan terhapus karena disimpan di Docker Volumes persisten (`db_data` dan `app_storage`).*
+
+### Backup & Restore Database
+```bash
+# Backup database ke file .sql
+docker compose exec db mysqldump -u smp_user -pGantiPasswordKuatDB123! smp > backup_smp_$(date +%F).sql
+
+# Restore database dari file .sql
+docker compose exec -T db mysql -u smp_user -pGantiPasswordKuatDB123! smp < backup_smp_2026-10-08.sql
+```
+
+### Membersihkan / Refresh Cache Aplikasi
+```bash
+docker compose exec app php artisan optimize:clear
+docker compose exec app php artisan optimize
+```

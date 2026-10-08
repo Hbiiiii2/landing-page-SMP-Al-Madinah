@@ -96,20 +96,24 @@
 @php
     $schoolName = $profile->name ?? 'SMP Islam Al-Madinah BSD';
     $whatsapp = $profile->whatsapp ?? '0812-9988-7766';
-    $whatsappClean = preg_replace('/[^0-9]/', '', $whatsapp);
-    if (str_starts_with($whatsappClean, '0')) {
-        $whatsappClean = '62' . substr($whatsappClean, 1);
+    $whatsappClean = $profile?->whatsapp_ppdb_clean ?? $profile?->whatsapp_clean;
+    if (! $whatsappClean) {
+        $whatsappClean = preg_replace('/[^0-9]/', '', $whatsapp);
+        if (str_starts_with($whatsappClean, '0')) {
+            $whatsappClean = '62' . substr($whatsappClean, 1);
+        }
     }
 
-    $waMessage = urlencode(
-        "Assalamu'alaikum Panitia PPDB SMP Islam Al-Madinah BSD,\n" .
+    $rawMessage = "Assalamu'alaikum Panitia PPDB SMP Islam Al-Madinah BSD,\n" .
         "Saya telah menyelesaikan pendaftaran online:\n" .
         "• No. Registrasi: {$registration->registration_number}\n" .
-        "• Nama Calon Santri: {$registration->full_name}\n" .
+        "• Nama Calon Siswa: {$registration->full_name}\n" .
         "• Asal Sekolah: {$registration->origin_school}\n" .
         "• No. WA Wali: {$registration->parent_phone}\n\n" .
-        "Mohon konfirmasi dan informasi jadwal observasi santri. Terima kasih."
-    );
+        "Mohon konfirmasi dan informasi jadwal observasi siswa. Terima kasih.";
+
+    $waTargetUrl = $profile?->buildWhatsappUrl($whatsappClean, $rawMessage) 
+        ?? ('https://wa.me/' . $whatsappClean . '?text=' . urlencode($rawMessage));
 @endphp
 
 <section class="py-12 lg:py-16 bg-[#F8FAF8]">
@@ -161,7 +165,7 @@
             <div class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 text-xs">
                     <div>
-                        <span class="text-brand-muted block">Nama Calon Santri:</span>
+                        <span class="text-brand-muted block">Nama Calon Siswa:</span>
                         <strong class="text-brand-dark text-sm print-text-dark">{{ $registration->full_name }}</strong>
                     </div>
 
@@ -172,14 +176,14 @@
 
                     @if ($registration->nik)
                     <div>
-                        <span class="text-brand-muted block">NIK Calon Santri:</span>
+                        <span class="text-brand-muted block">NIK Calon Siswa:</span>
                         <strong class="text-brand-dark font-mono print-text-dark">{{ $registration->nik }}</strong>
                     </div>
                     @endif
 
                     @if ($registration->nisn)
                     <div>
-                        <span class="text-brand-muted block">NISN Calon Santri:</span>
+                        <span class="text-brand-muted block">NISN Calon Siswa:</span>
                         <strong class="text-brand-dark font-mono print-text-dark">{{ $registration->nisn }}</strong>
                     </div>
                     @endif
@@ -231,7 +235,7 @@
                 <ol class="list-decimal list-inside space-y-1 pl-1">
                     <li>Simpan atau cetak bukti pendaftaran ini sebagai dokumen sah saat registrasi ulang.</li>
                     <li>Lakukan konfirmasi pendaftaran melalui WhatsApp panitia PPDB.</li>
-                    <li>Panitia akan memverifikasi berkas dan menginformasikan jadwal observasi/wawancara santri.</li>
+                    <li>Panitia akan memverifikasi berkas dan menginformasikan jadwal observasi/wawancara siswa.</li>
                 </ol>
             </div>
 
@@ -265,7 +269,7 @@
                     <span>Cetak Bukti</span>
                 </button>
 
-                <a href="https://wa.me/{{ $whatsappClean }}?text={{ $waMessage }}" 
+                <a href="{{ $waTargetUrl }}" 
                    target="_blank" 
                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#EAA824] hover:bg-amber-500 text-brand-dark font-black text-xs uppercase tracking-wide transition-all shadow-md">
                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">

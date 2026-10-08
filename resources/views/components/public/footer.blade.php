@@ -7,10 +7,15 @@
     $foundationName = 'Yayasan Kerukunan Keluarga Muslim BSD';
     $address = $profile->address ?? 'Komplek BSD City Sektor XIV, Tangerang Selatan, Banten';
     $phone = $profile->phone ?? '(021) 538-8888';
-    $whatsapp = $profile->whatsapp ?? '0812-9988-7766';
+    $whatsapp = !empty($profile?->whatsapp) ? $profile->whatsapp : '0812-9988-7766';
     $whatsappClean = preg_replace('/[^0-9]/', '', $whatsapp);
     if (str_starts_with($whatsappClean, '0')) {
         $whatsappClean = '62' . substr($whatsappClean, 1);
+    } elseif (str_starts_with($whatsappClean, '8')) {
+        $whatsappClean = '62' . $whatsappClean;
+    }
+    if (empty($whatsappClean)) {
+        $whatsappClean = '6281299887766';
     }
     $email = $profile->email ?? 'info@smpalmadinah.sch.id';
     $academicYear = '2027/2028';
@@ -42,7 +47,7 @@
             </div>
 
             <!-- Quick Subscribe / Search -->
-            <form action="https://wa.me/{{ $whatsappClean }}" method="GET" target="_blank" class="flex items-center max-w-md w-full">
+            <form action="{{ $profile?->whatsapp_custom_url ?: ('https://wa.me/' . $whatsappClean) }}" method="GET" target="_blank" class="flex items-center max-w-md w-full">
                 <input type="text" 
                        name="text" 
                        placeholder="Ada pertanyaan seputar PPDB? Tulis di sini..." 
@@ -114,7 +119,7 @@
                     <li><a href="{{ route('about') }}" class="hover:text-amber-300 transition-colors">Visi & Misi</a></li>
                     <li><a href="{{ route('programs') }}" class="hover:text-amber-300 transition-colors">Program Pendidikan</a></li>
                     <li><a href="{{ url('/#unggulan') }}" class="hover:text-amber-300 transition-colors">Program Unggulan</a></li>
-                    <li><a href="{{ route('achievements') }}" class="hover:text-amber-300 transition-colors">Prestasi Santri</a></li>
+                    <li><a href="{{ route('achievements') }}" class="hover:text-amber-300 transition-colors">Prestasi Siswa</a></li>
                     <li><a href="{{ route('gallery') }}" class="hover:text-amber-300 transition-colors">Galeri Kegiatan</a></li>
                     <li><a href="{{ route('news') }}" class="hover:text-amber-300 transition-colors">Berita & Warta</a></li>
                 </ul>
@@ -127,7 +132,7 @@
                     <li><a href="{{ route('ppdb.index') }}" class="hover:text-amber-300 transition-colors font-semibold text-white">Pendaftaran Online</a></li>
                     <li><a href="{{ route('ppdb.check-status') }}" class="hover:text-amber-300 transition-colors">Cek Status Verifikasi</a></li>
                     <li><a href="{{ url('/#ppdb') }}" class="hover:text-amber-300 transition-colors">Persyaratan Berkas</a></li>
-                    <li><a href="https://wa.me/{{ $whatsappClean }}" target="_blank" class="hover:text-amber-300 transition-colors">Konsultasi Panitia via WA</a></li>
+                    <li><a href="{{ $profile?->whatsapp_panitia_url ?? ('https://wa.me/' . $whatsappClean) }}" target="_blank" class="hover:text-amber-300 transition-colors">Konsultasi Panitia via WA</a></li>
                     <li class="pt-2 text-[11px] text-emerald-200">
                         Jam Layanan: Senin – Jumat (07.15 – 15.30 WIB)
                     </li>

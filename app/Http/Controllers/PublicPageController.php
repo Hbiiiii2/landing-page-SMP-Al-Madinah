@@ -44,7 +44,7 @@ class PublicPageController extends Controller
     }
 
     /**
-     * Halaman Etalase Prestasi Santri
+     * Halaman Etalase Prestasi Siswa
      */
     public function achievements()
     {

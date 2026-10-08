@@ -33,6 +33,33 @@ Route::get('/ppdb/cek-status', [PpdbController::class, 'checkStatus'])->name('pp
 
 /*
 |--------------------------------------------------------------------------
+| Unduh Dokumen Sekolah (Brosur & Biaya PPDB)
+|--------------------------------------------------------------------------
+*/
+Route::get('/brosur', function () {
+    $profile = \App\Models\SchoolProfile::first();
+    if (! empty($profile?->brochure_file) && Storage::disk('public')->exists($profile->brochure_file)) {
+        return Storage::disk('public')->download(
+            $profile->brochure_file,
+            'Brosur-PPDB-' . \Illuminate\Support\Str::slug($profile->name ?? 'SMP-Al-Madinah') . '.' . pathinfo($profile->brochure_file, PATHINFO_EXTENSION)
+        );
+    }
+    return redirect()->route('home')->with('info', 'Brosur digital sedang dipersiapkan oleh Panitia PPDB.');
+})->name('school.brochure');
+
+Route::get('/biaya-ppdb', function () {
+    $profile = \App\Models\SchoolProfile::first();
+    if (! empty($profile?->ppdb_fee_file) && Storage::disk('public')->exists($profile->ppdb_fee_file)) {
+        return Storage::disk('public')->download(
+            $profile->ppdb_fee_file,
+            'Rincian-Biaya-PPDB-' . \Illuminate\Support\Str::slug($profile->name ?? 'SMP-Al-Madinah') . '.' . pathinfo($profile->ppdb_fee_file, PATHINFO_EXTENSION)
+        );
+    }
+    return redirect()->route('home')->with('info', 'Rincian biaya sedang dipersiapkan oleh Panitia PPDB.');
+})->name('school.fee');
+
+/*
+|--------------------------------------------------------------------------
 | Auth & Admin Redirects
 |--------------------------------------------------------------------------
 */

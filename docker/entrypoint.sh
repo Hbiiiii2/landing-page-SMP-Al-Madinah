@@ -1,0 +1,58 @@
+#!/bin/sh
+set -e
+
+echo "Starting SMP Islam Al-Madinah Application Container..."
+
+# Ensure required directories exist
+mkdir -p /var/www/html/storage/framework/sessions \
+         /var/www/html/storage/framework/views \
+         /var/www/html/storage/framework/cache \
+         /var/www/html/storage/app/public \
+         /var/www/html/storage/logs \
+         /var/www/html/bootstrap/cache
+
+# Fix permissions
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Wait for MySQL database if DB_HOST is set and not sqlite
+if [ "$DB_CONNECTION" = "mysql" ] || [ "$DB_CONNECTION" = "mariadb" ]; then
+    echo "Waiting for database connection at $DB_HOST:${DB_PORT:-3306}..."
+    MAX_TRIES=30
+    COUNT=0
+    until php -r "try { new PDO('mysql:host=' . getenv('DB_HOST') . ';port=' . (getenv('DB_PORT') ?: 3306), getenv('DB_USERNAME'), getenv('DB_PASSWORD')); exit(0); } catch (Exception \$e) { exit(1); }" 2>/dev/null; do
+        COUNT=$((COUNT+1))
+        if [ $COUNT -ge $MAX_TRIES ]; then
+            echo "Database connection timed out after $MAX_TRIES attempts."
+            break
+        fi
+        echo "Database is not ready yet - retrying ($COUNT/$MAX_TRIES)..."
+        sleep 2
+    done
+    echo "Database is ready!"
+fi
+
+# Run database migrations and storage symlink only for web/app container
+if [ "$1" = "php-fpm" ]; then
+    echo "Creating public storage symlink..."
+    php artisan storage:link --force || true
+
+    echo "Running database migrations..."
+    php artisan migrate --force || true
+
+    if [ "$APP_ENV" = "production" ]; then
+        echo "Caching configuration, routes, and views for production..."
+        php artisan config:cache || true
+        php artisan route:cache || true
+        php artisan view:cache || true
+        php artisan event:cache || true
+        php artisan filament:cache-components || true
+    else
+        echo "Clearing cache for environment: $APP_ENV..."
+        php artisan config:clear || true
+        php artisan cache:clear || true
+    fi
+fi
+
+echo "Application setup completed. Launching: $@"
+exec "$@"

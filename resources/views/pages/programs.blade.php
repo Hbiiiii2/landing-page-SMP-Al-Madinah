@@ -11,7 +11,7 @@
             Program Pendidikan & Ekstrakurikuler
         </h1>
         <p class="text-xs sm:text-sm text-emerald-100 max-w-xl mx-auto">
-            Memadukan keilmuan akademik, kemahiran Al-Qur'an, dan eksplorasi bakat santri secara berimbang.
+            Memadukan keilmuan akademik, kemahiran Al-Qur'an, dan eksplorasi bakat siswa secara berimbang.
         </p>
     </div>
 </section>
@@ -21,7 +21,7 @@
     <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-10">
         <div>
             <h2 class="text-2xl font-extrabold text-[#0D6B57]">Pilar Program Akademik & Keislaman</h2>
-            <p class="text-xs text-brand-muted mt-1">Struktur kurikulum terintegrasi untuk membentuk santri yang unggul dan beradab.</p>
+            <p class="text-xs text-brand-muted mt-1">Struktur kurikulum terintegrasi untuk membentuk siswa yang unggul dan beradab.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -53,7 +53,7 @@
 <section class="py-14 bg-[#F8FAF8]">
     <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-10">
         <div>
-            <h2 class="text-2xl font-extrabold text-[#0D6B57]">Kegiatan Ekstrakurikuler Santri</h2>
+            <h2 class="text-2xl font-extrabold text-[#0D6B57]">Kegiatan Ekstrakurikuler Siswa</h2>
             <p class="text-xs text-brand-muted mt-1">Wadah pengembangan bakat, kepemimpinan, olahraga, dan seni Islami.</p>
         </div>
 

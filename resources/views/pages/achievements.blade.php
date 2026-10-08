@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Prestasi Santri — SMP Islam Al-Madinah BSD')
+@section('title', 'Prestasi Siswa — SMP Islam Al-Madinah BSD')
 
 @section('content')
 <!-- Header Banner -->
@@ -8,10 +8,10 @@
     <div class="max-w-[1280px] mx-auto px-4 lg:px-8 text-center space-y-2">
         <span class="text-xs font-bold uppercase tracking-wider text-amber-300">ETALASE REKOGNISI</span>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Prestasi & Kejuaraan Santri
+            Prestasi & Kejuaraan Siswa
         </h1>
         <p class="text-xs sm:text-sm text-emerald-100 max-w-xl mx-auto">
-            Capaian membanggakan santri SMP Islam Al-Madinah BSD di bidang keagamaan, sains, teknologi, dan olahraga.
+            Capaian membanggakan Siswa SMP Al-Madinah Islamic Center KKMB BSD di bidang keagamaan, sains, teknologi, dan olahraga.
         </p>
     </div>
 </section>
@@ -49,7 +49,7 @@
                 </div>
             @empty
                 <div class="col-span-3 text-center text-xs text-brand-muted py-12">
-                    Belum ada data prestasi santri.
+                    Belum ada data Prestasi Siswa.
                 </div>
             @endforelse
         </div>

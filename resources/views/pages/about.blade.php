@@ -19,7 +19,7 @@
             Tentang {{ $schoolName }}
         </h1>
         <p class="text-xs sm:text-sm text-emerald-100 max-w-xl mx-auto">
-            Mengenal lebih dekat visi, misi, nilai-nilai pembinaan santri, serta profil dewan guru dan asatidz.
+            Mengenal lebih dekat visi, misi, nilai-nilai pembinaan siswa, serta profil dewan guru dan asatidz.
         </p>
     </div>
 </section>
@@ -32,7 +32,7 @@
                 <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0D6B57] font-mono">
                     {{ $profile?->statistic_students ?? 350 }}+
                 </div>
-                <div class="text-xs font-bold text-brand-dark mt-1">Santri Aktif</div>
+                <div class="text-xs font-bold text-brand-dark mt-1">Murid Aktif</div>
                 <div class="text-[10px] text-brand-muted">Mendapatkan pembinaan intensif</div>
             </div>
             <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAF8] border border-brand-border shadow-xs hover:border-[#0D6B57] transition-all">
@@ -46,7 +46,7 @@
                 <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-[#EAA824] font-mono">
                     {{ $profile?->statistic_achievements ?? 48 }}+
                 </div>
-                <div class="text-xs font-bold text-brand-dark mt-1">Prestasi Santri</div>
+                <div class="text-xs font-bold text-brand-dark mt-1">Prestasi Siswa</div>
                 <div class="text-[10px] text-brand-muted">Tingkat kota hingga nasional</div>
             </div>
             <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAF8] border border-brand-border shadow-xs hover:border-[#0D6B57] transition-all">
@@ -88,7 +88,7 @@
                         "{{ $profile->headmaster_welcome ?? 'Selamat datang di portal resmi SMP Islam Al-Madinah BSD. Kami bertekad mewujudkan lingkungan pendidikan yang menumbuhkan kecintaan terhadap Al-Qur\'an, ketajaman intelektual sains, serta keluhuran akhlak mulia.' }}"
                     </p>
                     <p>
-                        {{ $profile->about ?? 'SMP Islam Al-Madinah BSD berdiri di bawah naungan Yayasan Kerukunan Keluarga Muslim BSD (YKKM BSD) di Sektor XIV BSD City. Dengan mengusung konsep pendidikan terpadu, santri dibimbing secara holistik mencakup aspek ruhiyah (spiritual), aqliyah (intelektual), dan jasadiyah (fisik).' }}
+                        {{ $profile->about ?? 'SMP Islam Al-Madinah BSD berdiri di bawah naungan Yayasan Kerukunan Keluarga Muslim BSD (YKKM BSD) di Sektor XIV BSD City. Dengan mengusung konsep pendidikan terpadu, siswa dibimbing secara holistik mencakup aspek ruhiyah (spiritual), aqliyah (intelektual), dan jasadiyah (fisik).' }}
                     </p>
                 </div>
             </div>
@@ -113,7 +113,7 @@
                     <span>Misi Utama</span>
                 </div>
                 <div class="text-xs text-brand-muted leading-relaxed whitespace-pre-line">
-                    {{ $profile->mission ?? "1. Menumbuhkan akidah shalihah dan pembiasaan adab Islami dalam kehidupan sehari-hari.\n2. Menyelenggarakan proses pembelajaran berbasis teknologi dan literasi modern.\n3. Membina hafalan Al-Qur'an bersanad dan keterampilan berbahasa internasional.\n4. Mengembangkan potensi kepemimpinan dan kemandirian sosial santri." }}
+                    {{ $profile->mission ?? "1. Menumbuhkan akidah shalihah dan pembiasaan adab Islami dalam kehidupan sehari-hari.\n2. Menyelenggarakan proses pembelajaran berbasis teknologi dan literasi modern.\n3. Membina hafalan Al-Qur'an bersanad dan keterampilan berbahasa internasional.\n4. Mengembangkan potensi kepemimpinan dan kemandirian sosial siswa." }}
                 </div>
             </div>
         </div>

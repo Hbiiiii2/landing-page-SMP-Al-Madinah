@@ -94,8 +94,8 @@
                 <!-- PPDB Banner Card in Sidebar -->
                 <div class="rounded-2xl bg-gradient-to-br from-[#0D6B57] to-[#08493B] text-white p-6 shadow-md space-y-3">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300">PPDB 2027/2028</span>
-                    <h4 class="text-base font-extrabold leading-snug">Penerimaan Santri Baru Telah Dibuka!</h4>
-                    <p class="text-xs text-emerald-100">Kuota terbatas 120 santri. Segera amankan kursi ananda sekarang.</p>
+                    <h4 class="text-base font-extrabold leading-snug">Penerimaan Siswa Baru Telah Dibuka!</h4>
+                    <p class="text-xs text-emerald-100">Kuota terbatas 120 siswa. Segera amankan kursi ananda sekarang.</p>
                     <a href="{{ route('ppdb.index') }}" class="inline-block w-full py-2.5 rounded-full bg-[#EAA824] hover:bg-amber-500 text-brand-dark text-center font-black text-xs uppercase tracking-wider transition-all shadow">
                         Daftar PPDB Online
                     </a>

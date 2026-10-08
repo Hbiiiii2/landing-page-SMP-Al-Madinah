@@ -1,0 +1,35 @@
+.git
+.github
+.idea
+.vscode
+node_modules
+npm-debug.log
+yarn-error.log
+vendor
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.docker.example
+
+# Laravel storage & cache
+storage/logs/*
+!storage/logs/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/app/*
+!storage/app/.gitignore
+!storage/app/public/.gitignore
+public/storage
+public/hot
+
+# Tests & OS artifacts
+tests
+.phpunit.cache
+Thumbs.db
+.DS_Store

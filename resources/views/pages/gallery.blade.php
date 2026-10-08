@@ -8,10 +8,10 @@
     <div class="max-w-[1280px] mx-auto px-4 lg:px-8 text-center space-y-2">
         <span class="text-xs font-bold uppercase tracking-wider text-amber-300">DOKUMENTASI SEKOLAH</span>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Galeri Kegiatan Santri
+            Galeri Kegiatan Siswa
         </h1>
         <p class="text-xs sm:text-sm text-emerald-100 max-w-xl mx-auto">
-            Merekam momen berharga dalam aktivitas tahfidz, pembelajaran kelas, eksperimen sains, dan kegiatan sosial santri.
+            Merekam momen berharga dalam aktivitas tahfidz, pembelajaran kelas, eksperimen sains, dan kegiatan sosial Siswa.
         </p>
     </div>
 </section>
@@ -40,7 +40,7 @@
                              alt="{{ $gallery->title ?? 'Galeri SMP Al-Madinah' }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4 flex items-end opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span class="text-xs font-bold text-white">{{ $gallery->title ?? 'Kegiatan Santri' }}</span>
+                            <span class="text-xs font-bold text-white">{{ $gallery->title ?? 'Kegiatan Siswa' }}</span>
                         </div>
                     </div>
                 @endforeach
@@ -48,7 +48,7 @@
                 @foreach ($sampleImages as $img)
                     <div class="h-48 sm:h-56 rounded-2xl overflow-hidden shadow-sm group relative">
                         <img src="{{ $img }}" 
-                             alt="Kegiatan Santri" 
+                             alt="Kegiatan Siswa SMP Al-Madinah Islamic Center KKMB BSD" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4 flex items-end opacity-0 group-hover:opacity-100 transition-opacity">
                             <span class="text-xs font-bold text-white">SMP Islam Al-Madinah BSD</span>

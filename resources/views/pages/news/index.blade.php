@@ -11,7 +11,7 @@
             Berita & Warta Sekolah
         </h1>
         <p class="text-xs sm:text-sm text-emerald-100 max-w-xl mx-auto">
-            Informasi terkini seputar agenda akademik, pengumuman yayasan, dan catatan dinamika santri.
+            Informasi terkini seputar agenda akademik, pengumuman yayasan, dan catatan dinamika siswa.
         </p>
     </div>
 </section>

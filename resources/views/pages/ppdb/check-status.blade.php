@@ -5,11 +5,7 @@
 @section('content')
 @php
     $schoolName = $profile->name ?? 'SMP Islam Al-Madinah BSD';
-    $whatsapp = $profile->whatsapp ?? '0812-9988-7766';
-    $whatsappClean = preg_replace('/[^0-9]/', '', $whatsapp);
-    if (str_starts_with($whatsappClean, '0')) {
-        $whatsappClean = '62' . substr($whatsappClean, 1);
-    }
+    $waUrlPanitia = $profile?->whatsapp_panitia_url ?? ('https://wa.me/' . ($profile?->whatsapp_ppdb_clean ?? '6281299887766'));
 @endphp
 
 <!-- Header Banner -->
@@ -19,7 +15,7 @@
             Cek Status Pendaftaran PPDB
         </h1>
         <p class="text-xs sm:text-sm text-emerald-100 max-w-lg mx-auto">
-            Pantau status verifikasi berkas dan hasil seleksi santri baru SMP Islam Al-Madinah BSD secara mandiri.
+            Pantau status verifikasi berkas dan hasil seleksi siswa baru SMP Islam Al-Madinah BSD secara mandiri.
         </p>
     </div>
 </section>
@@ -82,7 +78,7 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                         <div>
-                            <span class="text-brand-muted block">Nama Santri:</span>
+                            <span class="text-brand-muted block">Nama Siswa:</span>
                             <strong class="text-brand-dark text-sm">{{ $registration->full_name }}</strong>
                         </div>
 
@@ -114,7 +110,7 @@
                            class="text-xs font-bold text-[#0D6B57] hover:underline">
                             Lihat Bukti Pendaftaran Lengkap &gt;
                         </a>
-                        <a href="https://wa.me/{{ $whatsappClean }}" target="_blank" class="text-xs font-bold text-emerald-700 hover:underline">
+                        <a href="{{ $waUrlPanitia }}" target="_blank" class="text-xs font-bold text-emerald-700 hover:underline">
                             Bantuan Panitia via WA &gt;
                         </a>
                     </div>

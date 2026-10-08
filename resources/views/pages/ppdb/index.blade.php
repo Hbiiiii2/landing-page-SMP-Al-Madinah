@@ -26,7 +26,7 @@
                     Pendaftaran PPDB Online
                 </h1>
                 <p class="text-xs sm:text-sm text-emerald-100 max-w-xl">
-                    Silakan lengkapi formulir pendaftaran santri baru SMP Islam Al-Madinah BSD dengan data yang valid dan sesuai dokumen resmi.
+                    Silakan lengkapi formulir pendaftaran siswa baru SMP Islam Al-Madinah BSD dengan data yang valid dan sesuai dokumen resmi.
                 </p>
             </div>
 
@@ -55,8 +55,8 @@
                     ℹ️
                 </div>
                 <div>
-                    <h3 class="text-sm font-bold text-brand-dark">Kuota Santri: {{ $ppdbSetting->total_quota ?? 120 }} Siswa</h3>
-                    <p class="text-xs text-brand-muted">Maksimal 24 santri per kelas (5 rombel) demi efektivitas tahfidz & pengajaran.</p>
+                    <h3 class="text-sm font-bold text-brand-dark">Kuota Siswa: {{ $ppdbSetting->total_quota ?? 120 }} Siswa</h3>
+                    <p class="text-xs text-brand-muted">Maksimal 24 siswa per kelas (5 rombel) demi efektivitas tahfidz & pengajaran.</p>
                 </div>
             </div>
             <div class="text-left sm:text-right">
@@ -87,18 +87,18 @@
         <form action="{{ route('ppdb.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl border border-brand-border p-6 sm:p-10 shadow-sm space-y-8">
             @csrf
 
-            <!-- SECTION A: DATA CALON SANTRI -->
+            <!-- SECTION A: DATA CALON siswa -->
             <div class="space-y-4">
                 <div class="border-b border-brand-border pb-3 flex items-center gap-2">
                     <span class="w-6 h-6 rounded-full bg-[#0D6B57] text-white flex items-center justify-center font-bold text-xs">1</span>
-                    <h2 class="text-base font-bold text-brand-dark">Data Calon Santri</h2>
+                    <h2 class="text-base font-bold text-brand-dark">Data Calon Siswa</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Nama Lengkap -->
                     <div class="md:col-span-2 space-y-1">
                         <label class="text-xs font-bold text-brand-dark flex items-center justify-between">
-                            <span>Nama Lengkap Santri <span class="text-red-500">*</span></span>
+                            <span>Nama Lengkap Siswa <span class="text-red-500">*</span></span>
                             <span class="text-[11px] text-brand-muted">Sesuai Akta Kelahiran</span>
                         </label>
                         <input type="text" name="full_name" value="{{ old('full_name') }}" required 
@@ -110,7 +110,7 @@
                     <div class="space-y-1">
                         <label class="text-xs font-bold text-brand-dark">Nomor Induk Kependudukan (NIK)</label>
                         <input type="text" name="nik" value="{{ old('nik') }}" 
-                               placeholder="16 digit NIK calon santri"
+                               placeholder="16 digit NIK calon siswa"
                                class="w-full px-3.5 py-2.5 rounded-lg border border-brand-border text-sm focus:outline-none focus:border-[#0D6B57] focus:ring-2 focus:ring-emerald-100">
                     </div>
 
@@ -217,7 +217,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Pas Foto -->
                     <div class="p-4 rounded-xl border border-dashed border-brand-border bg-slate-50 space-y-1">
-                        <label class="text-xs font-bold text-brand-dark block">Pas Foto Calon Santri (Terbaru)</label>
+                        <label class="text-xs font-bold text-brand-dark block">Pas Foto Calon Siswa (Terbaru)</label>
                         <input type="file" name="student_photo_file" accept=".jpg,.jpeg,.png" 
                                class="w-full text-xs text-brand-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#EAF4F1] file:text-[#0D6B57] hover:file:bg-emerald-100">
                         <p class="text-[10px] text-brand-muted">Format foto rapi berseragam.</p>

@@ -9,10 +9,15 @@
     $address = $profile->address ?? 'Komplek BSD City Sektor XIV, Tangerang Selatan';
     $phone = $profile->phone ?? '(021) 538-8888';
     $email = $profile->email ?? 'info@smpalmadinah.sch.id';
-    $whatsapp = $profile->whatsapp ?? '0812-9988-7766';
+    $whatsapp = !empty($profile?->whatsapp) ? $profile->whatsapp : '0812-9988-7766';
     $whatsappClean = preg_replace('/[^0-9]/', '', $whatsapp);
     if (str_starts_with($whatsappClean, '0')) {
         $whatsappClean = '62' . substr($whatsappClean, 1);
+    } elseif (str_starts_with($whatsappClean, '8')) {
+        $whatsappClean = '62' . $whatsappClean;
+    }
+    if (empty($whatsappClean)) {
+        $whatsappClean = '6281299887766';
     }
     $academicYear = $ppdbSetting->academic_year ?? '2027/2028';
     $instagram = $profile->instagram_url ?? 'https://instagram.com';
@@ -52,7 +57,7 @@
                 </div>
                 <div>
                     <div class="text-[10px] uppercase font-bold text-brand-muted/80">Hubungi Kami</div>
-                    <a href="https://wa.me/{{ $whatsappClean }}" target="_blank" class="font-bold text-brand-dark hover:text-[#0D6B57] transition-colors">
+                    <a href="{{ $profile?->whatsapp_custom_url ?: ('https://wa.me/' . $whatsappClean) }}" target="_blank" class="font-bold text-brand-dark hover:text-[#0D6B57] transition-colors">
                         {{ $whatsapp }}
                     </a>
                 </div>
@@ -162,7 +167,7 @@
                 <a href="{{ route('programs') }}" class="block px-3 py-2 rounded hover:bg-[#08493B]">Program Pendidikan</a>
                 <a href="{{ url('/#unggulan') }}" class="block px-3 py-2 rounded hover:bg-[#08493B]">Program Unggulan</a>
                 <a href="{{ route('ppdb.index') }}" class="block px-3 py-2 rounded hover:bg-[#08493B] text-amber-300 font-bold">Pendaftaran (SPMB)</a>
-                <a href="{{ route('achievements') }}" class="block px-3 py-2 rounded hover:bg-[#08493B]">Prestasi Santri</a>
+                <a href="{{ route('achievements') }}" class="block px-3 py-2 rounded hover:bg-[#08493B]">Prestasi Siswa</a>
                 <a href="{{ route('gallery') }}" class="block px-3 py-2 rounded hover:bg-[#08493B]">Galeri Kegiatan</a>
                 <a href="{{ route('news') }}" class="block px-3 py-2 rounded hover:bg-[#08493B]">Berita</a>
                 <a href="{{ url('/#kontak') }}" class="block px-3 py-2 rounded hover:bg-[#08493B]">Kontak</a>
