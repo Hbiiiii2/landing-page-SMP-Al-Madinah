@@ -37,6 +37,12 @@ if [ "$1" = "php-fpm" ]; then
     echo "Creating public storage symlink..."
     php artisan storage:link --force || true
 
+    # Generate APP_KEY if missing
+    if [ -z "$APP_KEY" ]; then
+        echo "APP_KEY is empty, generating application key..."
+        php artisan key:generate --force || true
+    fi
+
     echo "Running database migrations..."
     php artisan migrate --force || true
 
