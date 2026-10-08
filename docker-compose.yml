@@ -29,7 +29,7 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: smpalmadinah_tunnel
     restart: unless-stopped
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:-}
     depends_on:
       - web
     networks:
@@ -47,7 +47,8 @@ services:
     container_name: smpalmadinah_app
     restart: unless-stopped
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       DB_HOST: db
       DB_PORT: 3306
@@ -97,7 +98,8 @@ services:
     restart: unless-stopped
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       DB_HOST: db
       DB_PORT: 3306
@@ -122,7 +124,8 @@ services:
     restart: unless-stopped
     command: ["php", "artisan", "schedule:work"]
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       DB_HOST: db
       DB_PORT: 3306
