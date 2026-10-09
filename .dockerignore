@@ -22,6 +22,8 @@ storage/framework/sessions/*
 !storage/framework/sessions/.gitignore
 storage/framework/views/*
 !storage/framework/views/.gitignore
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
 storage/app/*
 !storage/app/.gitignore
 !storage/app/public/.gitignore
