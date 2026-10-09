@@ -25,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (str_starts_with(config('app.url'), 'https://') || app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Storage::disk('local')->buildTemporaryUrlsUsing(function ($path, $expiration, $options) {
             return URL::temporarySignedRoute(
                 'secure.private.file',

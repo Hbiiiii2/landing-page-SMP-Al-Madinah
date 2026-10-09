@@ -46,6 +46,9 @@ if [ "$1" = "php-fpm" ]; then
     echo "Running database migrations..."
     php artisan migrate --force || true
 
+    echo "Publishing Filament assets..."
+    php artisan filament:assets || true
+
     if [ "$APP_ENV" = "production" ]; then
         echo "Caching configuration, routes, and views for production..."
         php artisan config:cache || true
