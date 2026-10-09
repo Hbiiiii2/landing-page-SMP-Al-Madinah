@@ -38,7 +38,7 @@ services:
       - tunnel
 
   # -----------------------------------------------------------
-  # Application (PHP 8.3-FPM + Laravel + Filament)
+  # Application (PHP 8.5-FPM + Laravel + Filament)
   # -----------------------------------------------------------
   app:
     build:
