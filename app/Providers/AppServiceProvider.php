@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,10 +26,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Force HTTPS only in production or behind a reverse proxy (Cloudflare Tunnel, etc.)
-        if (app()->environment('production') || request()->header('X-Forwarded-Proto') === 'https') {
+        // Force HTTPS only behind reverse proxy (Cloudflare) or in production when NOT on localhost
+        $isLocalhost = in_array(request()->getHost(), ['localhost', '127.0.0.1', '::1']);
+        if (request()->header('X-Forwarded-Proto') === 'https' || (app()->environment('production') && !$isLocalhost)) {
             URL::forceScheme('https');
         }
+
+        // Always generate root-relative URLs for Vite assets (/build/assets/...)
+        // This guarantees CSS/JS load seamlessly across localhost, IP, custom ports, and production HTTPS
+        Vite::createAssetPathsUsing(fn ($path) => '/' . ltrim($path, '/'));
 
         Storage::disk('local')->buildTemporaryUrlsUsing(function ($path, $expiration, $options) {
             return URL::temporarySignedRoute(

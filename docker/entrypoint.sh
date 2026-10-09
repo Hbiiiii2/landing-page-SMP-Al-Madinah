@@ -50,7 +50,8 @@ if [ "$1" = "php-fpm" ]; then
     php artisan filament:assets || true
 
     if [ "$APP_ENV" = "production" ]; then
-        echo "Caching configuration, routes, and views for production..."
+        echo "Clearing stale caches and optimizing for production..."
+        php artisan optimize:clear || true
         php artisan config:cache || true
         php artisan route:cache || true
         php artisan view:cache || true
