@@ -1,21 +1,5 @@
 # -------------------------------------------------------------
-# Stage 1: Build Frontend Assets (Vite, Tailwind, JS/CSS)
-# -------------------------------------------------------------
-FROM node:22-alpine AS frontend
-
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm ci
-
-COPY vite.config.js ./
-COPY resources ./resources
-COPY public ./public
-
-RUN npm run build
-
-# -------------------------------------------------------------
-# Stage 2: Composer Dependencies (Production only)
+# Stage 1: Composer Dependencies (Production only)
 # -------------------------------------------------------------
 FROM composer:2 AS composer
 
@@ -32,7 +16,7 @@ RUN composer install \
     --ignore-platform-reqs
 
 # -------------------------------------------------------------
-# Stage 3: Production PHP-FPM Application
+# Stage 2: Production PHP-FPM Application
 # -------------------------------------------------------------
 FROM php:8.3-fpm-alpine
 
@@ -71,9 +55,6 @@ COPY . /var/www/html
 
 # Copy vendor dependencies from Composer stage
 COPY --from=composer /app/vendor /var/www/html/vendor
-
-# Copy compiled frontend assets from Frontend stage
-COPY --from=frontend /app/public/build /var/www/html/public/build
 
 # Copy composer binary
 COPY --from=composer /usr/bin/composer /usr/bin/composer
