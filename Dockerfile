@@ -40,24 +40,17 @@ LABEL maintainer="SMP Islam Al-Madinah BSD"
 
 WORKDIR /var/www/html
 
+# Copy official PHP extension installer helper
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
 # Install required system packages and PHP extensions
 RUN apk update && apk add --no-cache \
     bash \
     curl \
     git \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    libwebp-dev \
-    libzip-dev \
-    icu-dev \
-    oniguruma-dev \
-    libxml2-dev \
-    linux-headers \
-    mysql-client \
+    mariadb-client \
     shadow \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) \
+    && install-php-extensions \
         pdo_mysql \
         mysqli \
         gd \

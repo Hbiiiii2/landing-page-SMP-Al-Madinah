@@ -44,6 +44,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: smpalmadinah_app:latest
     container_name: smpalmadinah_app
     restart: unless-stopped
     env_file:
@@ -91,9 +92,7 @@ services:
   # Background Queue Worker
   # -----------------------------------------------------------
   queue:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: smpalmadinah_app:latest
     container_name: smpalmadinah_queue
     restart: unless-stopped
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
@@ -117,9 +116,7 @@ services:
   # Scheduled Tasks Runner
   # -----------------------------------------------------------
   scheduler:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: smpalmadinah_app:latest
     container_name: smpalmadinah_scheduler
     restart: unless-stopped
     command: ["php", "artisan", "schedule:work"]
