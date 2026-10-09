@@ -34,7 +34,7 @@ RUN composer install \
 # -------------------------------------------------------------
 # Stage 3: Production PHP-FPM Application
 # -------------------------------------------------------------
-FROM php:8.5-fpm-alpine
+FROM php:8.3-fpm-alpine
 
 LABEL maintainer="SMP Islam Al-Madinah BSD"
 

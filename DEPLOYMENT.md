@@ -9,7 +9,7 @@ Panduan ini menjelaskan langkah demi langkah untuk mendeploy website **SMP Islam
 | Layanan | Komponen | Deskripsi |
 |---|---|---|
 | `web` | **Nginx (Alpine)** | Web server statis, reverse proxy FastCGI ke PHP-FPM, Gzip, caching asset, proteksi security headers, dan batas upload 50MB. |
-| `app` | **PHP 8.5-FPM + Laravel 12 + Filament** | Backend aplikasi, auto-wait database, auto-migrasi skema, auto-cache konfigurasi production, dan storage linking. |
+| `app` | **PHP 8.3-FPM + Laravel 12 + Filament** | Backend aplikasi, auto-wait database, auto-migrasi skema, auto-cache konfigurasi production, dan storage linking. |
 | `db` | **MySQL 8.0** | Database utama dengan volume persisten `db_data` (data aman tidak akan hilang saat container restart). |
 | `queue` | **Queue Worker** | Worker background processing untuk email & antrean tugas asynchronous. |
 | `scheduler`| **Cron Scheduler** | Eksekutor cron jobs otomatis Laravel (`schedule:work`). |
@@ -97,7 +97,7 @@ docker compose up -d --build
 
 Docker akan secara otomatis:
 1. Membuild aset frontend (Tailwind & Vite) via Node 22.
-2. Menginstall dependensi Composer production PHP 8.5.
+2. Menginstall dependensi Composer production PHP 8.3.
 3. Menyalakan MySQL 8.0 dan menunggu hingga database siap menerima koneksi.
 4. Menjalankan migrasi database (`php artisan migrate --force`).
 5. Menghubungkan symlink penyimpanan (`php artisan storage:link`).
