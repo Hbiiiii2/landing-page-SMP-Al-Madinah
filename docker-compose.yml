@@ -32,17 +32,17 @@ services:
   # Aktifkan dengan menambahkan CLOUDFLARE_TUNNEL_TOKEN di .env
   # lalu jalankan: docker compose --profile tunnel up -d
   # -----------------------------------------------------------
-  tunnel:
-    image: cloudflare/cloudflared:latest
-    container_name: smpalmadinah_tunnel
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:-}
-    depends_on:
-      - web
-    networks:
-      - smp_network
-    profiles:
-      - tunnel
+  # tunnel:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: smpalmadinah_tunnel
+  #   restart: unless-stopped
+  #   command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:-}
+  #   depends_on:
+  #     - web
+  #   networks:
+  #     - smp_network
+  #   profiles:
+  #     - tunnel
 
   # -----------------------------------------------------------
   # Application (PHP 8.3-FPM + Laravel + Filament)
@@ -87,7 +87,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$${DB_ROOT_PASSWORD:-rootsecret123} || exit 1"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 10
