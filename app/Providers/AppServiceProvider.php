@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,30 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Safeguard for HTML sanitization on PHP < 8.4 when symfony/html-sanitizer v8 is loaded.
+        // Symfony 8's NativeParser relies on \Dom\HTMLDocument which was added in PHP 8.4.
+        // Without this fallback, Filament notifications crash with HTTP 500 when rendering on PHP 8.3.
+        if (! class_exists(\Dom\HTMLDocument::class)) {
+            $this->app->scoped(
+                HtmlSanitizerInterface::class,
+                fn () => new class implements HtmlSanitizerInterface {
+                    public function sanitize(string $input): string
+                    {
+                        return strip_tags($input, ['b', 'strong', 'i', 'em', 'u', 'a', 'p', 'span', 'br', 'svg', 'path', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'small']);
+                    }
+
+                    public function sanitizeFor(string $element, string $input): string
+                    {
+                        return $this->sanitize($input);
+                    }
+                }
+            );
+
+            Str::macro('sanitizeHtml', function (string $html): string {
+                return strip_tags($html, ['b', 'strong', 'i', 'em', 'u', 'a', 'p', 'span', 'br', 'svg', 'path', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'small']);
+            });
+        }
+
         // Force HTTPS only behind reverse proxy (Cloudflare) or in production when NOT on localhost
         $isLocalhost = in_array(request()->getHost(), ['localhost', '127.0.0.1', '::1']);
         if (request()->header('X-Forwarded-Proto') === 'https' || (app()->environment('production') && !$isLocalhost)) {
