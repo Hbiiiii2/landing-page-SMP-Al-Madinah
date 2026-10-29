@@ -1,5 +1,19 @@
 name: smp-almadinah
 
+# -------------------------------------------------------------
+# Reusable Configurations (Anchors)
+# -------------------------------------------------------------
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-common-labels: &default-labels
+  com.docker.compose.project: "smp-almadinah"
+  app.kubernetes.io/part-of: "smp-almadinah"
+  app.kubernetes.io/managed-by: "docker-compose"
+
 services:
   # -----------------------------------------------------------
   # Web Server (Nginx)
@@ -8,14 +22,17 @@ services:
     build:
       context: .
       dockerfile: docker/nginx/Dockerfile
-    container_name: landingpage_smp
+    image: smp-almadinah-web:latest
+    container_name: smp-almadinah-web
     restart: unless-stopped
     ports:
       - "${APP_PORT:-8010}:80"
     labels:
-      - "dockflare.enable=true"
-      - "dockflare.hostname=smpaickkmb.sch.id"
-      - "dockflare.service=http://landingpage_smp:80"
+      <<: *default-labels
+      com.docker.compose.service: "web"
+      dockflare.enable: "true"
+      dockflare.hostname: "smpaickkmb.sch.id"
+      dockflare.service: "http://smp-almadinah-web:80"
     volumes:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./public:/var/www/html/public:ro
@@ -25,24 +42,10 @@ services:
     networks:
       smp_network:
         aliases:
+          - smp-almadinah-web
           - landingpage_smp
-
-  # -----------------------------------------------------------
-  # Cloudflare Tunnel (Dedicated Container)
-  # Aktifkan dengan menambahkan CLOUDFLARE_TUNNEL_TOKEN di .env
-  # lalu jalankan: docker compose --profile tunnel up -d
-  # -----------------------------------------------------------
-  # tunnel:
-  #   image: cloudflare/cloudflared:latest
-  #   container_name: smpalmadinah_tunnel
-  #   restart: unless-stopped
-  #   command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:-}
-  #   depends_on:
-  #     - web
-  #   networks:
-  #     - smp_network
-  #   profiles:
-  #     - tunnel
+          - web
+    logging: *default-logging
 
   # -----------------------------------------------------------
   # Application (PHP 8.4-FPM + Laravel + Filament)
@@ -51,8 +54,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: smpalmadinah_app:latest
-    container_name: smpalmadinah_app
+    image: smp-almadinah-app:latest
+    container_name: smp-almadinah-app
     restart: unless-stopped
     env_file:
       - path: .env
@@ -60,20 +63,27 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 3306
+    labels:
+      <<: *default-labels
+      com.docker.compose.service: "app"
     volumes:
       - app_storage:/var/www/html/storage
     depends_on:
       db:
         condition: service_healthy
     networks:
-      - smp_network
+      smp_network:
+        aliases:
+          - smp-almadinah-app
+          - app
+    logging: *default-logging
 
   # -----------------------------------------------------------
   # Database (MySQL 8.0)
   # -----------------------------------------------------------
   db:
     image: mysql:8.0
-    container_name: smpalmadinah_db
+    container_name: smp-almadinah-db
     restart: unless-stopped
     command: >
       --default-authentication-plugin=mysql_native_password
@@ -84,6 +94,9 @@ services:
       MYSQL_USER: ${DB_USERNAME:-smp_user}
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret123}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret123}
+    labels:
+      <<: *default-labels
+      com.docker.compose.service: "db"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -93,14 +106,18 @@ services:
       retries: 10
       start_period: 10s
     networks:
-      - smp_network
+      smp_network:
+        aliases:
+          - smp-almadinah-db
+          - db
+    logging: *default-logging
 
   # -----------------------------------------------------------
   # Background Queue Worker
   # -----------------------------------------------------------
   queue:
-    image: smpalmadinah_app:latest
-    container_name: smpalmadinah_queue
+    image: smp-almadinah-app:latest
+    container_name: smp-almadinah-queue
     restart: unless-stopped
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
     env_file:
@@ -109,6 +126,9 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 3306
+    labels:
+      <<: *default-labels
+      com.docker.compose.service: "queue"
     volumes:
       - app_storage:/var/www/html/storage
     depends_on:
@@ -117,14 +137,18 @@ services:
       app:
         condition: service_started
     networks:
-      - smp_network
+      smp_network:
+        aliases:
+          - smp-almadinah-queue
+          - queue
+    logging: *default-logging
 
   # -----------------------------------------------------------
   # Scheduled Tasks Runner
   # -----------------------------------------------------------
   scheduler:
-    image: smpalmadinah_app:latest
-    container_name: smpalmadinah_scheduler
+    image: smp-almadinah-app:latest
+    container_name: smp-almadinah-scheduler
     restart: unless-stopped
     command: ["php", "artisan", "schedule:work"]
     env_file:
@@ -133,6 +157,9 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 3306
+    labels:
+      <<: *default-labels
+      com.docker.compose.service: "scheduler"
     volumes:
       - app_storage:/var/www/html/storage
     depends_on:
@@ -141,14 +168,45 @@ services:
       app:
         condition: service_started
     networks:
-      - smp_network
+      smp_network:
+        aliases:
+          - smp-almadinah-scheduler
+          - scheduler
+    logging: *default-logging
+
+  # -----------------------------------------------------------
+  # Cloudflare Tunnel (Optional Dedicated Container)
+  # Aktifkan dengan menambahkan CLOUDFLARE_TUNNEL_TOKEN di .env
+  # lalu jalankan: docker compose --profile tunnel up -d
+  # -----------------------------------------------------------
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: smp-almadinah-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    labels:
+      <<: *default-labels
+      com.docker.compose.service: "tunnel"
+    depends_on:
+      - web
+    networks:
+      smp_network:
+        aliases:
+          - smp-almadinah-tunnel
+          - tunnel
+    profiles:
+      - tunnel
+    logging: *default-logging
 
 volumes:
   db_data:
+    name: smp-almadinah-db-data
     driver: local
   app_storage:
+    name: smp-almadinah-app-storage
     driver: local
 
 networks:
   smp_network:
+    name: smp-almadinah-network
     driver: bridge
