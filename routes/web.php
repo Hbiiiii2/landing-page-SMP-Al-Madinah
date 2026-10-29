@@ -60,6 +60,80 @@ Route::get('/biaya-ppdb', function () {
 
 /*
 |--------------------------------------------------------------------------
+| SEO & Search Engine Optimization (Sitemap & Robots)
+|--------------------------------------------------------------------------
+*/
+Route::get('/robots.txt', function () {
+    $sitemapUrl = url('/sitemap.xml');
+    $content = "User-agent: *\n";
+    $content .= "Allow: /\n";
+    $content .= "Disallow: /admin/\n";
+    $content .= "Disallow: /livewire/\n";
+    $content .= "Disallow: /secure-files/\n\n";
+    $content .= "Sitemap: {$sitemapUrl}\n";
+
+    return response($content, 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+});
+
+Route::get('/sitemap.xml', function () {
+    $schoolProfile = \App\Models\SchoolProfile::first();
+    $posts = collect();
+
+    if (\Illuminate\Support\Facades\Schema::hasTable('tallcms_posts')) {
+        $posts = \TallCms\Cms\Models\CmsPost::published()->latest('published_at')->get();
+    }
+
+    $staticRoutes = [
+        ['url' => url('/'), 'priority' => '1.0', 'changefreq' => 'daily', 'lastmod' => now()->toAtomString()],
+        ['url' => route('about'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => ($schoolProfile?->updated_at ?? now())->toAtomString()],
+        ['url' => route('programs'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => now()->toAtomString()],
+        ['url' => route('ppdb.index'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => now()->toAtomString()],
+        ['url' => route('achievements'), 'priority' => '0.8', 'changefreq' => 'weekly', 'lastmod' => now()->toAtomString()],
+        ['url' => route('gallery'), 'priority' => '0.8', 'changefreq' => 'weekly', 'lastmod' => now()->toAtomString()],
+        ['url' => route('news'), 'priority' => '0.8', 'changefreq' => 'daily', 'lastmod' => now()->toAtomString()],
+        ['url' => route('ppdb.check-status'), 'priority' => '0.6', 'changefreq' => 'daily', 'lastmod' => now()->toAtomString()],
+    ];
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
+
+    foreach ($staticRoutes as $r) {
+        $xml .= "    <url>\n";
+        $xml .= "        <loc>" . htmlspecialchars($r['url']) . "</loc>\n";
+        $xml .= "        <lastmod>" . $r['lastmod'] . "</lastmod>\n";
+        $xml .= "        <changefreq>" . $r['changefreq'] . "</changefreq>\n";
+        $xml .= "        <priority>" . $r['priority'] . "</priority>\n";
+        $xml .= "    </url>\n";
+    }
+
+    foreach ($posts as $post) {
+        $locale = config('app.locale', 'en');
+        $slug = is_array($post->slug) ? ($post->slug[$locale] ?? reset($post->slug)) : $post->slug;
+        $postUrl = route('news.show', ['slug' => $slug ?: $post->id]);
+        $lastmod = ($post->updated_at ?? $post->published_at ?? now())->toAtomString();
+
+        $xml .= "    <url>\n";
+        $xml .= "        <loc>" . htmlspecialchars($postUrl) . "</loc>\n";
+        $xml .= "        <lastmod>" . $lastmod . "</lastmod>\n";
+        $xml .= "        <changefreq>weekly</changefreq>\n";
+        $xml .= "        <priority>0.7</priority>\n";
+        if (!empty($post->featured_image)) {
+            $imgUrl = asset('storage/' . $post->featured_image);
+            $xml .= "        <image:image>\n";
+            $xml .= "            <image:loc>" . htmlspecialchars($imgUrl) . "</image:loc>\n";
+            $xml .= "            <image:title>" . htmlspecialchars($post->title) . "</image:title>\n";
+            $xml .= "        </image:image>\n";
+        }
+        $xml .= "    </url>\n";
+    }
+
+    $xml .= '</urlset>';
+
+    return response($xml, 200, ['Content-Type' => 'application/xml; charset=utf-8']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | Auth & Admin Redirects
 |--------------------------------------------------------------------------
 */

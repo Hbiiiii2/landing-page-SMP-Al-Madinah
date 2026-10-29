@@ -6,17 +6,88 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Page Title & Meta Tags -->
-    <title>@yield('title', 'SMP Islam Al-Madinah BSD — Mendidik dengan Adab, Membina dengan Ilmu')</title>
-    <meta name="description" content="@yield('meta_description', 'Portal Resmi SMP Islam Al-Madinah BSD di bawah naungan Yayasan Kerukunan Keluarga Muslim BSD. Menyeimbangkan tauhid, hafalan Al-Qur\'an bersanad, kemampuan dwibahasa, dan ketajaman sains modern.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'SMP Islam Al-Madinah BSD, SMP Al Madinah BSD, PPDB SMP BSD, Sekolah Islam Tangerang Selatan, Tahfidz Bersanad BSD, YKKM BSD')">
+    <title>@yield('title', 'SMP Islam Al-Madinah BSD — Sekolah Menengah Pertama Berkarakter & Unggul')</title>
+    <meta name="description" content="@yield('meta_description', 'Portal Resmi SMP Islam Al-Madinah BSD di bawah naungan Yayasan Kerukunan Keluarga Muslim BSD. Menyeimbangkan pendidikan karakter Islami, tahfidz Al-Qur\'an, dwibahasa, dan sains teknologi modern di Serpong, Tangerang Selatan.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'SMP Al-Madinah BSD, SMP Islam Al-Madinah BSD, PPDB SMP BSD, Sekolah Islam Tangerang Selatan, YKKM BSD, Islamic Center KKMB, SMP Swasta Terbaik BSD')">
     <meta name="author" content="SMP Islam Al-Madinah BSD">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('og_title', 'SMP Islam Al-Madinah BSD — Mendidik dengan Adab, Membina dengan Ilmu')">
-    <meta property="og:description" content="@yield('og_description', 'Pendidikan menengah pertama Islam terpadu dengan akreditasi A di Sektor XIV BSD City, Serpong, Tangerang Selatan.')">
+    <meta property="og:site_name" content="SMP Islam Al-Madinah BSD">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:title" content="@yield('og_title', 'SMP Islam Al-Madinah BSD — Mendidik Karakter, Membina Prestasi')">
+    <meta property="og:description" content="@yield('og_description', 'Pendidikan menengah pertama berkualitas berbasis karakter Islami, tahfidz, dan sains modern di Sektor XIV BSD City, Serpong, Tangerang Selatan.')">
     <meta property="og:image" content="@yield('og_image', asset('images/logo-almadinah.png'))">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="@yield('og_title', 'SMP Islam Al-Madinah BSD — Mendidik Karakter, Membina Prestasi')">
+    <meta name="twitter:description" content="@yield('og_description', 'Pendidikan menengah pertama berkualitas berbasis karakter Islami, tahfidz, dan sains modern di Sektor XIV BSD City, Serpong, Tangerang Selatan.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/logo-almadinah.png'))">
+
+    <!-- Local SEO & Geo Meta Tags -->
+    <meta name="geo.region" content="ID-BT">
+    <meta name="geo.placename" content="Tangerang Selatan">
+    <meta name="geo.position" content="-6.3015;106.6710">
+    <meta name="ICBM" content="-6.3015, 106.6710">
+
+    <!-- Structured Data (JSON-LD Schema.org for School & WebSite) -->
+    @php
+        $mainSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'School',
+                    '@id' => url('/') . '#school',
+                    'name' => 'SMP Islam Al-Madinah BSD',
+                    'alternateName' => ['SMP Al-Madinah BSD', 'SMP Al Madinah Islamic Center KKMB', 'SMP Al-Madinah YKKM'],
+                    'url' => url('/'),
+                    'logo' => [
+                        '@type' => 'ImageObject',
+                        'url' => asset('images/logo-almadinah.png'),
+                    ],
+                    'image' => asset('images/logo-almadinah.png'),
+                    'description' => 'Sekolah Menengah Pertama Islam Al-Madinah BSD di bawah naungan Yayasan Kerukunan Keluarga Muslim BSD (YKKM BSD). Mengintegrasikan kurikulum nasional, tahfidz Al-Qur\'an, dwibahasa, dan sains modern.',
+                    'telephone' => '(021) 538-8888',
+                    'email' => 'info@smpalmadinah.sch.id',
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => 'Komplek BSD City Sektor XIV',
+                        'addressLocality' => 'Serpong',
+                        'addressRegion' => 'Banten',
+                        'postalCode' => '15310',
+                        'addressCountry' => 'ID',
+                    ],
+                    'geo' => [
+                        '@type' => 'GeoCoordinates',
+                        'latitude' => -6.3015,
+                        'longitude' => 106.6710,
+                    ],
+                    'sameAs' => [
+                        'https://www.instagram.com/amickkmb.perguruan',
+                        'https://www.youtube.com/@SMP-SMAAl-MadinahIslamicCenter',
+                        'https://facebook.com/smpalmadinah',
+                    ],
+                ],
+                [
+                    '@type' => 'WebSite',
+                    '@id' => url('/') . '#website',
+                    'url' => url('/'),
+                    'name' => 'SMP Islam Al-Madinah BSD',
+                    'publisher' => [
+                        '@id' => url('/') . '#school',
+                    ],
+                    'inLanguage' => 'id-ID',
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($mainSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+    @stack('schema')
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo-almadinah.png') }}">
@@ -32,17 +103,17 @@
 
     @stack('styles')
 </head>
-<body class="bg-brand-bg-soft text-brand-dark font-sans antialiased selection:bg-brand-green/20 flex flex-col min-h-screen">
+<body class="bg-[#FAF9FB] text-[#202124] font-sans antialiased selection:bg-[#9377AD]/25 selection:text-[#4A3362] flex flex-col min-h-screen overflow-x-hidden">
     <!-- Skip to Content for Accessibility -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-brand-green text-white px-4 py-2 rounded-md z-50 text-xs font-semibold print:hidden">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-[#9377AD] text-white px-4 py-2 rounded-xl z-50 text-xs font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-[#796092] print:hidden">
         Langsung ke konten utama
     </a>
 
-    <!-- Master Header (Two-Level Header Spec) -->
+    <!-- Master Header -->
     <x-public.header :profile="$schoolProfile ?? $profile ?? null" :ppdbSetting="$ppdbSetting ?? null" />
 
-    <!-- Main Content Slot / Section -->
-    <main id="main-content" class="flex-1">
+    <!-- Main Content Slot -->
+    <main id="main-content" class="flex-1 w-full overflow-x-hidden">
         @yield('content')
     </main>
 
@@ -54,17 +125,17 @@
         $fabWaUrl = $fabProfile?->whatsapp_floating_url ?? 'https://wa.me/6281299887766';
     @endphp
 
-    <!-- Floating WhatsApp Panitia Button -->
-    <div class="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 print:hidden group">
+    <!-- Floating WhatsApp Panitia Button (Mobile Optimized) -->
+    <div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2.5 print:hidden group">
         <a href="{{ $fabWaUrl }}" 
            target="_blank" 
            rel="noopener noreferrer" 
-           class="flex items-center gap-2.5 bg-white pl-4 pr-2.5 py-2 rounded-full shadow-2xl border border-emerald-100 hover:border-emerald-300 hover:shadow-emerald-500/20 transition-all duration-300 group-hover:scale-105 active:scale-95"
-           title="Chat WhatsApp Panitia PPDB">
-            <span class="text-xs font-extrabold text-brand-dark tracking-wide hidden sm:inline">
-                Chat WA Panitia
+           class="flex items-center gap-2.5 bg-white pl-3.5 pr-2 py-1.5 sm:pl-4 sm:pr-2.5 sm:py-2 rounded-full shadow-lg border border-[#E7E3EA] hover:border-[#9377AD]/50 hover:shadow-xl transition-all duration-300 group-hover:scale-105 active:scale-95 touch-manipulation"
+           title="Chat WhatsApp Panitia">
+            <span class="text-xs font-bold text-[#202124] tracking-wide hidden sm:inline">
+                Konsultasi WhatsApp
             </span>
-            <div class="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-md shrink-0">
+            <div class="w-10 h-10 rounded-full bg-[#2A923F] text-white flex items-center justify-center shadow-md shrink-0">
                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.181-.076.355.101.173.449.742.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
                 </svg>

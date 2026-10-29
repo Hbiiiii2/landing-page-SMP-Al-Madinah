@@ -10,67 +10,77 @@
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-arabic: 'Amiri', serif;
 
-    /* Brand Primary Colors */
-    --color-brand-green: #2B923F;
-    --color-brand-green-dark: #176B2A;
+    /* SMP Al-Madinah BSD Brand Theme */
+    --color-brand-purple: #9377AD;
+    --color-brand-purple-hover: #796092;
+    --color-brand-purple-dark: #684681;
+    --color-brand-purple-deep: #4A3362;
+    --color-brand-purple-light: #F4F0F7;
+    --color-brand-purple-surface: #FAF8FC;
+
+    --color-brand-green: #2A923F;
+    --color-brand-green-hover: #217333;
+    --color-brand-green-dark: #1E662D;
     --color-brand-green-light: #EAF6EC;
     --color-brand-green-surface: #F4FAF5;
 
-    /* Islamic Emerald Palette (Matching Reference Layout) */
-    --color-brand-emerald: #0D6B57;
-    --color-brand-emerald-dark: #08493B;
-    --color-brand-emerald-deep: #063A2F;
-    --color-brand-emerald-light: #EAF4F1;
-    --color-brand-teal: #10846C;
+    --color-brand-blue: #4779B5;
+    --color-brand-blue-hover: #396497;
+    --color-brand-blue-light: #EDF4FC;
 
-    /* Secondary / Tahfidz Program */
-    --color-brand-purple: #9376AE;
-    --color-brand-purple-dark: #684681;
-    --color-brand-purple-light: #F2EDF6;
-
-    /* Accent Gold / Prestasi / Buttons */
-    --color-brand-gold: #E7B52F;
-    --color-brand-gold-dark: #B58B17;
-    --color-brand-gold-light: #FEF9EC;
-    --color-brand-gold-btn: #EAA824;
-
-    /* Neutrals & Text */
-    --color-brand-dark: #202520;
-    --color-brand-muted: #6B746D;
-    --color-brand-border: #E4E9E5;
-    --color-brand-bg: #FFFFFF;
-    --color-brand-bg-soft: #F8FAF8;
+    --color-brand-dark: #202124;
+    --color-brand-muted: #66676B;
+    --color-brand-border: #E7E3EA;
+    --color-brand-surface: #FFFFFF;
+    --color-brand-bg: #FAF9FB;
+    --color-brand-bg-soft: #FAF9FB;
 }
 
 :root {
-    --color-primary: #2B923F;
-    --color-primary-dark: #176B2A;
-    --color-primary-light: #EAF6EC;
-    --color-primary-surface: #F4FAF5;
-    --color-emerald: #0D6B57;
-    --color-emerald-dark: #08493B;
-    --color-secondary: #9376AE;
-    --color-secondary-dark: #684681;
-    --color-secondary-light: #F2EDF6;
-    --color-accent-gold: #E7B52F;
-    --color-accent-gold-dark: #B58B17;
-    --color-accent-gold-light: #FEF9EC;
-    --color-text-dark: #202520;
-    --color-text-muted: #6B746D;
-    --color-border: #E4E9E5;
-    --color-bg-soft: #F8FAF8;
+    --color-primary: #9377AD;
+    --color-primary-hover: #796092;
+    --color-primary-dark: #684681;
+    --color-primary-deep: #4A3362;
+    --color-primary-light: #F4F0F7;
+    --color-primary-surface: #FAF8FC;
+
+    --color-secondary: #2A923F;
+    --color-secondary-hover: #217333;
+    --color-secondary-dark: #1E662D;
+    --color-secondary-light: #EAF6EC;
+    --color-secondary-surface: #F4FAF5;
+
+    --color-accent: #4779B5;
+    --color-accent-hover: #396497;
+    --color-accent-light: #EDF4FC;
+
+    --color-text: #202124;
+    --color-text-muted: #66676B;
+    --color-surface: #FFFFFF;
+    --color-background: #FAF9FB;
+    --color-border: #E7E3EA;
+    --color-neutral: #858C95;
+
+    --color-success: #2A923F;
+    --color-warning: #D97706;
+    --color-danger: #DC2626;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
 }
 
 /* Base Body Styles */
 body {
     font-family: var(--font-sans);
-    color: var(--color-text-dark);
-    background-color: #FFFFFF;
+    color: var(--color-text);
+    background-color: var(--color-background);
     -webkit-font-smoothing: antialiased;
 }
 
 /* Custom Selection Highlight */
 ::selection {
-    background-color: rgba(13, 107, 87, 0.25);
-    color: #08493B;
+    background-color: rgba(147, 119, 173, 0.25);
+    color: #4A3362;
 }

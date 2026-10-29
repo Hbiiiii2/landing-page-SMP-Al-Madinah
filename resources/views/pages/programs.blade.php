@@ -1,47 +1,55 @@
 @extends('layouts.public')
 
 @section('title', 'Program Pendidikan & Ekstrakurikuler — SMP Islam Al-Madinah BSD')
+@section('meta_description', 'Program unggulan kurikulum nasional, tahfidz Al-Qur\'an bersanad, dwibahasa, serta beragam ekstrakurikuler sains, robotik, dan olahraga di SMP Islam Al-Madinah BSD.')
 
 @section('content')
+@php
+    $schoolName = $profile->name ?? 'SMP Al-Madinah BSD';
+@endphp
+
 <!-- Header Banner -->
-<section class="bg-gradient-to-r from-[#08493B] via-[#0D6B57] to-[#117C65] text-white py-12 lg:py-16">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 text-center space-y-2">
-        <span class="text-xs font-bold uppercase tracking-wider text-amber-300">KURIKULUM & KEGIATAN</span>
+<section class="bg-gradient-to-br from-[#3E2B52] via-[#543A70] to-[#704E94] text-white py-12 lg:py-16 border-b border-[#3E2B52]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2.5">
+        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-semibold text-purple-100 uppercase tracking-wider">
+            KURIKULUM & KEGIATAN
+        </span>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Program Pendidikan & Ekstrakurikuler
         </h1>
-        <p class="text-xs sm:text-sm text-emerald-100 max-w-xl mx-auto">
-            Memadukan keilmuan akademik, kemahiran Al-Qur'an, dan eksplorasi bakat siswa secara berimbang.
+        <p class="text-xs sm:text-sm text-purple-100 max-w-xl mx-auto">
+            Memadukan keilmuan akademik, kemahiran Al-Qur'an, dan eksplorasi bakat siswa secara berimbang di SMP Al-Madinah BSD.
         </p>
     </div>
 </section>
 
 <!-- Program Sekolah Detail -->
-<section class="py-14 bg-white border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-10">
+<section class="py-12 sm:py-16 bg-white border-b border-[#E7E3EA]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         <div>
-            <h2 class="text-2xl font-extrabold text-[#0D6B57]">Pilar Program Akademik & Keislaman</h2>
-            <p class="text-xs text-brand-muted mt-1">Struktur kurikulum terintegrasi untuk membentuk siswa yang unggul dan beradab.</p>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#9377AD]">PILAR KURIKULUM</span>
+            <h2 class="text-2xl font-extrabold text-[#202124] tracking-tight mt-1">Pilar Program Akademik & Keislaman</h2>
+            <p class="text-xs text-[#66676B] mt-1">Struktur kurikulum terintegrasi untuk membentuk siswa yang unggul dan beradab.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             @forelse ($programs as $prog)
-                <div class="bg-[#F8FAF8] rounded-2xl border border-brand-border p-6 sm:p-8 space-y-3 hover:border-[#0D6B57] transition-all">
+                <div class="bg-[#FAF9FB] rounded-2xl border border-[#E7E3EA] p-5 sm:p-8 space-y-3.5 hover:border-[#9377AD] hover:bg-white hover:shadow-sm transition-all">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-mono font-bold text-[#0D6B57] uppercase tracking-wider">
+                        <span class="text-xs font-mono font-bold text-[#9377AD] uppercase tracking-wider">
                             {{ $prog->category ?? 'Program' }}
                         </span>
-                        <span class="text-xs font-bold bg-[#EAF4F1] text-[#0D6B57] px-2.5 py-0.5 rounded-full">
-                            Al-Madinah
+                        <span class="text-xs font-bold bg-[#F4F0F7] text-[#684681] px-3 py-1 rounded-full border border-[#E3D9EC]">
+                            Al-Madinah BSD
                         </span>
                     </div>
-                    <h3 class="text-lg font-bold text-brand-dark">{{ $prog->name }}</h3>
-                    <p class="text-xs text-brand-muted leading-relaxed">
+                    <h3 class="text-base sm:text-lg font-bold text-[#202124]">{{ $prog->name }}</h3>
+                    <p class="text-xs sm:text-sm text-[#66676B] leading-relaxed">
                         {{ $prog->description ?? $prog->summary }}
                     </p>
                 </div>
             @empty
-                <div class="col-span-2 text-center text-xs text-brand-muted py-8">
+                <div class="col-span-2 text-center text-xs text-[#66676B] py-12 bg-[#FAF9FB] rounded-2xl border border-[#E7E3EA]">
                     Data program belum tersedia.
                 </div>
             @endforelse
@@ -50,27 +58,31 @@
 </section>
 
 <!-- Ekstrakurikuler -->
-<section class="py-14 bg-[#F8FAF8]">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-10">
+<section class="py-12 sm:py-16 bg-[#FAF9FB]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         <div>
-            <h2 class="text-2xl font-extrabold text-[#0D6B57]">Kegiatan Ekstrakurikuler Siswa</h2>
-            <p class="text-xs text-brand-muted mt-1">Wadah pengembangan bakat, kepemimpinan, olahraga, dan seni Islami.</p>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#9377AD]">PENGEMBANGAN DIRI</span>
+            <h2 class="text-2xl font-extrabold text-[#202124] tracking-tight mt-1">Kegiatan Ekstrakurikuler Siswa</h2>
+            <p class="text-xs text-[#66676B] mt-1">Wadah pengembangan minat bakat, kepemimpinan, olahraga, dan seni Islami.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             @forelse ($extracurriculars as $ekskul)
-                <div class="bg-white rounded-xl border border-brand-border p-5 space-y-2 shadow-sm hover:border-[#0D6B57] transition-all">
-                    <span class="text-[10px] font-bold uppercase text-[#0D6B57] tracking-wider">{{ $ekskul->category }}</span>
-                    <h3 class="text-sm font-bold text-brand-dark">{{ $ekskul->name }}</h3>
-                    <p class="text-xs text-brand-muted leading-relaxed">{{ $ekskul->description }}</p>
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] p-5 space-y-2.5 shadow-xs hover:border-[#9377AD] hover:shadow-sm transition-all flex flex-col justify-between">
+                    <div class="space-y-1.5">
+                        <span class="text-[10px] font-bold uppercase text-[#9377AD] tracking-wider">{{ $ekskul->category }}</span>
+                        <h3 class="text-sm font-bold text-[#202124]">{{ $ekskul->name }}</h3>
+                        <p class="text-xs text-[#66676B] leading-relaxed line-clamp-3">{{ $ekskul->description }}</p>
+                    </div>
                     @if ($ekskul->schedule)
-                        <div class="pt-2 border-t border-brand-border text-[10px] text-brand-muted">
-                            ⏰ {{ $ekskul->schedule }}
+                        <div class="pt-2 border-t border-[#E7E3EA] text-[10px] text-[#66676B] flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-[#2A923F] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>{{ $ekskul->schedule }}</span>
                         </div>
                     @endif
                 </div>
             @empty
-                <div class="col-span-4 text-center text-xs text-brand-muted py-8">
+                <div class="col-span-4 text-center text-xs text-[#66676B] py-12 bg-white rounded-2xl border border-[#E7E3EA]">
                     Data ekstrakurikuler belum tersedia.
                 </div>
             @endforelse

@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -15,27 +16,38 @@ class TeachersTable
     {
         return $table
             ->columns([
+                ImageColumn::make('photo')
+                    ->label('Foto')
+                    ->circular()
+                    ->disk('public')
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name ?? 'Guru') . '&background=F4F0F7&color=9377AD'),
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('nip')
-                    ->searchable(),
+                    ->label('Nama Lengkap')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
                 TextColumn::make('role')
+                    ->label('Jabatan')
+                    ->badge()
+                    ->color('primary')
                     ->searchable(),
                 TextColumn::make('subject')
-                    ->searchable(),
-                TextColumn::make('photo')
+                    ->label('Mata Pelajaran')
                     ->searchable(),
                 TextColumn::make('education')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
-                TextColumn::make('phone')
-                    ->searchable(),
+                    ->label('Pendidikan')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('nip')
+                    ->label('NIP / NIY')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('order')
+                    ->label('Urutan')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_active')
+                    ->label('Aktif')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -46,9 +58,7 @@ class TeachersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->defaultSort('order')
             ->recordActions([
                 EditAction::make(),
             ])

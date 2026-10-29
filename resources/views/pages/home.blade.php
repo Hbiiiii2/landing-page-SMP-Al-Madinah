@@ -1,1986 +1,803 @@
 @extends('layouts.public')
 
 @section('title', 'SMP Islam Al-Madinah BSD — Mendidik dengan Adab, Membina dengan Ilmu')
+@section('meta_description', 'Portal Resmi SMP Islam Al-Madinah BSD di Sektor XIV BSD City, Serpong, Tangerang Selatan. Memadukan kurikulum nasional, tahfidz Al-Qur\'an, dwibahasa, dan pembentukan karakter Islami unggul.')
+@section('canonical', url('/'))
 
 @section('content')
 @php
     $schoolName = $profile->name ?? 'SMP Islam Al-Madinah BSD';
-    $foundation = 'Yayasan Kerukunan Keluarga Muslim BSD';
-    $academicYear = $ppdbSetting->academic_year ?? '2026/2027';
+    $foundation = 'Islamic Center KKMB • Sektor XIV BSD';
+    $academicYear = $ppdbSetting->academic_year ?? '2027/2028';
 
-    // Dynamic WhatsApp Sanitization & URLs (Fully customizable via Admin Panel)
+    // WhatsApp Configuration
     $whatsapp = !empty($profile?->whatsapp) ? $profile->whatsapp : '0812-9988-7766';
     $whatsappClean = $profile?->whatsapp_ppdb_clean ?? '6281299887766';
     $waUrlPanitia = $profile?->whatsapp_panitia_url ?? ('https://wa.me/' . $whatsappClean);
-    $waUrlBrosur = $profile?->whatsapp_brosur_url ?? ('https://wa.me/' . $whatsappClean);
-    $waUrlBiaya = $profile?->whatsapp_biaya_url ?? ('https://wa.me/' . $whatsappClean);
 
-    // PPDB Online Registration URL
-    $ppdbRegistrationUrl = route('ppdb.index');
-
-    // Brochure & Fee files
-    $hasBrochure = !empty($profile?->brochure_file);
-    $brochureUrl = $hasBrochure ? asset('storage/' . $profile->brochure_file) : null;
-    $isBrochurePdf = $hasBrochure && strtolower(pathinfo($profile->brochure_file, PATHINFO_EXTENSION)) === 'pdf';
-
-    $hasPpdbFee = !empty($profile?->ppdb_fee_file);
-    $ppdbFeeUrl = $hasPpdbFee ? asset('storage/' . $profile->ppdb_fee_file) : null;
-    $isPpdbFeePdf = $hasPpdbFee && strtolower(pathinfo($profile->ppdb_fee_file, PATHINFO_EXTENSION)) === 'pdf';
-
-    // Dynamic QR Code for Quick Scan
-    if (!empty($profile?->ppdb_qr_code)) {
-        $ppdbQrCodeSrc = asset('storage/' . $profile->ppdb_qr_code);
-    } else {
-        try {
-            $ppdbQrCodeSrc = (new \chillerlan\QRCode\QRCode)->render($ppdbRegistrationUrl);
-        } catch (\Throwable $e) {
-            $ppdbQrCodeSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($ppdbRegistrationUrl);
-        }
-    }
-
-    // Hero Heading Photo & Achievement Badge
-    $heroImageFallback = 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80';
+    // Hero Assets
+    $heroImageFallback = asset('images/banner-almadinah.png');
     $heroImageSrc = !empty($profile?->hero_image) ? asset('storage/' . $profile->hero_image) : $heroImageFallback;
-    $heroBadgeTitle = $profile?->hero_badge_title ?: 'Santri Berprestasi';
-    $heroBadgeSubtitle = $profile?->hero_badge_subtitle ?: 'Tahfidz 10 Juz & Juara Sains';
-    $heroBadgeTag = $profile?->hero_badge_tag ?: 'Mumtaz';
-    $logoSrc = !empty($profile?->logo) ? asset('storage/' . $profile->logo) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAmbTzxzgl6wWksQemxIkN-NrASOhgrQ43jj8Ie82Cr-QQ_hO3Nldfe9ifPaO9jd5ShbMBwhbhUe95-6ZJnxMykUPQy1mucK-BSdzNVvAN-PahWS4DL6O6pZ1FEuzzjZek6KT_3GLxGyKhNz4UZcySi6KGAzmo5b4mcmlisOO0y1YY4VOIMWnxczmaESHA2jdQb68UL-7N8WImgP0evy_Cq86tebAneTuXeWKLRBlUDDyshxu9H6sNI';
+    $logoSrc = !empty($profile?->logo) ? asset('storage/' . $profile->logo) : asset('images/logo-almadinah.png');
+
+    // Posts distribution
+    $featuredPost = $posts->first();
+    $recentNews = $posts->take(5);
+    $gridPosts = $posts->slice(0, 3);
 @endphp
 
 <!-- ========================================================
-     01. HERO BANNER SECTION (SPMB / PPDB ISLAMIC GREEN BANNER)
+     01. HERO SECTION (TWILIGHT SKY + EMBLEM + BUILDING BANNER)
+     Sesuai Referensi SMAN 2 Kebumen
      ======================================================== -->
-<section class="relative bg-gradient-to-r from-[#08493B] via-[#0D6B57] to-[#117C65] text-white overflow-hidden py-12 lg:py-20 border-b border-emerald-900">
-    <!-- Subtle Background Islamic Pattern & Glows -->
-    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
-    <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute left-1/3 top-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
-            <!-- Left: Happy Students Visual Frame (5 cols) -->
-            <div class="lg:col-span-5 order-2 lg:order-1 flex justify-center">
-                <div class="relative w-full max-w-md">
-                    <!-- Islamic Arch Frame Backdrop -->
-                    <div class="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-t-full border border-white/20 transform -translate-y-2"></div>
-                    
-                    <div class="relative rounded-t-full overflow-hidden border-4 border-amber-300/40 shadow-2xl bg-gradient-to-b from-emerald-800 to-emerald-950 p-2">
-                        <img src="{{ $heroImageSrc }}" 
-                             alt="Santri {{ $schoolName }}" 
-                             class="w-full h-80 sm:h-96 object-cover object-center rounded-t-full"
-                             onerror="this.src='{{ $heroImageFallback }}'">
-                        
-                        <!-- Floating Student Achievement Badges -->
-                        <div class="absolute bottom-6 left-4 right-4 bg-white/95 backdrop-blur-md text-brand-dark p-3.5 rounded-xl shadow-lg border border-amber-200 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 font-extrabold text-sm shadow-sm">
-                                    ★
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-xs font-extrabold text-[#0D6B57]">{{ $heroBadgeTitle }}</div>
-                                    <div class="text-[10px] text-brand-muted font-medium">{{ $heroBadgeSubtitle }}</div>
-                                </div>
-                            </div>
-                            <span class="text-[11px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200 shadow-xs">
-                                {{ $heroBadgeTag }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right: Hero SPMB / PPDB Announcement (7 cols) -->
-            <div class="lg:col-span-7 order-1 lg:order-2 space-y-6 text-center lg:text-left">
-                <!-- Eyebrow Badge -->
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 border border-white/20 text-xs font-semibold text-emerald-100">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span>Penerimaan Santri Baru Tahun Ajaran {{ $academicYear }}</span>
-                </div>
-
-                <!-- Big Headline -->
-                <div class="space-y-1">
-                    <div class="text-3xl sm:text-4xl lg:text-5xl font-black text-amber-300 tracking-tight uppercase drop-shadow-sm">
-                        SPMB / PPDB ONLINE
-                    </div>
-                    <div class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-wide">
-                        {{ $schoolName }}
-                    </div>
-                    <div class="text-3xl sm:text-5xl font-extrabold text-amber-400 tracking-wider">
-                        {{ $academicYear }}
-                    </div>
-                </div>
-
-                <p class="text-sm sm:text-base text-emerald-100/90 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                    {{ $profile?->tagline ?? 'Membina generasi muslim yang kokoh dalam tauhid, mutqin hafalan Al-Qur\'an bersanad, fasih dwibahasa, serta unggul dalam nalar sains dan teknologi modern.' }}
-                </p>
-
-                <!-- Action Button & Schedule Box -->
-                <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3.5">
-                    <a href="{{ route('ppdb.index') }}" 
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-[#EAA824] hover:bg-amber-500 text-brand-dark font-extrabold text-sm uppercase tracking-wide transition-all shadow-lg hover:shadow-xl hover:scale-105 transform">
-                        <span>DAFTAR SEKARANG</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                    </a>
-
-                    <button type="button" 
-                            onclick="openBrosurPpdbModal()" 
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold text-sm transition-all cursor-pointer">
-                        <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        <span>Unduh Brosur</span>
-                        @if ($hasBrochure)
-                            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        @endif
-                    </button>
-
-                    <a href="{{ $waUrlPanitia }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold text-sm transition-all">
-                        <svg class="w-4 h-4 fill-current text-emerald-300" viewBox="0 0 24 24">
-                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.181-.076.355.101.173.449.742.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
-                        </svg>
-                        <span>Konsultasi WA</span>
-                    </a>
-
-                    @if(!empty($profile?->youtube_embed) || !empty($profile?->hero_video_url))
-                    <a href="#video-profil" 
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 text-amber-200 font-bold text-sm transition-all shadow-sm hover:scale-[1.02]" title="Tonton Video Profil">
-                        <svg class="w-4 h-4 fill-current text-amber-300" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                        </svg>
-                        <span>Video Profil</span>
-                    </a>
-                    @endif
-                </div>
-
-                <!-- Info Box (Schedule & QR Quick Scan) -->
-                <div class="mt-6 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="text-left space-y-1">
-                        <div class="text-xs font-bold text-amber-300 uppercase tracking-wider">Jadwal Gelombang 1</div>
-                        <div class="text-sm font-bold text-white">Oktober 2026 – Januari 2027</div>
-                        <div class="text-xs text-emerald-200">Kuota Terbatas: {{ $ppdbSetting?->total_quota ?? 120 }} Santri (5 Kelas @ 24 Siswa)</div>
-                    </div>
-
-                    <!-- Fitur Scan untuk Daftar Cepat (Aktif & Interaktif) -->
-                    <button type="button" 
-                            onclick="openPpdbQrModal()"
-                            class="group flex items-center gap-3 bg-white hover:bg-emerald-50 active:scale-95 p-2 sm:p-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 border border-emerald-100 text-brand-dark shrink-0 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-amber-400"
-                            title="Klik untuk membuka QR Code Pendaftaran Cepat">
-                        <div class="w-12 h-12 bg-white rounded-lg p-0.5 border border-emerald-200 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                            <img src="{{ $ppdbQrCodeSrc }}" alt="QR Code PPDB" class="w-full h-full object-contain">
-                        </div>
-                        <div class="leading-tight pr-1">
-                            <div class="text-[11px] font-bold text-[#0D6B57] flex items-center gap-1 group-hover:text-emerald-800">
-                                <span>Scan untuk</span>
-                                <svg class="w-3 h-3 text-amber-500 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </div>
-                            <div class="text-[11px] font-extrabold text-brand-dark">
-                                Daftar Cepat
-                            </div>
-                            <div class="text-[9px] text-emerald-600 font-semibold flex items-center gap-1 mt-0.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span>Klik / Scan HP</span>
-                            </div>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-        </div>
+<section class="relative bg-gradient-to-b from-[#2E1F42] via-[#48315E] to-[#60427D] text-white pt-12 pb-16 lg:pt-16 lg:pb-20 overflow-hidden">
+    <!-- Starfield & Subtle Architectural Glow -->
+    <div class="absolute inset-0 pointer-events-none opacity-20">
+        <div class="absolute top-6 left-12 w-1.5 h-1.5 bg-white rounded-full"></div>
+        <div class="absolute top-16 right-20 w-2 h-2 bg-white rounded-full"></div>
+        <div class="absolute top-24 left-1/3 w-1 h-1 bg-amber-200 rounded-full"></div>
+        <div class="absolute top-10 right-1/4 w-1.5 h-1.5 bg-white rounded-full"></div>
+        <div class="absolute top-32 right-12 w-1 h-1 bg-white rounded-full"></div>
+        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
     </div>
-</section>
 
-<!-- ========================================================
-     MODAL POPUP: SCAN QR CODE DAFTAR CEPAT PPDB ONLINE
-     ======================================================== -->
-<div id="ppdb-qr-modal" 
-     class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm transition-opacity duration-300"
-     role="dialog" 
-     aria-modal="true" 
-     aria-labelledby="qr-modal-title">
-    
-    <!-- Modal Card Box -->
-    <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden transform transition-all duration-300 scale-95 opacity-0"
-         id="ppdb-qr-modal-box">
-        
-        <!-- Header with Islamic Emerald Gradient -->
-        <div class="bg-gradient-to-r from-[#08493B] via-[#0D6B57] to-[#117C65] text-white p-5 sm:p-6 text-center relative">
-            <button type="button" 
-                    onclick="closePpdbQrModal()" 
-                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
-                    aria-label="Tutup modal">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-            
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-semibold text-emerald-100 mb-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                <span>SPMB / PPDB Online {{ $academicYear }}</span>
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- Floating School Crest in the Sky -->
+        <div class="inline-flex flex-col items-center justify-center mb-5 sm:mb-6">
+            <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-white/10 p-2 backdrop-blur-md border border-white/20 shadow-2xl flex items-center justify-center">
+                <img src="{{ $logoSrc }}" 
+                     alt="Logo {{ $schoolName }}" 
+                     class="w-16 h-16 sm:w-22 sm:h-22 object-contain drop-shadow"
+                     onerror="this.src='{{ asset('images/logo-almadinah.png') }}'">
             </div>
-            <h3 id="qr-modal-title" class="text-lg sm:text-xl font-extrabold text-white tracking-tight">
-                Scan untuk Daftar Cepat
-            </h3>
-            <p class="text-xs text-emerald-100/90 mt-1 max-w-xs mx-auto">
-                {{ $schoolName }}
-            </p>
-        </div>
-
-        <!-- Body with QR Code & Scanner Directions -->
-        <div class="p-6 sm:p-7 space-y-5 text-center">
-            <!-- QR Frame -->
-            <div class="inline-block relative p-3 sm:p-4 bg-white rounded-2xl border-2 border-emerald-100 shadow-md">
-                <div class="w-48 h-48 sm:w-56 sm:h-56 mx-auto flex items-center justify-center overflow-hidden bg-white">
-                    <img id="ppdb-qr-modal-image" 
-                         src="{{ $ppdbQrCodeSrc }}" 
-                         alt="QR Code PPDB {{ $schoolName }}" 
-                         class="w-full h-full object-contain">
-                </div>
-                <div class="mt-2 text-[11px] font-bold text-[#0D6B57] flex items-center justify-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-                    </svg>
-                    <span>Arahkan Kamera HP / Google Lens ke Sini</span>
-                </div>
-            </div>
-
-            <!-- Direction explanation -->
-            <p class="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
-                Buka kamera smartphone Anda (Android / iPhone) lalu arahkan ke kode QR di atas untuk langsung membuka formulir pendaftaran PPDB tanpa repot mengetik link.
-            </p>
-
-            <!-- URL Copy Box -->
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between gap-2 text-left">
-                <div class="truncate text-xs text-slate-600 font-mono pl-1 select-all">
-                    {{ $ppdbRegistrationUrl }}
-                </div>
-                <button type="button" 
-                        onclick="copyPpdbUrl('{{ $ppdbRegistrationUrl }}')" 
-                        id="btn-copy-ppdb-url"
-                        class="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                    </svg>
-                    <span id="copy-text-label">Salin Link</span>
-                </button>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="grid grid-cols-2 gap-3 pt-1">
-                <a href="{{ $ppdbRegistrationUrl }}" 
-                   class="w-full py-3 px-4 rounded-xl bg-[#EAA824] hover:bg-amber-500 active:bg-amber-600 text-brand-dark font-extrabold text-xs uppercase tracking-wide transition-all shadow-md flex items-center justify-center gap-1.5">
-                    <span>Buka Formulir</span>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                    </svg>
-                </a>
-                <a href="{{ $ppdbQrCodeSrc }}" 
-                   download="QR-Code-PPDB-{{ \Illuminate\Support\Str::slug($schoolName) }}.{{ str_starts_with($ppdbQrCodeSrc, 'data:image/svg') ? 'svg' : 'png' }}"
-                   class="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    <span>Unduh QR</span>
-                </a>
+            <div class="mt-2.5 sm:mt-3 text-[11px] sm:text-sm font-bold text-emerald-200 tracking-wider uppercase">
+                Yayasan Kerukunan Keluarga Muslim BSD
             </div>
         </div>
 
-    </div>
-</div>
-
-<!-- ========================================================
-     MODAL POPUP: UNDUH BROSUR RESMI PPDB ONLINE
-     ======================================================== -->
-<div id="ppdb-brosur-modal" 
-     class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm transition-opacity duration-300"
-     role="dialog" 
-     aria-modal="true" 
-     aria-labelledby="brosur-modal-title">
-    
-    <!-- Modal Card Box -->
-    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 max-h-[90vh] flex flex-col"
-         id="ppdb-brosur-modal-box">
-        
-        <!-- Header with Islamic Emerald Gradient -->
-        <div class="bg-gradient-to-r from-[#08493B] via-[#0D6B57] to-[#117C65] text-white p-5 sm:p-6 text-center relative shrink-0">
-            <button type="button" 
-                    onclick="closeBrosurPpdbModal()" 
-                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
-                    aria-label="Tutup modal">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-            
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-semibold text-emerald-100 mb-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                <span>Brosur Informasi PPDB {{ $academicYear }}</span>
-            </div>
-            <h3 id="brosur-modal-title" class="text-lg sm:text-xl font-extrabold text-white tracking-tight">
-                Unduh Brosur Resmi
-            </h3>
-            <p class="text-xs text-emerald-100/90 mt-1 max-w-xs mx-auto">
-                {{ $schoolName }}
-            </p>
-        </div>
-
-        <!-- Body with Brochure Details -->
-        <div class="p-6 sm:p-7 space-y-5 text-center overflow-y-auto flex-1">
-            @if ($hasBrochure)
-                @if (!$isBrochurePdf)
-                    <!-- Image Preview -->
-                    <div class="max-h-64 sm:max-h-72 overflow-hidden rounded-2xl border-2 border-emerald-100 bg-slate-50 shadow-inner group relative">
-                        <img src="{{ $brochureUrl }}" 
-                             alt="Brosur {{ $schoolName }}" 
-                             class="w-full h-full object-contain">
-                    </div>
-                @else
-                    <!-- PDF Document Card -->
-                    <div class="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-left flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-black text-xl shrink-0 shadow-xs">
-                            📄
-                        </div>
-                        <div class="space-y-1">
-                            <div class="text-xs font-extrabold text-[#0D6B57]">Dokumen Brosur Resmi (PDF)</div>
-                            <div class="text-[11px] text-slate-600 leading-relaxed">
-                                Memuat profil sekolah, rincian program tahfidz, kurikulum unggulan, fasilitas kampus, dan alur pendaftaran.
-                            </div>
-                            <div class="text-[10px] text-emerald-700 font-bold flex items-center gap-1 pt-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                <span>Berkas siap diunduh</span>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <p class="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
-                    Klik tombol di bawah untuk mengunduh brosur ke perangkat Anda atau konsultasi via WhatsApp jika membutuhkan informasi tambahan.
-                </p>
-
-                <!-- Actions for Uploaded Brochure -->
-                <div class="space-y-2.5 pt-1">
-                    <a href="{{ $brochureUrl }}" 
-                       download="Brosur-PPDB-{{ \Illuminate\Support\Str::slug($schoolName) }}"
-                       class="w-full py-3.5 px-6 rounded-2xl bg-[#EAA824] hover:bg-amber-500 active:bg-amber-600 text-brand-dark font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        <span>Unduh Berkas Brosur Sekarang</span>
-                    </a>
-
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <a href="{{ $brochureUrl }}" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                            </svg>
-                            <span>Buka di Tab Baru</span>
-                        </a>
-
-                        <a href="{{ $waUrlBrosur }}" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           class="w-full py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#0D6B57] font-bold text-xs transition-all flex items-center justify-center gap-1.5 border border-emerald-200">
-                            <svg class="w-3.5 h-3.5 fill-current text-emerald-600" viewBox="0 0 24 24">
-                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.181-.076.355.101.173.449.742.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
-                            </svg>
-                            <span>Tanya via WA</span>
-                        </a>
-                    </div>
-                </div>
-            @else
-                <!-- Fallback when brochure not yet uploaded -->
-                <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-center space-y-3">
-                    <div class="w-14 h-14 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-black">
-                        📖
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-extrabold text-[#0D6B57]">Brosur PPDB {{ $academicYear }}</h4>
-                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
-                            Brosur digital versi terlengkap dapat langsung Anda peroleh secara cepat melalui Sekretariat Panitia PPDB via chat WhatsApp.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="space-y-2.5 pt-1">
-                    <a href="{{ $waUrlBrosur }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="w-full py-3.5 px-6 rounded-2xl bg-[#EAA824] hover:bg-amber-500 active:bg-amber-600 text-brand-dark font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4 fill-current text-brand-dark" viewBox="0 0 24 24">
-                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.181-.076.355.101.173.449.742.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
-                        </svg>
-                        <span>Minta Brosur via WhatsApp</span>
-                    </a>
-
-                    <a href="{{ route('ppdb.index') }}" 
-                       class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5">
-                        <span>Lanjut ke Formulir Online</span>
-                        <span>&rarr;</span>
-                    </a>
-                </div>
-            @endif
-        </div>
-
-    </div>
-</div>
-
-<!-- ========================================================
-     MODAL POPUP: RINCIAN BIAYA PPDB ONLINE
-     ======================================================== -->
-<div id="ppdb-biaya-modal" 
-     class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm transition-opacity duration-300"
-     role="dialog" 
-     aria-modal="true" 
-     aria-labelledby="biaya-modal-title">
-    
-    <!-- Modal Card Box -->
-    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 max-h-[90vh] flex flex-col"
-         id="ppdb-biaya-modal-box">
-        
-        <!-- Header with Islamic Emerald Gradient -->
-        <div class="bg-gradient-to-r from-[#08493B] via-[#0D6B57] to-[#117C65] text-white p-5 sm:p-6 text-center relative shrink-0">
-            <button type="button" 
-                    onclick="closeBiayaPpdbModal()" 
-                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
-                    aria-label="Tutup modal">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-            
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-semibold text-emerald-100 mb-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                <span>Transparansi Pembiayaan</span>
-            </div>
-            <h3 id="biaya-modal-title" class="text-lg sm:text-xl font-extrabold text-white tracking-tight">
-                Rincian Biaya PPDB {{ $academicYear }}
-            </h3>
-            <p class="text-xs text-emerald-100/90 mt-1 max-w-xs mx-auto">
-                {{ $schoolName }}
-            </p>
-        </div>
-
-        <!-- Body with PPDB Fee Details -->
-        <div class="p-6 sm:p-7 space-y-5 text-center overflow-y-auto flex-1">
-            @if ($hasPpdbFee)
-                @if (!$isPpdbFeePdf)
-                    <!-- Image Preview -->
-                    <div class="max-h-64 sm:max-h-72 overflow-hidden rounded-2xl border-2 border-emerald-100 bg-slate-50 shadow-inner group relative">
-                        <img src="{{ $ppdbFeeUrl }}" 
-                             alt="Tabel Biaya {{ $schoolName }}" 
-                             class="w-full h-full object-contain">
-                    </div>
-                @else
-                    <!-- PDF Document Card -->
-                    <div class="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-left flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-black text-xl shrink-0 shadow-xs">
-                            📋
-                        </div>
-                        <div class="space-y-1">
-                            <div class="text-xs font-extrabold text-[#0D6B57]">Dokumen Rincian Biaya Resmi (PDF)</div>
-                            <div class="text-[11px] text-slate-600 leading-relaxed">
-                                Rincian lengkap biaya pendaftaran, uang pangkal / pengembangan sarana, SPP bulanan, biaya seragam, dan buku paket.
-                            </div>
-                            <div class="text-[10px] text-emerald-700 font-bold flex items-center gap-1 pt-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                <span>Tersedia untuk diunduh</span>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <p class="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
-                    Anda dapat mengunduh berkas rincian biaya resmi atau berkonsultasi mengenai skema cicilan dan beasiswa melalui panitia PPDB.
-                </p>
-
-                <!-- Actions for Uploaded Fee File -->
-                <div class="space-y-2.5 pt-1">
-                    <a href="{{ $ppdbFeeUrl }}" 
-                       download="Rincian-Biaya-PPDB-{{ \Illuminate\Support\Str::slug($schoolName) }}"
-                       class="w-full py-3.5 px-6 rounded-2xl bg-[#EAA824] hover:bg-amber-500 active:bg-amber-600 text-brand-dark font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        <span>Unduh Berkas Rincian Biaya</span>
-                    </a>
-
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <a href="{{ $ppdbFeeUrl }}" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                            </svg>
-                            <span>Buka di Tab Baru</span>
-                        </a>
-
-                        <a href="{{ $waUrlBiaya }}" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           class="w-full py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#0D6B57] font-bold text-xs transition-all flex items-center justify-center gap-1.5 border border-emerald-200">
-                            <svg class="w-3.5 h-3.5 fill-current text-emerald-600" viewBox="0 0 24 24">
-                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.181-.076.355.101.173.449.742.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
-                            </svg>
-                            <span>Tanya Biaya via WA</span>
-                        </a>
-                    </div>
-                </div>
-            @else
-                <!-- Fallback when fee schedule not yet uploaded -->
-                <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-center space-y-3">
-                    <div class="w-14 h-14 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-black">
-                        💳
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-extrabold text-[#0D6B57]">Rincian Biaya PPDB {{ $academicYear }}</h4>
-                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
-                            Rincian resmi mengenai uang pangkal, SPP bulanan, subsidi gelombang 1, serta skema beasiswa prestasi/tahfidz dapat Anda konsultasikan langsung bersama Panitia PPDB.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="space-y-2.5 pt-1">
-                    <a href="{{ $waUrlBiaya }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="w-full py-3.5 px-6 rounded-2xl bg-[#EAA824] hover:bg-amber-500 active:bg-amber-600 text-brand-dark font-extrabold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4 fill-current text-brand-dark" viewBox="0 0 24 24">
-                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.181-.076.355.101.173.449.742.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
-                        </svg>
-                        <span>Konsultasi Biaya via WhatsApp</span>
-                    </a>
-
-                    <a href="{{ route('ppdb.index') }}" 
-                       class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5">
-                        <span>Lanjut ke Formulir Online</span>
-                        <span>&rarr;</span>
-                    </a>
-                </div>
-            @endif
-        </div>
-
-    </div>
-</div>
-
-
-<!-- ========================================================
-     02. TICKER / RUNNING TEXT BAR (Pengumuman Berjalan)
-     ======================================================== -->
-<div class="bg-white border-b border-brand-border py-2.5 px-4 lg:px-8">
-    <div class="max-w-[1280px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-        <div class="flex items-center gap-2 overflow-hidden">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#EAF4F1] text-[#0D6B57] font-bold shrink-0">
-                <span class="w-2 h-2 rounded-full bg-[#0D6B57] animate-ping"></span>
-                INFO TERBARU:
-            </span>
-            <span class="text-brand-dark font-medium truncate">
-                Penerimaan Siswa Baru (PPDB) SMP Islam Al-Madinah BSD Tahun Ajaran {{ $academicYear }} telah dibuka. Pendaftaran gelombang 1 mendapatkan subsidi perlengkapan belajar.
-            </span>
-        </div>
-        <a href="{{ route('ppdb.index') }}" class="text-[#0D6B57] font-bold hover:underline shrink-0 flex items-center gap-1">
-            <span>Informasi Pendaftaran Lengkap</span>
-            <span>&gt;</span>
-        </a>
-    </div>
-</div>
-
-<!-- ========================================================
-     02B. COUNTER STATISTIK CAPAIAN SEKOLAH
-     ======================================================== -->
-<section class="py-8 bg-white border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
-            <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAF8] border border-brand-border shadow-xs hover:border-[#0D6B57] transition-all">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0D6B57] font-mono">
-                    {{ $profile?->statistic_students ?? 350 }}+
-                </div>
-                <div class="text-xs font-bold text-brand-dark mt-1">Murid Aktif</div>
-                <div class="text-[10px] text-brand-muted">Mendapatkan pembinaan intensif</div>
-            </div>
-            <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAF8] border border-brand-border shadow-xs hover:border-[#0D6B57] transition-all">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0D6B57] font-mono">
-                    {{ $profile?->statistic_teachers ?? 25 }}
-                </div>
-                <div class="text-xs font-bold text-brand-dark mt-1">Asatidz & Pendidik</div>
-                <div class="text-[10px] text-brand-muted">Tersertifikasi & musyrif tahfidz</div>
-            </div>
-            <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAF8] border border-brand-border shadow-xs hover:border-[#0D6B57] transition-all">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-[#EAA824] font-mono">
-                    {{ $profile?->statistic_achievements ?? 48 }}+
-                </div>
-                <div class="text-xs font-bold text-brand-dark mt-1">Prestasi Siswa</div>
-                <div class="text-[10px] text-brand-muted">Tingkat kota hingga nasional</div>
-            </div>
-            <div class="p-4 sm:p-5 rounded-2xl bg-[#F8FAF8] border border-brand-border shadow-xs hover:border-[#0D6B57] transition-all">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0D6B57] font-mono">
-                    {{ $profile?->statistic_year_founded ?? 2012 }}
-                </div>
-                <div class="text-xs font-bold text-brand-dark mt-1">Tahun Berdiri</div>
-                <div class="text-[10px] text-brand-muted">Akreditasi {{ $profile?->accreditation ?? 'A' }} BAN-S/M</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ========================================================
-     03. TENTANG YAYASAN & 4 QUICK FEATURES (#tentang)
-     ======================================================== -->
-<section id="tentang" class="py-16 lg:py-20 bg-[#F8FAF8] border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-12">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
-            <!-- Left: Circular Photo with Ribbon Badge (5 cols) -->
-            <div class="lg:col-span-5 flex justify-center">
-                <div class="relative w-72 sm:w-80 h-72 sm:h-80">
-                    <!-- Circle Border Ring -->
-                    <div class="absolute inset-0 rounded-full border-4 border-[#0D6B57] p-2">
-                        <img src="{{ !empty($profile?->headmaster_photo) ? asset('storage/' . $profile->headmaster_photo) : (!empty($profile?->logo) ? asset('storage/' . $profile->logo) : 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=700&q=80') }}" 
-                             alt="{{ $profile?->headmaster_name ?? $schoolName }}" 
-                             class="w-full h-full object-cover rounded-full shadow-lg"
-                             onerror="this.src='https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=700&q=80'">
-                    </div>
-                    
-                    <!-- Curved Badge Ribbon at bottom -->
-                    <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-[#EAA824] text-brand-dark px-6 py-2 rounded-full font-extrabold text-xs uppercase tracking-wider shadow-md whitespace-nowrap border-2 border-white">
-                        {{ $profile?->headmaster_name ?? $schoolName }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right: Description & Gold Button (7 cols) -->
-            <div class="lg:col-span-7 space-y-5 text-left">
-                <div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0D6B57] tracking-tight">
-                        Tentang Profil Sekolah
-                    </h2>
-                    <h3 class="text-base sm:text-lg font-bold text-brand-dark mt-1">
-                        {{ $profile?->tagline ?? 'Mendidik Karakter Cerdas, Beradab, dan Berdaya Saing Global' }}
-                    </h3>
-                </div>
-
-                @if(!empty($profile?->headmaster_welcome))
-                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-brand-dark italic space-y-1">
-                    <div class="font-bold text-[#0D6B57] not-italic text-[10px] uppercase tracking-wider">Sambutan Kepala Sekolah ({{ $profile->headmaster_name }}):</div>
-                    <p class="leading-relaxed">"{{ Str::limit($profile->headmaster_welcome, 240) }}"</p>
-                </div>
-                @endif
-
-                <p class="text-xs sm:text-sm text-brand-muted leading-relaxed">
-                    {{ $profile?->about ?? 'SMP Islam Al-Madinah BSD bernaung di bawah Yayasan Kerukunan Keluarga Muslim BSD (YKKM BSD). Didirikan di kawasan asri Sektor XIV BSD City, kami bertekad memberikan layanan pendidikan terpadu yang memadukan kurikulum nasional, penguasaan sains teknologi, serta kedalaman pemahaman agama Islam.' }}
-                </p>
-
-                <div class="pt-2">
-                    <a href="{{ route('about') }}" 
-                       class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#EAA824] hover:bg-amber-500 text-brand-dark font-extrabold text-xs uppercase tracking-wider transition-all shadow-sm">
-                        <span>SELENGKAPNYA</span>
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- 4 Quick Feature Cards in a row (Teal header / cards) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-6">
-            <!-- 1. Pendidikan Berkarakter -->
-            <div class="bg-white rounded-xl border border-brand-border p-5 shadow-sm hover:border-[#0D6B57] transition-all space-y-3">
-                <div class="w-11 h-11 rounded-lg bg-[#EAF4F1] text-[#0D6B57] flex items-center justify-center font-bold">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                </div>
-                <div>
-                    <h4 class="text-sm font-bold text-brand-dark">Pendidikan Berkarakter</h4>
-                    <p class="text-xs text-brand-muted mt-1 leading-relaxed">
-                        Penanaman adab dan keteladanan akhlak sebelum ilmu dalam seluruh aktivitas belajar.
-                    </p>
-                </div>
-            </div>
-
-            <!-- 2. Pengembangan Bakat -->
-            <div class="bg-white rounded-xl border border-brand-border p-5 shadow-sm hover:border-[#0D6B57] transition-all space-y-3">
-                <div class="w-11 h-11 rounded-lg bg-[#EAF4F1] text-[#0D6B57] flex items-center justify-center font-bold">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                    </svg>
-                </div>
-                <div>
-                    <h4 class="text-sm font-bold text-brand-dark">Pengembangan Bakat</h4>
-                    <p class="text-xs text-brand-muted mt-1 leading-relaxed">
-                        Eksplorasi minat siswa melalui sains, robotika, bahasa, seni islami, dan olahraga.
-                    </p>
-                </div>
-            </div>
-
-            <!-- 3. Program Unggulan -->
-            <div class="bg-white rounded-xl border border-brand-border p-5 shadow-sm hover:border-[#0D6B57] transition-all space-y-3">
-                <div class="w-11 h-11 rounded-lg bg-[#EAF4F1] text-[#0D6B57] flex items-center justify-center font-bold">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                    </svg>
-                </div>
-                <div>
-                    <h4 class="text-sm font-bold text-brand-dark">Tahfidz Bersanad</h4>
-                    <p class="text-xs text-brand-muted mt-1 leading-relaxed">
-                        Halaqah Qur'ani setiap pagi dengan target mutqin 3 hingga 10 Juz bersama musyrif bersertifikat.
-                    </p>
-                </div>
-            </div>
-
-            <!-- 4. Pengajar Berpengalaman -->
-            <div class="bg-white rounded-xl border border-brand-border p-5 shadow-sm hover:border-[#0D6B57] transition-all space-y-3">
-                <div class="w-11 h-11 rounded-lg bg-[#EAF4F1] text-[#0D6B57] flex items-center justify-center font-bold">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </div>
-                <div>
-                    <h4 class="text-sm font-bold text-brand-dark">Asatidz Berpengalaman</h4>
-                    <p class="text-xs text-brand-muted mt-1 leading-relaxed">
-                        Tenaga pendidik tersertifikasi dari universitas terkemuka dalam dan luar negeri.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-
-<!-- ========================================================
-     04. PROGRAM PENDIDIKAN (DEEP GREEN SECTION WITH WHITE ARCHED CARDS) (#program)
-     ======================================================== -->
-<section id="program" class="py-16 lg:py-24 bg-[#0D6B57] text-white">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-12">
-        <!-- Section Header -->
-        <div class="text-center max-w-2xl mx-auto space-y-2">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Program Pendidikan
-            </h2>
-            <p class="text-xs sm:text-sm text-emerald-100">
-                Menyediakan jenjang pendidikan menengah pertama Islam terpadu yang adaptif terhadap kurikulum nasional dan tantangan masa depan.
-            </p>
-        </div>
-
-        <!-- 3 White Arched Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            <!-- CARD 1: Program Reguler Kurikulum Merdeka -->
-            <div class="bg-white text-brand-dark rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between group">
-                <div>
-                    <!-- Islamic Arched Top Visual -->
-                    <div class="h-48 relative overflow-hidden bg-emerald-100">
-                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80" 
-                             alt="Kelas Reguler Merdeka" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                        <span class="absolute top-3 left-3 bg-[#0D6B57] text-white px-3 py-1 rounded-full text-xs font-bold uppercase">
-                            Kelas Reguler
-                        </span>
-                    </div>
-
-                    <div class="p-6 text-center space-y-3">
-                        <h3 class="text-lg font-extrabold text-[#0D6B57]">
-                            Kurikulum Merdeka & Sains
-                        </h3>
-                        <p class="text-xs text-brand-muted leading-relaxed">
-                            Mengintegrasikan standar capaian kompetensi Kemendikbudristek dengan pendalaman literasi sains, numerasi, dan proyek penguatan karakter (P5).
-                        </p>
-                    </div>
-                </div>
-
-                <div class="p-6 pt-0 text-center">
-                    <a href="{{ route('programs') }}" 
-                       class="inline-block w-full py-2.5 rounded-full bg-[#0D6B57] hover:bg-[#08493B] text-white font-bold text-xs uppercase tracking-wider transition-colors shadow">
-                        SELENGKAPNYA
-                    </a>
-                </div>
-            </div>
-
-            <!-- CARD 2: Program Tahfidz Bersanad & Bahasa (FEATURED) -->
-            <div class="bg-white text-brand-dark rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-between border-2 border-amber-400 group transform md:-translate-y-2">
-                <div>
-                    <!-- Islamic Arched Top Visual -->
-                    <div class="h-48 relative overflow-hidden bg-emerald-100">
-                        <img src="https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80" 
-                             alt="Tahfidz Bersanad & Bahasa" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                        <span class="absolute top-3 left-3 bg-[#EAA824] text-brand-dark px-3 py-1 rounded-full text-xs font-extrabold uppercase">
-                            Program Unggulan
-                        </span>
-                    </div>
-
-                    <div class="p-6 text-center space-y-3">
-                        <h3 class="text-lg font-extrabold text-[#0D6B57]">
-                            Tahfidz Bersanad & Bilingual
-                        </h3>
-                        <p class="text-xs text-brand-muted leading-relaxed">
-                            Halaqah Al-Qur'an intensif dengan target hafalan 3 hingga 10 Juz mutqin talaqqi asatidz bersanad, dipadu habituasi bahasa Inggris dan Arab aktif harian.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="p-6 pt-0 text-center">
-                    <a href="{{ route('programs') }}" 
-                       class="inline-block w-full py-2.5 rounded-full bg-[#EAA824] hover:bg-amber-500 text-brand-dark font-extrabold text-xs uppercase tracking-wider transition-colors shadow">
-                        SELENGKAPNYA
-                    </a>
-                </div>
-            </div>
-
-            <!-- CARD 3: STEM & Robotika -->
-            <div class="bg-white text-brand-dark rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between group">
-                <div>
-                    <!-- Islamic Arched Top Visual -->
-                    <div class="h-48 relative overflow-hidden bg-emerald-100">
-                        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80" 
-                             alt="STEM & Robotika" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                        <span class="absolute top-3 left-3 bg-[#0D6B57] text-white px-3 py-1 rounded-full text-xs font-bold uppercase">
-                            Teknologi
-                        </span>
-                    </div>
-
-                    <div class="p-6 text-center space-y-3">
-                        <h3 class="text-lg font-extrabold text-[#0D6B57]">
-                            Sains, Robotika & Coding
-                        </h3>
-                        <p class="text-xs text-brand-muted leading-relaxed">
-                            Pengembangan kemampuan computational thinking, merakit robot mikro-kontroler, dan persiapan siswa mengikuti kompetisi teknologi nasional.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="p-6 pt-0 text-center">
-                    <a href="{{ route('programs') }}" 
-                       class="inline-block w-full py-2.5 rounded-full bg-[#0D6B57] hover:bg-[#08493B] text-white font-bold text-xs uppercase tracking-wider transition-colors shadow">
-                        SELENGKAPNYA
-                    </a>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Pagination dots indicator -->
-        <div class="flex items-center justify-center gap-2 pt-4">
-            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-white/40"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-white/40"></span>
-        </div>
-    </div>
-</section>
-
-
-<!-- ========================================================
-     05. MENGAPA MEMILIH KAMI (Checklist & Student Photo)
-     ======================================================== -->
-<section class="py-16 lg:py-20 bg-white border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8">
-        <div class="bg-[#F8FAF8] rounded-3xl border border-brand-border p-8 lg:p-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <!-- School Building Visual Banner -->
+        <div class="max-w-4xl mx-auto rounded-3xl overflow-hidden border-2 border-white/20 shadow-2xl bg-[#1E142B] p-1.5 sm:p-2 relative group">
+            <div class="relative h-60 sm:h-80 md:h-96 rounded-2xl overflow-hidden">
+                <img src="{{ $heroImageSrc }}" 
+                     alt="Gedung {{ $schoolName }}" 
+                     class="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-700"
+                     onerror="this.src='{{ asset('images/banner-almadinah.png') }}'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20"></div>
                 
-                <!-- Left: Checklist Content (7 cols) -->
-                <div class="lg:col-span-7 space-y-6">
-                    <div>
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0D6B57] tracking-tight">
-                            Mengapa Memilih SMP Islam Al-Madinah BSD?
-                        </h2>
-                        <p class="text-xs sm:text-sm text-brand-muted mt-1.5">
-                            Komitmen kami dalam menghadirkan lingkungan pendidikan yang kondusif, berprestasi, dan berakhlakul karimah.
-                        </p>
+                <div class="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between text-left">
+                    <div class="text-white">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider bg-[#2A923F] text-white shadow-sm mb-1">
+                            <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <span>Akreditasi A Unggul</span>
+                        </span>
+                        <h1 class="text-base sm:text-2xl font-black text-white drop-shadow-md">
+                            SMP Islam Al-Madinah BSD
+                        </h1>
                     </div>
-
-                    <!-- Checklist with Gold Dots -->
-                    <div class="space-y-3 text-xs sm:text-sm text-brand-dark">
-                        <div class="flex items-start gap-3">
-                            <span class="w-5 h-5 rounded-full bg-[#EAA824] text-brand-dark flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">
-                                ✓
-                            </span>
-                            <span>Kurikulum Terpadu: Paduan Kurikulum Merdeka Nasional & Kurikulum Khas Islam Terpadu.</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="w-5 h-5 rounded-full bg-[#EAA824] text-brand-dark flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">
-                                ✓
-                            </span>
-                            <span>Bimbingan intensif Tahfidz Al-Qur'an bersanad talaqqi target 3–10 Juz mutqin.</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="w-5 h-5 rounded-full bg-[#EAA824] text-brand-dark flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">
-                                ✓
-                            </span>
-                            <span>Pembiasaan adab dan akhlak mulia dalam pergaulan nyata maupun etika digital.</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="w-5 h-5 rounded-full bg-[#EAA824] text-brand-dark flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">
-                                ✓
-                            </span>
-                            <span>Rasio kelas emas: maksimal 24 siswa per kelas demi pendampingan optimal.</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="w-5 h-5 rounded-full bg-[#EAA824] text-brand-dark flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">
-                                ✓
-                            </span>
-                            <span>Fasilitas modern: Laboratorium sains, lab CBT, masjid kampus luas, dan arena olahraga.</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="w-5 h-5 rounded-full bg-[#EAA824] text-brand-dark flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">
-                                ✓
-                            </span>
-                            <span>Lingkungan belajar yang asri, tenang, dan aman di Komplek Sektor XIV BSD City.</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <span class="w-5 h-5 rounded-full bg-[#EAA824] text-brand-dark flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">
-                                ✓
-                            </span>
-                            <span>Dewan asatidz dan pendidik bersertifikasi profesional serta berdedikasi tinggi.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: Cheerful Student Portrait (5 cols) -->
-                <div class="lg:col-span-5 flex justify-center">
-                    <div class="relative w-full max-w-sm">
-                        <img src="{{ $profile?->why_choose_us_image_src ?? 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=700&q=80' }}" 
-                             alt="Siswa Ceria {{ $schoolName }}" 
-                             class="w-full h-80 sm:h-96 object-cover rounded-2xl shadow-lg border-4 border-white"
-                             onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=700&q=80'">
-                        <div class="absolute -bottom-4 right-4 bg-white p-3 rounded-xl shadow-md border border-brand-border flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-[#0D6B57] text-white flex items-center justify-center font-extrabold text-sm">
-                                {{ substr($profile?->accreditation ?? 'A', 0, 1) }}
-                            </div>
-                            <div>
-                                <div class="text-xs font-bold text-brand-dark">{{ $profile?->why_choose_us_badge_title ?: 'Akreditasi ' . ($profile?->accreditation ?? 'A') . ' Unggul' }}</div>
-                                <div class="text-[10px] text-brand-muted">{{ $profile?->why_choose_us_badge_subtitle ?: 'BAN-S/M Kemendikbud' }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- ========================================================
-     06. PROGRAM UNGGULAN (6 CARDS WITH TEAL HEADER STRIP) (#unggulan)
-     ======================================================== -->
-<section id="unggulan" class="py-16 lg:py-24 bg-white border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-12">
-        <!-- Section Header -->
-        <div class="text-center max-w-2xl mx-auto space-y-2">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0D6B57] tracking-tight">
-                Program Unggulan
-            </h2>
-            <p class="text-xs sm:text-sm text-brand-muted">
-                Kembangkan potensi terbaik siswa melalui program unggulan SMP Islam Al-Madinah BSD.
-            </p>
-        </div>
-
-        <!-- 6 Distinctive Cards (2 Rows x 3 Cols) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            <!-- 1. Tahfidz Al-Quran Bersanad -->
-            <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:shadow-md transition-all">
-                <div class="bg-[#0D6B57] text-white px-5 py-3 flex items-center gap-3">
-                    <span class="text-lg">🌙</span>
-                    <h3 class="text-sm font-bold tracking-wide">Tahfidz Al-Qur'an Bersanad</h3>
-                </div>
-                <div class="p-5 text-xs text-brand-muted leading-relaxed">
-                    Halaqah tahfidz intensif setiap pagi dibimbing langsung oleh musyrif dan asatidz bersanad dengan target mutqin 3 hingga 10 Juz pilihan.
-                </div>
-            </div>
-
-            <!-- 2. Kelas Bilingual -->
-            <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:shadow-md transition-all">
-                <div class="bg-[#0D6B57] text-white px-5 py-3 flex items-center gap-3">
-                    <span class="text-lg">🗣️</span>
-                    <h3 class="text-sm font-bold tracking-wide">Kelas Bilingual Inggris & Arab</h3>
-                </div>
-                <div class="p-5 text-xs text-brand-muted leading-relaxed">
-                    Pembiasaan percakapan harian berbahasa Arab dan Inggris, dilengkapi pelatihan public speaking dan persiapan kompetisi pidato dwibahasa.
-                </div>
-            </div>
-
-            <!-- 3. Sains & Robotika -->
-            <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:shadow-md transition-all">
-                <div class="bg-[#0D6B57] text-white px-5 py-3 flex items-center gap-3">
-                    <span class="text-lg">🤖</span>
-                    <h3 class="text-sm font-bold tracking-wide">Sains, Coding & Robotika</h3>
-                </div>
-                <div class="p-5 text-xs text-brand-muted leading-relaxed">
-                    Laboratorium sains interaktif, perakitan robot mikrokontroler, dan coding dasar untuk mengasah nalar kritis dan logika komputasional.
-                </div>
-            </div>
-
-            <!-- 4. Pembinaan Adab & Akhlak -->
-            <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:shadow-md transition-all">
-                <div class="bg-[#0D6B57] text-white px-5 py-3 flex items-center gap-3">
-                    <span class="text-lg">📖</span>
-                    <h3 class="text-sm font-bold tracking-wide">Pembinaan Adab & Akhlak Mulia</h3>
-                </div>
-                <div class="p-5 text-xs text-brand-muted leading-relaxed">
-                    Penanaman adab pergaulan islami, habituasi shalat berjamaah tepat waktu, dzikir ma'tsurat, dan buku pantauan mutaba'ah yaumiyah.
-                </div>
-            </div>
-
-            <!-- 5. Kepanduan & Leadership Camp -->
-            <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:shadow-md transition-all">
-                <div class="bg-[#0D6B57] text-white px-5 py-3 flex items-center gap-3">
-                    <span class="text-lg">⛺</span>
-                    <h3 class="text-sm font-bold tracking-wide">Kepanduan & Leadership Camp</h3>
-                </div>
-                <div class="p-5 text-xs text-brand-muted leading-relaxed">
-                    Kegiatan kepanduan Pramuka SIT, latihan dasar kepemimpinan (LDK), dan kemah bakti sosial untuk membentuk jiwa mandiri siswa.
-                </div>
-            </div>
-
-            <!-- 6. Literasi & CBT Digital -->
-            <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:shadow-md transition-all">
-                <div class="bg-[#0D6B57] text-white px-5 py-3 flex items-center gap-3">
-                    <span class="text-lg">💻</span>
-                    <h3 class="text-sm font-bold tracking-wide">Literasi Digital & Ujian CBT</h3>
-                </div>
-                <div class="p-5 text-xs text-brand-muted leading-relaxed">
-                    Pemanfaatan e-library, platform e-learning modern, dan sistem ujian berbasis komputer (CBT) dengan koneksi serat optik dedicated.
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-
-<!-- ========================================================
-     07. DAFTAR SEKARANG JUGA! (4-PHOTO COLLAGE + CTA PPDB)
-     ======================================================== -->
-<section class="py-16 lg:py-20 bg-[#F8FAF8] border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
-            <!-- Left: 4-Photo Collage (5 cols) -->
-            <div class="lg:col-span-5">
-                <div class="grid grid-cols-2 gap-3.5 max-w-md mx-auto">
-                    <img src="{{ $profile?->getCtaCollageImage(1) ?? 'https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=400&q=80' }}" 
-                         alt="Foto Siswa 1" 
-                         class="w-full h-36 sm:h-44 object-cover rounded-2xl shadow-sm"
-                         onerror="this.src='https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=400&q=80'">
-                    <img src="{{ $profile?->getCtaCollageImage(2) ?? 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=400&q=80' }}" 
-                         alt="Foto Siswa 2" 
-                         class="w-full h-36 sm:h-44 object-cover rounded-2xl shadow-sm"
-                         onerror="this.src='https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=400&q=80'">
-                    <img src="{{ $profile?->getCtaCollageImage(3) ?? 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80' }}" 
-                         alt="Foto Siswa 3" 
-                         class="w-full h-36 sm:h-44 object-cover rounded-2xl shadow-sm"
-                         onerror="this.src='https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80'">
-                    <img src="{{ $profile?->getCtaCollageImage(4) ?? 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80' }}" 
-                         alt="Foto Siswa 4" 
-                         class="w-full h-36 sm:h-44 object-cover rounded-2xl shadow-sm"
-                         onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80'">
-                </div>
-            </div>
-
-            <!-- Right: Title + 4 Pill Buttons (7 cols) -->
-            <div class="lg:col-span-7 space-y-6 text-left">
-                <div>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-[#0D6B57] tracking-tight leading-tight">
-                        Daftar SMP Islam Al-Madinah BSD <br>
-                        <span class="text-amber-500">Sekarang Juga!</span>
-                    </h2>
-                    <p class="text-xs sm:text-sm text-brand-muted mt-2 leading-relaxed">
-                        Segera daftarkan putra-putri Anda pada Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran {{ $academicYear }}. Kuota terbatas demi menjamin kualitas pendidikan terbaik.
-                    </p>
-                </div>
-
-                <!-- 4 Action Pill Buttons -->
-                <div class="flex flex-wrap items-center gap-3">
                     <a href="{{ route('ppdb.index') }}" 
-                       class="px-5 py-2.5 rounded-full bg-[#0D6B57] hover:bg-[#08493B] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center gap-2">
-                        <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        <span>DAFTAR ONLINE</span>
-                    </a>
-
-                    <button type="button" 
-                            onclick="openBrosurPpdbModal()" 
-                            class="px-5 py-2.5 rounded-full bg-[#0D6B57] hover:bg-[#08493B] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer">
-                        <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        <span>UNDUH BROSUR</span>
-                        @if ($hasBrochure)
-                            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        @endif
-                    </button>
-
-                    <button type="button" 
-                            onclick="openBiayaPpdbModal()" 
-                            class="px-5 py-2.5 rounded-full bg-[#0D6B57] hover:bg-[#08493B] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center gap-2 cursor-pointer">
-                        <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span>BIAYA PPDB</span>
-                        @if ($hasPpdbFee)
-                            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        @endif
-                    </button>
-
-                    <a href="{{ $waUrlPanitia }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="px-5 py-2.5 rounded-full bg-[#EAA824] hover:bg-amber-500 active:scale-95 text-brand-dark font-extrabold text-xs uppercase tracking-wide transition-all shadow-sm flex items-center gap-2">
-                        <svg class="w-4 h-4 fill-current text-brand-dark" viewBox="0 0 24 24">
-                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.181-.076.355.101.173.449.742.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z" />
-                        </svg>
-                        <span>CHAT WA PANITIA</span>
+                       class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#2A923F] hover:bg-[#217333] text-white text-xs font-black uppercase tracking-wider transition-all shadow-lg shrink-0">
+                        <span>Daftar PPDB</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </a>
                 </div>
             </div>
-
-        </div>
-    </div>
-</section>
-
-
-<!-- ========================================================
-     08. GALERI KEGIATAN (PHOTO GRID) (#galeri)
-     ======================================================== -->
-<section id="galeri" class="py-16 lg:py-24 bg-white border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-10">
-        <!-- Section Header -->
-        <div class="text-center max-w-2xl mx-auto space-y-2">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0D6B57] tracking-tight">
-                Galeri Kegiatan
-            </h2>
-            <p class="text-xs sm:text-sm text-brand-muted">
-                Dokumentasi dinamika pembelajaran, pembiasaan ibadah, dan keceriaan siswa di kampus Al-Madinah BSD.
-            </p>
         </div>
 
-        <!-- 3 Rows x 4 Cols (12 Photos) Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-            @php
-                $galleryPhotos = [
-                    'https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=400&q=80',
-                    'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=400&q=80',
-                    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80',
-                    'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80',
-                    'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=400&q=80',
-                    'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=400&q=80',
-                    'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=400&q=80',
-                    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=400&q=80',
-                ];
-            @endphp
-
-            @foreach ($galleryPhotos as $photo)
-                <div class="h-36 sm:h-44 rounded-xl overflow-hidden shadow-sm group relative">
-                    <img src="{{ $photo }}" 
-                         alt="Kegiatan Siswa" 
-                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold">
-                        SMP Al-Madinah
-                    </div>
-                </div>
-            @endforeach
+        <!-- Green Ribbon Banner Strip -->
+        <div class="max-w-2xl mx-auto -mt-5 sm:-mt-7 relative z-20 px-2 sm:px-0">
+            <div class="bg-[#2A923F] text-white py-2.5 sm:py-3.5 px-3 sm:px-6 rounded-2xl shadow-xl border border-[#217333] text-center font-black tracking-wider text-[11px] sm:text-sm uppercase flex items-center justify-center gap-2">
+                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white animate-pulse shrink-0"></span>
+                <span class="truncate sm:whitespace-normal">SMP ISLAM AL-MADINAH BSD • SEKTOR XIV BSD CITY</span>
+                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white animate-pulse shrink-0"></span>
+            </div>
         </div>
 
-        <div class="text-center pt-2">
-            <a href="{{ route('gallery') }}" class="text-xs font-bold text-[#0D6B57] hover:underline uppercase tracking-wider inline-flex items-center gap-1">
-                <span>LIHAT SEMUA FOTO</span>
-                <span>&gt;</span>
+        <!-- Mobile Quick CTAs -->
+        <div class="mt-4 flex sm:hidden items-center justify-center gap-2.5">
+            <a href="{{ route('ppdb.index') }}" 
+               class="flex-1 max-w-[200px] py-2.5 px-4 rounded-full bg-[#2A923F] text-white font-extrabold text-xs uppercase tracking-wider shadow-md text-center">
+                Daftar PPDB
+            </a>
+            <a href="{{ route('about') }}" 
+               class="flex-1 max-w-[200px] py-2.5 px-4 rounded-full bg-white/15 border border-white/25 text-white font-bold text-xs uppercase tracking-wider text-center">
+                Profil Sekolah
             </a>
         </div>
     </div>
 </section>
 
-
 <!-- ========================================================
-     08B. MULTIMEDIA RESMI: VIDEO PROFIL & INSTAGRAM RESMI (#video-profil / #media)
+     02. PROFIL SEKOLAH (SPLIT INTRO SECTION)
+     Sesuai Referensi SMAN 2 Kebumen
      ======================================================== -->
-<section id="video-profil" class="py-16 lg:py-24 bg-gradient-to-b from-[#F7FAF9] via-white to-[#F7FAF9] border-b border-brand-border relative overflow-hidden">
-    <!-- Subtle Background Glows -->
-    <div class="absolute -top-24 right-0 w-96 h-96 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-24 left-0 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 relative z-10 space-y-12">
-        <!-- Section Header -->
-        <div class="text-center max-w-3xl mx-auto space-y-3">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[#0D6B57] text-xs font-bold uppercase tracking-wider">
-                <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-                <span>MULTIMEDIA & KABAR MEDIA SOSIAL</span>
-            </div>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0D6B57] tracking-tight">
-                Video Profil & Aktivitas Terkini
-            </h2>
-            <p class="text-xs sm:text-sm text-brand-muted">
-                Saksikan lingkungan belajar, pembinaan akhlak santri, dan ikuti kabar terbaru SMP Al-Madinah langsung melalui saluran YouTube dan Instagram resmi kami.
-            </p>
-        </div>
-
-        <!-- 2-Columns Grid: Video Profil & Instagram Embed -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<section class="py-14 sm:py-16 bg-white border-b border-[#E7E3EA]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            <!-- LEFT (7 Cols): YouTube Video Profile Player -->
-            <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-7 shadow-lg border border-emerald-100/80 hover:shadow-xl transition-shadow flex flex-col justify-between">
-                <div class="space-y-4">
-                    <!-- Card Top Header -->
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shadow-xs">
-                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-                                    Video Profil SMP Al-Madinah
-                                </h3>
-                                <p class="text-xs text-brand-muted">
-                                    Mengenal lebih dekat lingkungan dan budaya sekolah
-                                </p>
-                            </div>
+            <!-- Left: Profil Thumbnail Card -->
+            <div class="md:col-span-5 flex justify-center">
+                <div class="w-full max-w-sm rounded-2xl border border-[#E7E3EA] p-4 bg-[#FAF9FB] shadow-sm space-y-3">
+                    <div class="relative h-60 rounded-xl overflow-hidden bg-slate-100 border border-[#E7E3EA]">
+                        <img src="{{ asset('images/banner-almadinah.png') }}" 
+                             alt="Profil SMP Islam Al-Madinah BSD" 
+                             class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent flex flex-col justify-end p-4 text-white">
+                            <span class="text-[10px] uppercase font-bold text-emerald-300 tracking-wider">PROFIL SEKOLAH</span>
+                            <h4 class="text-sm font-black leading-snug">SMP Islam Al-Madinah</h4>
+                            <p class="text-[11px] text-white/80">Islamic Center KKMB BSD</p>
                         </div>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-[11px] font-bold border border-rose-200">
-                            <span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping"></span>
-                            YouTube
-                        </span>
                     </div>
-
-                    <!-- Video Player Container (16:9 Aspect Ratio) -->
-                    @php
-                        $ytEmbedUrl = $profile?->youtube_embed_url;
-                        $hasRawIframe = !empty($profile?->youtube_embed) && str_contains($profile->youtube_embed, '<iframe');
-                    @endphp
-
-                    @if(!empty($ytEmbedUrl))
-                        <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-md border border-slate-200">
-                            <iframe 
-                                src="{{ $ytEmbedUrl }}" 
-                                title="Video Profil {{ $schoolName }}"
-                                class="w-full h-full border-0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                allowfullscreen
-                                loading="lazy">
-                            </iframe>
-                        </div>
-                    @elseif($hasRawIframe)
-                        <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-md border border-slate-200 [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0">
-                            {!! $profile->youtube_embed !!}
-                        </div>
-                    @else
-                        <!-- Graceful Fallback if video hasn't been set by admin yet -->
-                        <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-tr from-[#08493B] to-[#117C65] shadow-md border border-emerald-800 flex flex-col items-center justify-center text-center p-6 text-white group">
-                            <img src="{{ $heroImageSrc }}" alt="{{ $schoolName }}" class="absolute inset-0 w-full h-full object-cover opacity-25 group-hover:scale-105 transition-transform duration-500">
-                            <div class="relative z-10 space-y-3">
-                                <a href="{{ $profile?->youtube_url ?? 'https://youtube.com' }}" target="_blank" rel="noopener noreferrer" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 backdrop-blur-md hover:bg-rose-600 text-white flex items-center justify-center mx-auto shadow-2xl transition-all transform hover:scale-110">
-                                    <svg class="w-8 h-8 sm:w-10 sm:h-10 fill-current translate-x-0.5" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z"/>
-                                    </svg>
-                                </a>
-                                <div>
-                                    <div class="text-base sm:text-lg font-bold text-white drop-shadow-sm">Saksikan Video Profil Sekolah</div>
-                                    <div class="text-xs text-emerald-100 drop-shadow-sm">Kunjungi kanal YouTube resmi SMP Al-Madinah</div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Video Card Footer -->
-                <div class="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p class="text-xs text-slate-500 text-center sm:text-left">
-                        Dukung channel kami dengan menonton kegiatan dan inovasi santri.
-                    </p>
-                    <a href="{{ $profile?->youtube_url ?? 'https://youtube.com' }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition-all hover:scale-102 shrink-0">
-                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                        </svg>
-                        <span>Buka Channel YouTube</span>
-                    </a>
+                    <div class="flex items-center justify-between text-xs text-[#66676B] px-1">
+                        <span>NPSN: <strong>20613809</strong></span>
+                        <span class="text-[#2A923F] font-bold">Terakreditasi A</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- RIGHT (5 Cols): Instagram Feed / Post Embed -->
-            <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-7 shadow-lg border border-pink-100/80 hover:shadow-xl transition-shadow flex flex-col justify-between">
-                <div class="space-y-4">
-                    <!-- Card Top Header -->
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white shadow-xs">
-                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-                                    Instagram Resmi
-                                </h3>
-                                <p class="text-xs text-brand-muted">
-                                    {{ '@' . ($profile?->instagram_handle ?? 'smpalmadinah') }}
-                                </p>
-                            </div>
-                        </div>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-50 text-pink-700 text-[11px] font-bold border border-pink-200">
-                            Terbaru
-                        </span>
-                    </div>
-
-                    <!-- Instagram Embed Container -->
-                    @php
-                        $igHtml = $profile?->getInstagramEmbedHtml();
-                    @endphp
-
-                    @if(!empty($igHtml))
-                        <div class="w-full flex justify-center items-center py-2 min-h-[380px] max-h-[520px] overflow-y-auto rounded-2xl bg-slate-50 border border-slate-100">
-                            {!! $igHtml !!}
-                        </div>
-                    @else
-                        <!-- Graceful Fallback if Instagram Embed not configured yet -->
-                        <div class="rounded-2xl p-5 bg-gradient-to-b from-slate-50 to-white border border-slate-200 space-y-4">
-                            <!-- Account Snapshot -->
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full p-0.5 bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600">
-                                    <img src="{{ $logoSrc }}" alt="Logo" class="w-full h-full object-contain rounded-full bg-white p-1">
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-1.5">
-                                        <span class="text-sm font-extrabold text-slate-900 truncate">{{ $schoolName }}</span>
-                                        <svg class="w-4 h-4 text-sky-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                    <p class="text-xs text-brand-muted truncate">{{ '@' . ($profile?->instagram_handle ?? 'smpalmadinah') }}</p>
-                                </div>
-                            </div>
-
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                Ikuti dokumentasi visual, reels motivasi santri, liputan prestasi, dan info pendaftaran PPDB terhangat langsung dari tim humas kami.
-                            </p>
-
-                            <!-- Mini Photo Grid Mockup -->
-                            <div class="grid grid-cols-3 gap-2 pt-1">
-                                <div class="aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=300&q=80" alt="Santri" class="w-full h-full object-cover hover:scale-105 transition-transform">
-                                </div>
-                                <div class="aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                    <img src="https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=300&q=80" alt="Kegiatan" class="w-full h-full object-cover hover:scale-105 transition-transform">
-                                </div>
-                                <div class="aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                    <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=300&q=80" alt="Prestasi" class="w-full h-full object-cover hover:scale-105 transition-transform">
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+            <!-- Right: Text Description & Action -->
+            <div class="md:col-span-7 space-y-4 text-left">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
+                        Profil Sekolah
+                    </h2>
+                    <div class="w-16 h-1 bg-[#2A923F] rounded-full mt-2"></div>
                 </div>
 
-                <!-- Instagram Card Footer -->
-                <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                    <p class="text-xs text-slate-500 truncate">
-                        {{ '@' . ($profile?->instagram_handle ?? 'smpalmadinah') }}
-                    </p>
-                    <a href="{{ $profile?->instagram_url ?? 'https://instagram.com' }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:opacity-95 text-white text-xs font-bold shadow-sm transition-all hover:scale-102 shrink-0">
-                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                        </svg>
-                        <span>Lihat Instagram</span>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Instagram Embed Script Loader -->
-    <script async src="//www.instagram.com/embed.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (window.instgrm && window.instgrm.Embeds) {
-                window.instgrm.Embeds.process();
-            }
-        });
-    </script>
-</section>
-
-
-<!-- ========================================================
-     09. HORIZONTAL PROMO BANNER (Green & Gold Arch Motif)
-     ======================================================== -->
-<section class="py-10 bg-white">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8">
-        <div class="rounded-3xl bg-gradient-to-r from-[#08493B] via-[#0D6B57] to-[#0A5344] text-white p-6 sm:p-10 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="space-y-2 text-center md:text-left z-10">
-                <div class="text-xs font-bold uppercase tracking-wider text-amber-300">
-                    PENERIMAAN siswa BARU (PPDB)
-                </div>
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                    SMP Islam Al-Madinah BSD — {{ $academicYear }}
-                </h3>
-                <p class="text-xs sm:text-sm text-emerald-100 max-w-xl">
-                    Daftarkan ananda sekarang juga. Kuota kelas terbatas 24 siswa per kelas untuk memastikan perhatian penuh dewan asatidz.
+                <p class="text-sm text-[#66676B] leading-relaxed">
+                    SMP Islam Al-Madinah BSD berada di bawah naungan <strong>Yayasan Kerukunan Keluarga Muslim BSD (YKKM BSD)</strong>. Kami berkomitmen menyelenggarakan pendidikan holistik yang memadukan keunggulan adab Islami, hafalan Al-Qur'an (Tahfidz), kemahiran dwibahasa (Arab & Inggris), serta penguasaan sains dan teknologi terkini.
                 </p>
+
+                <p class="text-sm text-[#66676B] leading-relaxed">
+                    Dengan rasio maksimal 24 santri per kelas, proses pembelajaran dirancang personal, interaktif, dan berorientasi pada pembentukan karakter mandiri yang siap bersaing di era global.
+                </p>
+
+                <div class="pt-2">
+                    <a href="{{ route('about') }}" 
+                       class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-[#2A923F] text-[#2A923F] hover:bg-[#2A923F] hover:text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xs">
+                        <span>Lihat Profil Lengkap</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
             </div>
 
-            <div class="flex items-center gap-4 z-10 shrink-0">
-                <a href="{{ route('ppdb.index') }}" 
-                   class="px-8 py-3.5 rounded-full bg-[#EAA824] hover:bg-amber-500 text-brand-dark font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg hover:scale-105 transform">
-                    DAFTAR SEKARANG
-                </a>
-            </div>
-
-            <!-- Background subtle ornament -->
-            <div class="absolute right-0 top-0 bottom-0 w-80 bg-white/5 rounded-l-full pointer-events-none"></div>
         </div>
     </div>
 </section>
 
-
 <!-- ========================================================
-     10. INFO TERBARU & BERITA (3 Articles + Sidebar) (#berita)
+     03. WARTA PILIHAN (FEATURED EDITORIAL HIGHLIGHT)
      ======================================================== -->
-<section id="berita" class="py-16 lg:py-24 bg-[#F8FAF8] border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-10">
-        <div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0D6B57] tracking-tight">
-                Info Terbaru & Berita
-            </h2>
-            <p class="text-xs sm:text-sm text-brand-muted mt-1">
-                Kabar terkini seputar aktivitas pembelajaran, prestasi siswa, dan pengumuman sekolah.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+@if ($featuredPost)
+<section class="py-12 bg-[#FAF9FB] border-b border-[#E7E3EA]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-white rounded-3xl border border-[#E7E3EA] p-6 sm:p-8 shadow-sm">
             
-            <!-- Left: 3 Articles Grid (8 cols) -->
-            <div class="lg:col-span-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    @forelse ($posts ?? [] as $post)
-                        @php
-                            $catName = $post->categories->first()?->name ?? 'Warta';
-                            $imgSrc = $post->featured_image 
-                                ? asset('storage/' . $post->featured_image) 
-                                : 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80';
-                            $postUrl = route('news.show', $post->slug ?: $post->id);
-                            $dateStr = $post->published_at?->translatedFormat('d F Y') ?? $post->created_at?->translatedFormat('d F Y');
-                            $authorStr = $post->author?->name ?? 'Humas';
-                            $excerptStr = $post->excerpt ?: Str::limit(strip_tags($post->content), 90);
-                        @endphp
-                        <!-- Dynamic Article Card -->
-                        <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:border-[#0D6B57] transition-all flex flex-col justify-between group">
-                            <div>
-                                <div class="h-36 bg-slate-100 overflow-hidden relative">
-                                    <img src="{{ $imgSrc }}" 
-                                         alt="{{ $post->title }}" 
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                         onerror="this.src='https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80'">
-                                    <span class="absolute top-2.5 left-2.5 bg-[#0D6B57] text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm">
-                                        {{ ucfirst($catName) }}
-                                    </span>
-                                </div>
-                                <div class="p-4 space-y-1.5">
-                                    <div class="text-[10px] text-brand-muted">{{ $dateStr }} • {{ $authorStr }}</div>
-                                    <h4 class="text-xs font-bold text-brand-dark group-hover:text-[#0D6B57] transition-colors leading-snug line-clamp-2">
-                                        <a href="{{ $postUrl }}">
-                                            {{ $post->title }}
-                                        </a>
-                                    </h4>
-                                    <p class="text-[11px] text-brand-muted line-clamp-2 leading-relaxed">
-                                        {{ $excerptStr }}
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="px-4 pb-3 pt-1">
-                                <a href="{{ $postUrl }}" class="text-[11px] font-bold text-[#0D6B57] hover:underline inline-flex items-center gap-1">
-                                    <span>Baca Selengkapnya</span>
-                                    <span>&gt;</span>
-                                </a>
-                            </div>
-                        </div>
-                    @empty
-                        <!-- Fallback jika belum ada berita CMS -->
-                        <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:border-[#0D6B57] transition-all flex flex-col justify-between group">
-                            <div>
-                                <div class="h-36 bg-slate-100 overflow-hidden relative">
-                                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80" 
-                                         alt="Berita 1" 
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                                </div>
-                                <div class="p-4 space-y-1.5">
-                                    <div class="text-[10px] text-brand-muted">Humas Al-Madinah</div>
-                                    <h4 class="text-xs font-bold text-brand-dark group-hover:text-[#0D6B57] transition-colors leading-snug">
-                                        Pelepasan Kontingen Siswa Jambore Sains & Tahfidz Banten
-                                    </h4>
-                                    <p class="text-[11px] text-brand-muted line-clamp-2">
-                                        Sebanyak 15 siswa terpilih siap berkompetisi pada ajang sains dan tahfidz tingkat wilayah.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="px-4 pb-3 pt-1">
-                                <a href="{{ route('news') }}" class="text-[11px] font-bold text-[#0D6B57] hover:underline">
-                                    Baca Selengkapnya &gt;
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:border-[#0D6B57] transition-all flex flex-col justify-between group">
-                            <div>
-                                <div class="h-36 bg-slate-100 overflow-hidden relative">
-                                    <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=500&q=80" 
-                                         alt="Berita 2" 
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                                </div>
-                                <div class="p-4 space-y-1.5">
-                                    <div class="text-[10px] text-brand-muted">PPDB Al-Madinah</div>
-                                    <h4 class="text-xs font-bold text-brand-dark group-hover:text-[#0D6B57] transition-colors leading-snug">
-                                        Open House & Parenting Talkshow Pendidikan Adab Digital
-                                    </h4>
-                                    <p class="text-[11px] text-brand-muted line-clamp-2">
-                                        Mengenal lebih dekat kurikulum tahfidz bersanad dan sistem pendampingan siswa.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="px-4 pb-3 pt-1">
-                                <a href="{{ route('news') }}" class="text-[11px] font-bold text-[#0D6B57] hover:underline">
-                                    Baca Selengkapnya &gt;
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl border border-brand-border overflow-hidden shadow-sm hover:border-[#0D6B57] transition-all flex flex-col justify-between group">
-                            <div>
-                                <div class="h-36 bg-slate-100 overflow-hidden relative">
-                                    <img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=500&q=80" 
-                                         alt="Berita 3" 
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                                </div>
-                                <div class="p-4 space-y-1.5">
-                                    <div class="text-[10px] text-brand-muted">Tahfidz Al-Madinah</div>
-                                    <h4 class="text-xs font-bold text-brand-dark group-hover:text-[#0D6B57] transition-colors leading-snug">
-                                        Wisuda Khotmil Qur'an & Syahadah Tahfidz Angkatan VIII
-                                    </h4>
-                                    <p class="text-[11px] text-brand-muted line-clamp-2">
-                                        Sebanyak 42 siswa berhasil menyelesaikan setoran hafalan mutqin bersanad.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="px-4 pb-3 pt-1">
-                                <a href="{{ route('news') }}" class="text-[11px] font-bold text-[#0D6B57] hover:underline">
-                                    Baca Selengkapnya &gt;
-                                </a>
-                            </div>
-                        </div>
-                    @endforelse
+            <!-- Left: Content & Excerpt -->
+            <div class="md:col-span-7 space-y-3.5">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#EAF6EC] text-[#2A923F] border border-[#CDE8D2]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                    <span>Warta Pilihan</span>
+                </span>
+                <h3 class="text-xl sm:text-2xl font-black text-[#202124] leading-snug">
+                    {{ $featuredPost->title }}
+                </h3>
+                <p class="text-xs sm:text-sm text-[#66676B] leading-relaxed line-clamp-3">
+                    {{ $featuredPost->excerpt ?: Str::limit(strip_tags($featuredPost->content), 180) }}
+                </p>
+                <div class="pt-2">
+                    <a href="{{ route('news.show', $featuredPost->slug ?: $featuredPost->id) }}" 
+                       class="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#2A923F] text-[#2A923F] hover:bg-[#2A923F] hover:text-white font-bold text-xs uppercase tracking-wider transition-all">
+                        <span>Selengkapnya</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
                 </div>
             </div>
 
-            <!-- Right: Sidebar (4 cols) -->
-            <div class="lg:col-span-4 space-y-6">
-                <!-- Search Box -->
-                <div class="bg-white p-4 rounded-xl border border-brand-border shadow-sm">
-                    <label class="text-xs font-bold text-brand-dark block mb-2">Cari Informasi</label>
-                    <form action="{{ route('news') }}" method="GET" class="relative">
-                        <input type="text" 
-                               name="q"
-                               placeholder="Ketik kata kunci..." 
-                               class="w-full px-3.5 py-2 pr-9 rounded-lg border border-brand-border text-xs focus:outline-none focus:border-[#0D6B57]">
-                        <button type="submit" class="absolute right-3 top-2.5 text-brand-muted hover:text-[#0D6B57] transition-colors" title="Cari">
-                            🔍
-                        </button>
+            <!-- Right: Image Card -->
+            <div class="md:col-span-5">
+                @php
+                    $featImg = $featuredPost->featured_image 
+                        ? asset('storage/' . $featuredPost->featured_image) 
+                        : 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80';
+                @endphp
+                <div class="h-56 sm:h-64 rounded-2xl overflow-hidden border border-[#E7E3EA] bg-slate-100 shadow-inner">
+                    <img src="{{ $featImg }}" 
+                         alt="{{ $featuredPost->title }}" 
+                         class="w-full h-full object-cover">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- ========================================================
+     04. ICON QUICK NAVIGATION BAR (OPEN-SOURCE HEROICONS)
+     Sesuai Referensi SMAN 2 Kebumen
+     ======================================================== -->
+<section class="py-10 bg-white border-b border-[#E7E3EA]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 max-w-4xl mx-auto">
+            
+            <!-- Kejuaraan -->
+            <a href="#kejuaraan" 
+               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group">
+                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#EAF6EC] text-[#2A923F] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.982-3.172M15 4.5a3 3 0 11-6 0 3 3 0 016 0zm6 3a3 3 0 11-6 0 3 3 0 016 0zm-12 0a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <span class="mt-2.5 sm:mt-3 text-xs sm:text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">
+                    Kejuaraan
+                </span>
+            </a>
+
+            <!-- Ekstrakurikuler -->
+            <a href="#ekstrakurikuler" 
+               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group">
+                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#EDF4FC] text-[#4779B5] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                </div>
+                <span class="mt-2.5 sm:mt-3 text-xs sm:text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">
+                    Ekstrakurikuler
+                </span>
+            </a>
+
+            <!-- Berita -->
+            <a href="#berita" 
+               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group">
+                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#F4F0F7] text-[#9377AD] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/></svg>
+                </div>
+                <span class="mt-2.5 sm:mt-3 text-xs sm:text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">
+                    Berita
+                </span>
+            </a>
+
+            <!-- Agenda -->
+            <a href="#agenda" 
+               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group">
+                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+                </div>
+                <span class="mt-2.5 sm:mt-3 text-xs sm:text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">
+                    Agenda
+                </span>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     05. KEJUARAAN (ACHIEVEMENTS WITH REAL PHOTO & METRICS)
+     Anti AI-Slop: Tidak menggunakan gambar kartun stick-figure
+     ======================================================== -->
+<section id="kejuaraan" class="py-16 bg-[#FAF9FB] border-b border-[#E7E3EA]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <!-- Section Heading -->
+        <div class="text-center space-y-2">
+            <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
+                Kejuaraan & Prestasi
+            </h2>
+            <div class="w-14 h-1 bg-[#2A923F] rounded-full mx-auto"></div>
+            <p class="text-xs sm:text-sm text-[#66676B] max-w-xl mx-auto">
+                Membina potensi santri berprestasi dalam bidang tahfidz Al-Qur'an, sains, riset teknologi, dan olahraga.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
+            
+            <!-- Left: Authentic Achievement Stats Card (Anti-AI-Slop) -->
+            <div class="md:col-span-5 flex justify-center">
+                <div class="w-full max-w-sm bg-gradient-to-br from-[#3E2B52] to-[#543A70] text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-300">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-200">REKAM JEJAK PRESTASI</span>
+                            <h3 class="text-base font-black text-white">SMP Al-Madinah</h3>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-2 gap-2.5 sm:gap-3.5 pt-2">
+                        <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white/10 border border-white/10 text-center">
+                            <div class="text-xl sm:text-2xl font-black text-white">45+</div>
+                            <div class="text-[10px] sm:text-[11px] text-white/80 mt-0.5">Juara Kota & Provinsi</div>
+                        </div>
+                        <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white/10 border border-white/10 text-center">
+                            <div class="text-xl sm:text-2xl font-black text-emerald-300">12+</div>
+                            <div class="text-[10px] sm:text-[11px] text-white/80 mt-0.5">Tingkat Nasional</div>
+                        </div>
+                        <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white/10 border border-white/10 text-center">
+                            <div class="text-xl sm:text-2xl font-black text-amber-300">100%</div>
+                            <div class="text-[10px] sm:text-[11px] text-white/80 mt-0.5">Santri Berprestasi</div>
+                        </div>
+                        <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white/10 border border-white/10 text-center">
+                            <div class="text-xl sm:text-2xl font-black text-white">3 Juz</div>
+                            <div class="text-[10px] sm:text-[11px] text-white/80 mt-0.5">Target Tahfidz Mutqin</div>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-white/80 leading-relaxed italic">
+                        "Membentuk santri berakhlak mulia dengan prestasi akademik dan Al-Qur'an yang unggul."
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right: Interactive Achievement Card -->
+            <div class="md:col-span-7">
+                @php
+                    $firstAchieve = $achievements->first();
+                @endphp
+                <div class="bg-white rounded-3xl border border-[#E7E3EA] p-4 sm:p-8 shadow-sm space-y-4 relative">
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#2A923F] text-white">
+                            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
+                            <span>{{ $firstAchieve?->category ?? 'Prestasi Santri' }}</span>
+                        </span>
+                        <span class="text-xs font-semibold text-[#66676B]">
+                            Tahun {{ $firstAchieve?->year ?? date('Y') }}
+                        </span>
+                    </div>
+
+                    <div class="h-44 sm:h-56 rounded-2xl overflow-hidden bg-slate-100 border border-[#E7E3EA] relative">
+                        <img src="{{ !empty($firstAchieve?->photo) ? (Str::startsWith($firstAchieve->photo, ['http://', 'https://']) ? $firstAchieve->photo : asset('storage/' . $firstAchieve->photo)) : 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=700&q=80' }}" 
+                             alt="{{ $firstAchieve?->title ?? 'Prestasi Santri' }}" 
+                             class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="space-y-1">
+                        <h4 class="text-base sm:text-lg font-black text-[#202124] leading-snug">
+                            {{ $firstAchieve?->title ?? 'Juara Umum Tahfidz & Lomba Sains Madrasah' }}
+                        </h4>
+                        <p class="text-xs text-[#66676B]">
+                            Peraih: <strong>{{ $firstAchieve?->student_name ?? 'Santri SMP Islam Al-Madinah BSD' }}</strong>
+                        </p>
+                    </div>
+
+                    <div class="pt-2 flex items-center justify-between border-t border-[#E7E3EA]">
+                        <a href="{{ route('achievements') }}" class="text-xs font-bold text-[#2A923F] hover:underline flex items-center gap-1.5">
+                            <span>Lihat Semua Kejuaraan</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('achievements') }}" class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white transition-all text-xs" title="Sebelumnya">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            </a>
+                            <a href="{{ route('achievements') }}" class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white transition-all text-xs" title="Berikutnya">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     06. EKSTRAKURIKULER (WITH ORGANIC CURVED WAVE CONTAINER)
+     Anti AI-Slop: Visual bersih dengan icon open-source & fotografi nyata
+     ======================================================== -->
+<section id="ekstrakurikuler" class="relative py-16 lg:py-20 bg-white overflow-hidden">
+    <!-- Top Curved Wave Separator -->
+    <div class="absolute top-0 left-0 right-0 h-10 overflow-hidden leading-none z-10 pointer-events-none">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="relative block w-full h-10 text-[#FAF9FB] fill-current">
+            <path d="M0,0 C150,90 350,-40 500,40 C650,120 900,10 1200,40 L1200,0 L0,0 Z"></path>
+        </svg>
+    </div>
+
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-20">
+        <!-- Section Heading -->
+        <div class="text-center space-y-2">
+            <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
+                Ekstrakurikuler
+            </h2>
+            <div class="w-14 h-1 bg-[#2A923F] rounded-full mx-auto"></div>
+            <p class="text-xs sm:text-sm text-[#66676B] max-w-xl mx-auto">
+                Wadah penyaluran bakat, kepemimpinan, seni, olahraga, dan kecintaan terhadap sains santri.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
+            
+            <!-- Left: Featured Ekskul Card with Navigation Arrows -->
+            <div class="md:col-span-6 flex justify-center">
+                <div class="w-full max-w-md bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-5 sm:p-8 px-8 sm:px-10 text-center space-y-4 sm:space-y-5 shadow-sm relative">
+                    <!-- Navigation Arrows on Sides -->
+                    <a href="{{ route('programs') }}" class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs" title="Sebelumnya">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </a>
+                    <a href="{{ route('programs') }}" class="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs" title="Berikutnya">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+
+                    <!-- Open-Source Extracurricular Compass Emblem -->
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-white border border-[#E7E3EA] p-2.5 sm:p-3 shadow-xs flex items-center justify-center text-[#2A923F]">
+                        <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M18.364 5.636l-3.536 8.486-8.485 3.535 3.535-8.485 8.486-3.536z"/></svg>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <h3 class="text-lg sm:text-xl font-black text-[#202124] uppercase tracking-wide">
+                            PRAMUKA
+                        </h3>
+                        <p class="text-xs text-[#2A923F] font-bold">
+                            Gugus Depan SMP Islam Al-Madinah BSD
+                        </p>
+                        <p class="text-xs text-[#66676B] leading-relaxed max-w-xs mx-auto">
+                            Membina kedisiplinan, kepemimpinan tangguh, kemandirian santri, dan kepekaan sosial berlandaskan Dasa Darma.
+                        </p>
+                    </div>
+
+                    <div class="pt-2">
+                        <a href="{{ route('programs') }}" 
+                           class="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#2A923F] text-[#2A923F] hover:bg-[#2A923F] hover:text-white font-bold text-xs uppercase tracking-wider transition-all">
+                            <span>Selengkapnya</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Grid of Other Extracurricular Activities (Anti-AI-Slop) -->
+            <div class="md:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                <!-- Tahfidz Club -->
+                <div class="p-4 rounded-2xl border border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white transition-all space-y-2 group">
+                    <div class="w-10 h-10 rounded-xl bg-[#EAF6EC] text-[#2A923F] flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">Klub Tahfidz</h4>
+                        <p class="text-[11px] text-[#66676B] mt-0.5">Munaqasyah & Tilawah Qur'an</p>
+                    </div>
+                </div>
+
+                <!-- Robotic & Coding -->
+                <div class="p-4 rounded-2xl border border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white transition-all space-y-2 group">
+                    <div class="w-10 h-10 rounded-xl bg-[#EDF4FC] text-[#4779B5] flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">Robotik & IT</h4>
+                        <p class="text-[11px] text-[#66676B] mt-0.5">Sains Terapan & Pemrograman</p>
+                    </div>
+                </div>
+
+                <!-- Futsal & Olahraga -->
+                <div class="p-4 rounded-2xl border border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white transition-all space-y-2 group">
+                    <div class="w-10 h-10 rounded-xl bg-[#F4F0F7] text-[#9377AD] flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">Futsal & Panahan</h4>
+                        <p class="text-[11px] text-[#66676B] mt-0.5">Kebugaran & Olahraga Sunnah</p>
+                    </div>
+                </div>
+
+                <!-- PMR & Relawan -->
+                <div class="p-4 rounded-2xl border border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white transition-all space-y-2 group">
+                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">PMR & UKS</h4>
+                        <p class="text-[11px] text-[#66676B] mt-0.5">Kesehatan & Pertolongan Pertama</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bottom Curved Wave Separator -->
+    <div class="absolute bottom-0 left-0 right-0 h-10 overflow-hidden leading-none z-10 pointer-events-none">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="relative block w-full h-10 text-[#FAF9FB] fill-current">
+            <path d="M0,0 C150,90 350,-40 500,40 C650,120 900,10 1200,40 L1200,120 L0,120 Z"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- ========================================================
+     07. BERITA (NUMBERED LIST 1-5 WITH EDITORIAL CARD)
+     Sesuai Referensi SMAN 2 Kebumen
+     ======================================================== -->
+<section id="berita" class="py-16 bg-[#FAF9FB] border-b border-[#E7E3EA]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <!-- Section Heading -->
+        <div class="text-center space-y-2">
+            <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
+                Berita & Warta
+            </h2>
+            <div class="w-14 h-1 bg-[#2A923F] rounded-full mx-auto"></div>
+            <p class="text-xs sm:text-sm text-[#66676B] max-w-xl mx-auto">
+                Kanal warta resmi seputar agenda akademik, pengumuman yayasan, dan catatan dinamika santri.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
+            
+            <!-- Left: Editorial Highlights Card (Anti-AI-Slop) -->
+            <div class="md:col-span-5 flex justify-center">
+                <div class="w-full max-w-sm rounded-3xl bg-white border border-[#E7E3EA] p-6 shadow-sm space-y-4">
+                    <div class="flex items-center gap-2 text-xs font-bold text-[#2A923F]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                        <span>PUBLIKASI TERVERIFIKASI</span>
+                    </div>
+
+                    <div class="h-44 rounded-2xl overflow-hidden bg-slate-100 border border-[#E7E3EA]">
+                        <img src="{{ asset('images/banner-almadinah.png') }}" 
+                             alt="Warta SMP Islam Al-Madinah BSD" 
+                             class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <span class="text-[10px] text-[#66676B]">Humas SMP Islam Al-Madinah BSD</span>
+                        <h4 class="text-sm font-black text-[#202124] leading-snug">
+                            Laporan Kegiatan Akademik & Pembiasaan Adab Santri
+                        </h4>
+                        <p class="text-xs text-[#66676B] leading-relaxed line-clamp-2">
+                            Mendokumentasikan seluruh dinamika kelas dan tahfidz untuk transparansi wali santri.
+                        </p>
+                    </div>
+
+                    <div class="pt-2">
+                        <a href="{{ route('news') }}" class="text-xs font-bold text-[#2A923F] hover:underline flex items-center gap-1.5">
+                            <span>Buka Arsip Warta</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Numbered 1-5 News List with Open-Source Icons -->
+            <div class="md:col-span-7 space-y-3">
+                @forelse ($recentNews as $newsItem)
+                    @php
+                        $newsUrl = route('news.show', $newsItem->slug ?: $newsItem->id);
+                        $itemDate = $newsItem->published_at?->translatedFormat('d M Y') ?? $newsItem->created_at?->translatedFormat('d M Y');
+                    @endphp
+                    <div class="bg-white rounded-2xl border border-[#E7E3EA] p-3.5 sm:p-4 shadow-2xs hover:border-[#2A923F] hover:shadow-xs transition-all flex items-center gap-3.5 group">
+                        <!-- Square Numbered Badge -->
+                        <div class="w-10 h-10 rounded-xl border border-[#E7E3EA] bg-[#FAF9FB] group-hover:bg-[#2A923F] group-hover:text-white group-hover:border-[#2A923F] text-[#202124] font-black text-sm flex items-center justify-center shrink-0 transition-colors">
+                            {{ sprintf('%02d', $loop->iteration) }}
+                        </div>
+
+                        <!-- Title & Meta with Heroicons -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-xs sm:text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors leading-snug line-clamp-2">
+                                <a href="{{ $newsUrl }}" class="hover:underline">
+                                    {{ $newsItem->title }}
+                                </a>
+                            </h4>
+                            <div class="flex items-center gap-1.5 text-[10px] text-[#66676B] mt-0.5">
+                                <svg class="w-3 h-3 text-[#2A923F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>{{ $itemDate }}</span>
+                            </div>
+                        </div>
+
+                        <a href="{{ $newsUrl }}" class="text-[#66676B] group-hover:text-[#2A923F] transition-colors shrink-0 p-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                @empty
+                    @for ($i = 1; $i <= 5; $i++)
+                        <div class="bg-white rounded-2xl border border-[#E7E3EA] p-3.5 sm:p-4 shadow-2xs hover:border-[#2A923F] transition-all flex items-center gap-3.5 group">
+                            <div class="w-10 h-10 rounded-xl border border-[#E7E3EA] bg-[#FAF9FB] group-hover:bg-[#2A923F] group-hover:text-white group-hover:border-[#2A923F] text-[#202124] font-black text-sm flex items-center justify-center shrink-0 transition-colors">
+                                {{ sprintf('%02d', $i) }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs sm:text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors leading-snug truncate">
+                                    <a href="{{ route('news') }}" class="hover:underline">
+                                        Laporan Publikasi & Catatan Dinamika Santri SMP Islam Al-Madinah BSD (Bagian {{ $i }})
+                                    </a>
+                                </h4>
+                                <span class="text-[10px] text-[#66676B]">Warta Sekolah</span>
+                            </div>
+                        </div>
+                    @endfor
+                @endforelse
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     08. POSTINGAN (3-COLUMN CARDS WITH CLEAN OPEN-SOURCE ICONS)
+     Sesuai Referensi SMAN 2 Kebumen
+     ======================================================== -->
+<section class="py-16 bg-white border-b border-[#E7E3EA]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <!-- Section Heading -->
+        <div class="text-center space-y-2">
+            <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
+                Postingan
+            </h2>
+            <div class="w-14 h-1 bg-[#2A923F] rounded-full mx-auto"></div>
+        </div>
+
+        <!-- 3 Columns Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            @forelse ($gridPosts as $postItem)
+                @php
+                    $postCat = $postItem->categories->first()?->name ?? 'Warta Sekolah';
+                    $postImg = $postItem->featured_image 
+                        ? asset('storage/' . $postItem->featured_image) 
+                        : 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80';
+                    $postUrl = route('news.show', $postItem->slug ?: $postItem->id);
+                @endphp
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs hover:shadow-md hover:border-[#2A923F] transition-all flex flex-col justify-between group">
+                    <div>
+                        <div class="h-44 bg-slate-100 relative overflow-hidden">
+                            <img src="{{ $postImg }}" 
+                                 alt="{{ $postItem->title }}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-3 left-3 bg-[#2A923F] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow inline-flex items-center gap-1">
+                                <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
+                                <span>{{ ucfirst($postCat) }}</span>
+                            </span>
+                        </div>
+                        <div class="p-5 space-y-2">
+                            <h3 class="text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors leading-snug line-clamp-2">
+                                <a href="{{ $postUrl }}">
+                                    {{ $postItem->title }}
+                                </a>
+                            </h3>
+                            <p class="text-xs text-[#66676B] line-clamp-2">
+                                {{ $postItem->excerpt ?: Str::limit(strip_tags($postItem->content), 90) }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="px-5 pb-5 pt-1">
+                        <a href="{{ $postUrl }}" class="text-xs font-bold text-[#2A923F] hover:underline inline-flex items-center gap-1.5">
+                            <span>Baca Lengkap</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3">
+                    <span class="inline-block bg-[#2A923F] text-white px-3 py-1 rounded-full text-[10px] font-bold">DANA BOSP</span>
+                    <h4 class="text-xs font-bold text-[#202124]">Laporan Rekapitulasi dan Realisasi Penggunaan Dana BOS</h4>
+                </div>
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3">
+                    <span class="inline-block bg-[#2A923F] text-white px-3 py-1 rounded-full text-[10px] font-bold">AKADEMIK</span>
+                    <h4 class="text-xs font-bold text-[#202124]">Upacara Peringatan Hari Pendidikan dan Prestasi Santri</h4>
+                </div>
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3">
+                    <span class="inline-block bg-[#2A923F] text-white px-3 py-1 rounded-full text-[10px] font-bold">KEISLAMAN</span>
+                    <h4 class="text-xs font-bold text-[#202124]">Tasmi' Akbar dan Ujian Munaqasyah Tahfidz Al-Qur'an</h4>
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Pill Button: Lihat Semua -->
+        <div class="text-center pt-2">
+            <a href="{{ route('news') }}" 
+               class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#2A923F] text-[#2A923F] hover:bg-[#2A923F] hover:text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xs">
+                <span>Lihat Semua Postingan</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     09. TAG CLOUD / KATEGORI PILLS (OPEN-SOURCE TAG ICON)
+     Sesuai Referensi SMAN 2 Kebumen
+     ======================================================== -->
+<section class="py-10 bg-[#FAF9FB] border-b border-[#E7E3EA]">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap items-center justify-center gap-2.5 max-w-4xl mx-auto">
+            @php
+                $tags = [
+                    'Pramuka', 'Tahfidz Al-Qur\'an', 'OSIS', 'Sains & Robotik', 'Bilingual Class', 
+                    'Prestasi Santri', 'PPDB Online', 'Ekstrakurikuler', 'Laboratorium', 
+                    'Karakter Islami', 'Adab & Akhlak', 'Futsal', 'Memanah', 'Literasi', 
+                    'Buku Pedoman', 'Kantin Sehat'
+                ];
+            @endphp
+            @foreach ($tags as $tag)
+                <a href="{{ route('news', ['q' => $tag]) }}" 
+                   class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#2A923F] hover:bg-[#217333] text-white text-[11px] sm:text-xs font-bold transition-all shadow-2xs hover:shadow-xs">
+                    <svg class="w-3.5 h-3.5 opacity-85" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    <span>{{ $tag }}</span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     10. CONTACT & LOCATION (DOODLE PATTERN + 2-COLUMN CARD)
+     Sesuai Referensi SMAN 2 Kebumen
+     ======================================================== -->
+<section id="kontak" class="py-14 sm:py-16 lg:py-20 bg-slate-100 relative">
+    <!-- Subtle Educational Grid Pattern -->
+    <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#202124_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="max-w-4xl mx-auto bg-white rounded-3xl border border-[#E7E3EA] shadow-lg p-5 sm:p-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                
+                <!-- Left: Contact Form -->
+                <div class="space-y-4">
+                    <h3 class="text-xl font-black text-[#202124] text-center md:text-left">
+                        Hubungi Kami
+                    </h3>
+                    <p class="text-xs text-[#66676B]">
+                        Sampaikan pertanyaan atau jadwal kunjungan konsultasi langsung dengan tim humas sekolah.
+                    </p>
+
+                    <form action="{{ $waUrlPanitia }}" method="GET" target="_blank" class="space-y-3 pt-2">
+                        <div>
+                            <input type="text" 
+                                   name="nama" 
+                                   required 
+                                   placeholder="Nama Lengkap *" 
+                                   class="w-full px-4 py-2.5 rounded-xl border border-[#E7E3EA] text-xs text-[#202124] focus:outline-none focus:border-[#2A923F] focus:ring-1 focus:ring-[#2A923F] bg-[#FAF9FB]">
+                        </div>
+                        <div>
+                            <input type="text" 
+                                   name="kontak" 
+                                   required 
+                                   placeholder="Email / No. WhatsApp *" 
+                                   class="w-full px-4 py-2.5 rounded-xl border border-[#E7E3EA] text-xs text-[#202124] focus:outline-none focus:border-[#2A923F] focus:ring-1 focus:ring-[#2A923F] bg-[#FAF9FB]">
+                        </div>
+                        <div>
+                            <textarea name="pesan" 
+                                      rows="3" 
+                                      required 
+                                      placeholder="Pesan atau Pertanyaan Anda..." 
+                                      class="w-full px-4 py-2.5 rounded-xl border border-[#E7E3EA] text-xs text-[#202124] focus:outline-none focus:border-[#2A923F] focus:ring-1 focus:ring-[#2A923F] bg-[#FAF9FB]"></textarea>
+                        </div>
+                        <div>
+                            <button type="submit" 
+                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full border border-[#2A923F] text-[#2A923F] hover:bg-[#2A923F] hover:text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xs">
+                                <span>Kirim Pesan</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </button>
+                        </div>
                     </form>
                 </div>
 
-                <!-- Categories List -->
-                <div class="bg-white p-5 rounded-xl border border-brand-border shadow-sm space-y-3">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-brand-dark uppercase tracking-wider">Kategori Berita</h4>
-                        <a href="{{ route('news') }}" class="text-[11px] font-semibold text-[#0D6B57] hover:underline">Lihat Semua</a>
-                    </div>
-                    <ul class="space-y-2 text-xs text-brand-muted">
-                        @forelse ($categories ?? [] as $cat)
-                            <li>
-                                <a href="{{ route('news', ['kategori' => $cat->slug]) }}" class="hover:text-[#0D6B57] flex items-center justify-between transition-colors">
-                                    <span>{{ ucfirst($cat->name) }}</span>
-                                    <span class="font-mono text-[11px] text-brand-muted/70">({{ $cat->posts_count }})</span>
-                                </a>
-                            </li>
-                        @empty
-                            <li><a href="{{ route('news') }}" class="hover:text-[#0D6B57] flex items-center justify-between"><span>Penerimaan Siswa (PPDB)</span><span class="font-mono text-[11px] text-brand-muted/70">(1)</span></a></li>
-                            <li><a href="{{ route('news') }}" class="hover:text-[#0D6B57] flex items-center justify-between"><span>Prestasi & Kejuaraan</span><span class="font-mono text-[11px] text-brand-muted/70">(0)</span></a></li>
-                            <li><a href="{{ route('news') }}" class="hover:text-[#0D6B57] flex items-center justify-between"><span>Kegiatan & Dinamika Siswa</span><span class="font-mono text-[11px] text-brand-muted/70">(0)</span></a></li>
-                        @endforelse
-                    </ul>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-
-<!-- ========================================================
-     11. FORMULIR PENDAFTARAN & KONSULTASI (#ppdb)
-     ======================================================== -->
-<section id="ppdb" class="py-16 lg:py-24 bg-white border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-10">
-        <div class="text-center max-w-2xl mx-auto space-y-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-[#0D6B57]">
-                FORMULIR ONLINE RESMI
-            </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-brand-dark tracking-tight">
-                Pendaftaran & Konsultasi SPMB {{ $academicYear }}
-            </h2>
-            <p class="text-xs sm:text-sm text-brand-muted">
-                Isi formulir di bawah ini untuk memulai proses pendaftaran atau konsultasi langsung dengan panitia PPDB.
-            </p>
-        </div>
-
-        <div class="bg-[#F8FAF8] rounded-2xl border border-brand-border p-6 sm:p-10 shadow-sm max-w-3xl mx-auto">
-            <form action="{{ $profile?->whatsapp_custom_url ?: ('https://wa.me/' . $whatsappClean) }}" method="GET" target="_blank" class="space-y-5" id="ppdb-form">
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-brand-dark flex items-center justify-between">
-                        <span>Nama Lengkap Calon Siswa</span>
-                        <span class="text-red-500 text-[11px]">*Wajib</span>
-                    </label>
-                    <input type="text" 
-                           id="nama_santri"
-                           required
-                           placeholder="Contoh: Muhammad Fatih Rayhan" 
-                           class="w-full px-4 py-2.5 rounded-lg border border-brand-border text-sm text-brand-dark focus:outline-none focus:border-[#0D6B57] focus:ring-2 focus:ring-emerald-200 bg-white">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-bold text-brand-dark">Pilihan Jalur Program</label>
-                        <select id="jalur_program" 
-                                class="w-full px-4 py-2.5 rounded-lg border border-brand-border text-sm text-brand-dark focus:outline-none focus:border-[#0D6B57] focus:ring-2 focus:ring-emerald-200 bg-white">
-                            <option value="Tahfidz Bersanad & Bilingual">Tahfidz Bersanad & Bilingual (Unggulan)</option>
-                            <option value="Kurikulum Merdeka Reguler">Kurikulum Merdeka Reguler & Sains</option>
-                            <option value="Sains, STEM & Robotika">Sains, STEM & Robotika</option>
-                            <option value="Konsultasi Umum PPDB">Konsultasi Umum PPDB</option>
-                        </select>
+                <!-- Right: School Info & Google Maps Embed -->
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-base font-black text-[#202124]">
+                            SMP Islam Al-Madinah BSD
+                        </h4>
+                        <p class="text-xs text-[#66676B] mt-1 leading-relaxed">
+                            Komplek BSD City Sektor XIV, Serpong, Kota Tangerang Selatan, Banten
+                        </p>
+                        <p class="text-xs text-[#2A923F] font-bold mt-1">
+                            Telepon: {{ $profile?->phone ?? '(021) 538-8888' }}
+                        </p>
                     </div>
 
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-bold text-brand-dark flex items-center justify-between">
-                            <span>Nomor WhatsApp Wali Siswa</span>
-                            <span class="text-red-500 text-[11px]">*Wajib</span>
-                        </label>
-                        <input type="tel" 
-                               id="whatsapp_wali"
-                               required
-                               placeholder="Contoh: 081299887766" 
-                               class="w-full px-4 py-2.5 rounded-lg border border-brand-border text-sm text-brand-dark focus:outline-none focus:border-[#0D6B57] focus:ring-2 focus:ring-emerald-200 bg-white">
+                    <!-- Interactive Google Map Frame -->
+                    <div class="h-56 rounded-2xl overflow-hidden border border-[#E7E3EA] shadow-inner bg-slate-100">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.8016482813137!2d106.6806782!3d-6.3028731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fb7a2c56d787%3A0xe543596706903737!2sSMP%20Al%20Madinah%20Islamic%20Center%20KKMB!5e0!3m2!1sid!2sid!4v1710000000000!5m2!1sid!2sid" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Peta Lokasi SMP Islam Al-Madinah BSD">
+                        </iframe>
                     </div>
                 </div>
 
-                <div class="pt-3">
-                    <button type="submit" 
-                            class="w-full py-3.5 rounded-full bg-[#EAA824] hover:bg-amber-500 text-brand-dark font-black text-sm uppercase tracking-wider transition-all shadow-md">
-                        HUBUNGKAN DENGAN PANITIA PPDB SEKARANG
-                    </button>
-                    <p class="text-[11px] text-brand-muted text-center mt-2.5">
-                        Panitia PPDB SMP Islam Al-Madinah BSD akan segera merespons konfirmasi Anda.
-                    </p>
-                </div>
-            </form>
-        </div>
-    </div>
-</section>
-
-<!-- ========================================================
-     12. LOKASI KAMPUS & PETA INTERAKTIF (#lokasi)
-     ======================================================== -->
-<section id="lokasi" class="py-16 lg:py-24 bg-[#F8FAF8] border-b border-brand-border">
-    <div class="max-w-[1280px] mx-auto px-4 lg:px-8 space-y-10">
-        <div class="text-center max-w-2xl mx-auto space-y-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-[#0D6B57]">
-                KUNJUNGI KAMPUS KAMI
-            </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-brand-dark tracking-tight">
-                Lokasi & Peta Interaktif Kampus
-            </h2>
-            <p class="text-xs sm:text-sm text-brand-muted">
-                Kampus asri dan modern {{ $schoolName }} berlokasi strategis di kawasan Sektor XIV BSD City, Serpong, Tangerang Selatan.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <!-- Left Info Card (5 cols) -->
-            <div class="lg:col-span-5 bg-white p-6 sm:p-8 rounded-3xl border border-brand-border shadow-sm space-y-6">
-                <div>
-                    <h3 class="text-lg font-bold text-brand-dark flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-full bg-[#EAF4F1] text-[#0D6B57] flex items-center justify-center font-bold text-sm">📍</span>
-                        <span>Alamat Resmi Sekolah</span>
-                    </h3>
-                    <p class="text-xs sm:text-sm text-brand-muted mt-2 leading-relaxed">
-                        {{ $profile?->address ?? 'Komplek BSD City Sektor XIV, Serpong, Kota Tangerang Selatan, Banten' }}
-                    </p>
-                </div>
-
-                <div class="space-y-3 pt-2 border-t border-brand-border text-xs">
-                    <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
-                        <span class="text-brand-muted">Telepon Kantor:</span>
-                        <strong class="text-brand-dark">{{ $profile?->phone ?? '(021) 538-8888' }}</strong>
-                    </div>
-                    <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
-                        <span class="text-brand-muted">WhatsApp Layanan:</span>
-                        <strong class="text-[#0D6B57]">{{ $profile?->whatsapp ?? '0812-9988-7766' }}</strong>
-                    </div>
-                    <div class="flex items-center justify-between py-1.5 border-b border-slate-100">
-                        <span class="text-brand-muted">Email Resmi:</span>
-                        <strong class="text-brand-dark">{{ $profile?->email ?? 'info@smpalmadinah.sch.id' }}</strong>
-                    </div>
-                    <div class="flex items-center justify-between py-1.5">
-                        <span class="text-brand-muted">Jam Layanan Tamu:</span>
-                        <span class="text-brand-dark font-medium">Senin – Jumat (07.15 – 15.30 WIB)</span>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($schoolName . ' ' . ($profile?->address ?? 'Al Madinah Islamic Centre BSD')) }}" 
-                       target="_blank" 
-                       class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0D6B57] hover:bg-[#08493B] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>Petunjuk Arah Google Maps</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Right Interactive Maps Frame (7 cols) -->
-            <div class="lg:col-span-7">
-                <div class="w-full h-[380px] sm:h-[440px] rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-slate-100 relative [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0">
-                    @if (!empty($profile?->google_maps_embed))
-                        {!! $profile->google_maps_embed !!}
-                    @else
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d495.7268564616415!2d106.67262261897964!3d-6.288050860278647!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fb2125c0a82d%3A0x635e8df9edaa3b7f!2sAl%20Madinah%20Islamic%20centre%20BSD!5e0!3m2!1sid!2sid!4v1791386907445!5m2!1sid!2sid" 
-                                width="600" 
-                                height="450" 
-                                style="border:0;" 
-                                allowfullscreen="" 
-                                loading="lazy" 
-                                referrerpolicy="strict-origin-when-cross-origin"></iframe>
-                    @endif
-                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- PPDB Fast WhatsApp Form Submission & Modal Scripts -->
-<script>
-    // 1. QR Code Modal
-    function openPpdbQrModal() {
-        const modal = document.getElementById('ppdb-qr-modal');
-        const box = document.getElementById('ppdb-qr-modal-box');
-        if (!modal || !box) return;
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-        
-        setTimeout(() => {
-            box.classList.remove('scale-95', 'opacity-0');
-            box.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    function closePpdbQrModal() {
-        const modal = document.getElementById('ppdb-qr-modal');
-        const box = document.getElementById('ppdb-qr-modal-box');
-        if (!modal || !box) return;
-        
-        box.classList.remove('scale-100', 'opacity-100');
-        box.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = '';
-        }, 200);
-    }
-
-    // 2. Brosur Modal
-    function openBrosurPpdbModal() {
-        const modal = document.getElementById('ppdb-brosur-modal');
-        const box = document.getElementById('ppdb-brosur-modal-box');
-        if (!modal || !box) return;
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-        
-        setTimeout(() => {
-            box.classList.remove('scale-95', 'opacity-0');
-            box.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    function closeBrosurPpdbModal() {
-        const modal = document.getElementById('ppdb-brosur-modal');
-        const box = document.getElementById('ppdb-brosur-modal-box');
-        if (!modal || !box) return;
-        
-        box.classList.remove('scale-100', 'opacity-100');
-        box.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = '';
-        }, 200);
-    }
-
-    // 3. Biaya PPDB Modal
-    function openBiayaPpdbModal() {
-        const modal = document.getElementById('ppdb-biaya-modal');
-        const box = document.getElementById('ppdb-biaya-modal-box');
-        if (!modal || !box) return;
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-        
-        setTimeout(() => {
-            box.classList.remove('scale-95', 'opacity-0');
-            box.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    function closeBiayaPpdbModal() {
-        const modal = document.getElementById('ppdb-biaya-modal');
-        const box = document.getElementById('ppdb-biaya-modal-box');
-        if (!modal || !box) return;
-        
-        box.classList.remove('scale-100', 'opacity-100');
-        box.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = '';
-        }, 200);
-    }
-
-    function copyPpdbUrl(url) {
-        const label = document.getElementById('copy-text-label');
-        const btn = document.getElementById('btn-copy-ppdb-url');
-
-        const onSuccess = () => {
-            if (label && btn) {
-                const prev = label.textContent;
-                label.textContent = 'Tersalin!';
-                btn.classList.add('bg-amber-500');
-                btn.classList.remove('bg-emerald-600');
-                setTimeout(() => {
-                    label.textContent = prev;
-                    btn.classList.remove('bg-amber-500');
-                    btn.classList.add('bg-emerald-600');
-                }, 2000);
-            }
-        };
-
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(url).then(onSuccess).catch(() => fallbackCopy(url, onSuccess));
-        } else {
-            fallbackCopy(url, onSuccess);
-        }
-    }
-
-    function fallbackCopy(text, callback) {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-9999px';
-        textArea.style.top = '0';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            if (callback) callback();
-        } catch (err) {
-            console.error('Failed to copy text', err);
-        }
-        document.body.removeChild(textArea);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // Modal backdrops & ESC click handlers
-        const modals = [
-            { id: 'ppdb-qr-modal', close: closePpdbQrModal },
-            { id: 'ppdb-brosur-modal', close: closeBrosurPpdbModal },
-            { id: 'ppdb-biaya-modal', close: closeBiayaPpdbModal },
-        ];
-
-        modals.forEach(({ id, close }) => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('click', (e) => {
-                    if (e.target === el) close();
-                });
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closePpdbQrModal();
-                closeBrosurPpdbModal();
-                closeBiayaPpdbModal();
-            }
-        });
-
-        // WhatsApp Form Handler
-        const form = document.getElementById('ppdb-form');
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const nama = document.getElementById('nama_santri')?.value || '';
-                const jalur = document.getElementById('jalur_program')?.value || '';
-                const wa = document.getElementById('whatsapp_wali')?.value || '';
-                
-                const text = encodeURIComponent(
-                    `Assalamu'alaikum Panitia PPDB {{ $schoolName }},\n` +
-                    `Saya ingin mendaftarkan calon siswa:\n` +
-                    `• Nama Siswa: ${nama}\n` +
-                    `• Jalur Peminatan: ${jalur}\n` +
-                    `• No. WA Wali: ${wa}\n\n` +
-                    `Mohon petunjuk langkah pendaftaran selanjutnya. Terima kasih.`
-                );
-
-                const waCustomUrl = @json($profile?->whatsapp_custom_url);
-                if (waCustomUrl) {
-                    const sep = waCustomUrl.includes('?') ? '&' : '?';
-                    window.open(`${waCustomUrl}${sep}text=${text}`, '_blank');
-                } else {
-                    const waTarget = "{{ $whatsappClean }}";
-                    window.open(`https://wa.me/${waTarget}?text=${text}`, '_blank');
-                }
-            });
-        }
-    });
-</script>
 @endsection

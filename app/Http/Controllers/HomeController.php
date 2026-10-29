@@ -82,7 +82,7 @@ class HomeController extends Controller
                 $posts = CmsPost::published()
                     ->with(['categories', 'author'])
                     ->latest('published_at')
-                    ->take(3)
+                    ->take(9)
                     ->get();
             }
 
