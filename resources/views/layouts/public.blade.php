@@ -98,8 +98,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 
+    <!-- Alpine.js Cloak Prevention Style -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
     <!-- Styles & Scripts (Tailwind CSS v4 via Vite) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Alpine.js for public interactive components -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 
     @stack('styles')
 </head>

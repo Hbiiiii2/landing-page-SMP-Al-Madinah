@@ -285,7 +285,7 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start max-w-5xl mx-auto">
             
             <!-- Left: Authentic Achievement Stats Card -->
             <div class="md:col-span-5 flex justify-center">
@@ -333,7 +333,8 @@
             </div>
 
             <!-- Right: Interactive Dynamic Achievement Slider -->
-            <div class="md:col-span-7"
+            <div class="md:col-span-7 w-full"
+                 id="achievements-carousel"
                  x-data="{
                     activeIndex: 0,
                     total: {{ max($achievements->count(), 1) }},
@@ -369,12 +370,11 @@
 
                 @if($achievements->isNotEmpty())
                     @foreach($achievements as $index => $achieve)
-                        <div x-show="activeIndex === {{ $index }}"
-                             x-transition:enter="transition ease-out duration-300 transform"
-                             x-transition:enter-start="opacity-0 translate-y-2 scale-98"
-                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                        <div id="achievement-item-{{ $index }}"
+                             x-show="activeIndex === {{ $index }}"
+                             :class="{ 'hidden': activeIndex !== {{ $index }} }"
                              x-cloak
-                             class="bg-white rounded-3xl border border-[#E7E3EA] p-4 sm:p-7 shadow-sm space-y-4 relative">
+                             class="achievement-item-card bg-white rounded-3xl border border-[#E7E3EA] p-4 sm:p-7 shadow-sm space-y-4 relative {{ $index > 0 ? 'hidden' : '' }}">
                             
                             <!-- Card Header: Rank / Level Badge & Year -->
                             <div class="flex items-center justify-between gap-2">
@@ -388,7 +388,7 @@
                             </div>
 
                             <!-- Photo Showcase -->
-                            <div class="h-44 sm:h-56 rounded-2xl overflow-hidden bg-slate-100 border border-[#E7E3EA] relative group">
+                            <div class="h-48 sm:h-56 rounded-2xl overflow-hidden bg-slate-100 border border-[#E7E3EA] relative group">
                                 <img src="{{ $achieve->photo_url }}" 
                                      alt="{{ $achieve->title }}" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -427,12 +427,13 @@
                                 </a>
 
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[11px] font-semibold text-[#66676B] bg-slate-100 px-2 py-0.5 rounded-md tabular-nums">
+                                    <span class="text-[11px] font-semibold text-[#66676B] bg-slate-100 px-2.5 py-0.5 rounded-md tabular-nums achievement-counter">
                                         {{ $index + 1 }} / {{ $achievements->count() }}
                                     </span>
 
                                     <button type="button" 
                                             @click="prev()" 
+                                            onclick="if(window.cycleAchievement) window.cycleAchievement(-1)"
                                             class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white hover:border-[#2A923F] transition-all text-xs cursor-pointer shadow-2xs" 
                                             title="Prestasi Sebelumnya" 
                                             aria-label="Prestasi Sebelumnya">
@@ -440,6 +441,7 @@
                                     </button>
                                     <button type="button" 
                                             @click="next()" 
+                                            onclick="if(window.cycleAchievement) window.cycleAchievement(1)"
                                             class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white hover:border-[#2A923F] transition-all text-xs cursor-pointer shadow-2xs" 
                                             title="Prestasi Berikutnya" 
                                             aria-label="Prestasi Berikutnya">
@@ -558,7 +560,8 @@
 
         @if($extracurriculars->isNotEmpty())
             <!-- Dynamic Interactive Component connecting Left Featured Card and Right Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto"
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start max-w-5xl mx-auto"
+                 id="ekstrakurikuler-container"
                  x-data="{
                     selected: 0,
                     total: {{ $extracurriculars->count() }},
@@ -569,11 +572,12 @@
                 
                 <!-- Left: Interactive Featured Extracurricular Card -->
                 <div class="md:col-span-6 flex justify-center w-full">
-                    <div class="w-full max-w-md bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-5 sm:p-8 px-8 sm:px-10 text-center space-y-4 sm:space-y-5 shadow-sm relative min-h-[420px] flex flex-col justify-between">
+                    <div class="w-full max-w-md bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-5 sm:p-8 px-8 sm:px-10 text-center space-y-4 sm:space-y-5 shadow-sm relative min-h-[460px] flex flex-col justify-between">
                         
                         <!-- Side Navigation Arrows -->
                         <button type="button" 
                                 @click="prev()" 
+                                onclick="if(window.cycleEkskul) window.cycleEkskul(-1)"
                                 class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer z-10" 
                                 title="Ekstrakurikuler Sebelumnya" 
                                 aria-label="Ekstrakurikuler Sebelumnya">
@@ -581,6 +585,7 @@
                         </button>
                         <button type="button" 
                                 @click="next()" 
+                                onclick="if(window.cycleEkskul) window.cycleEkskul(1)"
                                 class="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer z-10" 
                                 title="Ekstrakurikuler Berikutnya" 
                                 aria-label="Ekstrakurikuler Berikutnya">
@@ -591,12 +596,11 @@
                             @php
                                 $meta = $getEkskulMeta($ekskul->category, $ekskul->name);
                             @endphp
-                            <div x-show="selected === {{ $index }}"
-                                 x-transition:enter="transition ease-out duration-300 transform"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100"
+                            <div id="ekskul-slide-{{ $index }}"
+                                 x-show="selected === {{ $index }}"
+                                 :class="{ 'hidden': selected !== {{ $index }} }"
                                  x-cloak
-                                 class="space-y-4 flex-1 flex flex-col justify-center">
+                                 class="ekskul-slide-item space-y-4 flex-1 flex flex-col justify-center {{ $index > 0 ? 'hidden' : '' }}">
 
                                 <!-- Photo / Icon Emblem -->
                                 @if(!empty($ekskul->image))
@@ -665,9 +669,11 @@
                             <div class="flex items-center justify-center gap-1.5 pt-1">
                                 @foreach($extracurriculars as $index => $ekskul)
                                     <button type="button" 
+                                            id="ekskul-dot-{{ $index }}"
                                             @click="select({{ $index }})" 
+                                            onclick="if(window.selectEkskul) window.selectEkskul({{ $index }})"
                                             :class="selected === {{ $index }} ? 'w-5 bg-[#2A923F]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'"
-                                            class="h-1.5 rounded-full transition-all cursor-pointer" 
+                                            class="ekskul-dot-indicator h-1.5 rounded-full transition-all cursor-pointer {{ $index === 0 ? 'w-5 bg-[#2A923F]' : 'w-1.5 bg-slate-300 hover:bg-slate-400' }}" 
                                             title="{{ $ekskul->name }}"
                                             aria-label="{{ $ekskul->name }}"></button>
                                 @endforeach
@@ -678,15 +684,17 @@
                 </div>
 
                 <!-- Right: Dynamic Grid of Extracurricular Activities from Filament -->
-                <div class="md:col-span-6 space-y-3.5">
+                <div class="md:col-span-6 w-full space-y-3.5">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                         @foreach($extracurriculars->take(6) as $index => $item)
                             @php
                                 $itemMeta = $getEkskulMeta($item->category, $item->name);
                             @endphp
-                            <div @click="select({{ $index }})"
+                            <div id="ekskul-card-{{ $index }}"
+                                 @click="select({{ $index }})"
+                                 onclick="if(window.selectEkskul) window.selectEkskul({{ $index }})"
                                  :class="selected === {{ $index }} ? 'border-[#2A923F] bg-white ring-2 ring-[#2A923F]/20 shadow-sm' : 'border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white'"
-                                 class="p-4 rounded-2xl border transition-all space-y-2 group cursor-pointer text-left relative">
+                                 class="ekskul-card-item p-4 rounded-2xl border transition-all space-y-2 group cursor-pointer text-left relative {{ $index === 0 ? 'border-[#2A923F] bg-white ring-2 ring-[#2A923F]/20 shadow-sm' : 'border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white' }}">
                                 
                                 <div class="flex items-center justify-between">
                                     <div class="w-10 h-10 rounded-xl {{ $itemMeta['bg'] }} {{ $itemMeta['text'] }} flex items-center justify-center p-2">
@@ -712,8 +720,8 @@
                                     </div>
 
                                     <span :class="selected === {{ $index }} ? 'opacity-100 text-[#2A923F] font-bold' : 'opacity-0 group-hover:opacity-100 text-slate-400'"
-                                          class="text-[10px] uppercase tracking-wider transition-opacity flex items-center gap-1">
-                                        <span x-text="selected === {{ $index }} ? 'Aktif' : 'Pilih'"></span>
+                                          class="ekskul-card-status text-[10px] uppercase tracking-wider transition-opacity flex items-center gap-1 {{ $index === 0 ? 'opacity-100 text-[#2A923F] font-bold' : 'opacity-0 group-hover:opacity-100 text-slate-400' }}">
+                                        <span x-text="selected === {{ $index }} ? 'Aktif' : 'Pilih'">{{ $index === 0 ? 'Aktif' : 'Pilih' }}</span>
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                     </span>
                                 </div>
@@ -1114,5 +1122,90 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+<script>
+    // Fallback script if Alpine.js is not loaded or delayed
+    window.cycleAchievement = function(dir) {
+        if (window.Alpine) return;
+        var cards = document.querySelectorAll('.achievement-item-card');
+        if (!cards.length) return;
+        var currentIdx = 0;
+        cards.forEach(function(card, idx) {
+            if (!card.classList.contains('hidden')) {
+                currentIdx = idx;
+            }
+        });
+        var nextIdx = (currentIdx + dir + cards.length) % cards.length;
+        cards.forEach(function(card, idx) {
+            if (idx === nextIdx) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+    };
+
+    window.cycleEkskul = function(dir) {
+        if (window.Alpine) return;
+        var slides = document.querySelectorAll('.ekskul-slide-item');
+        if (!slides.length) return;
+        var currentIdx = 0;
+        slides.forEach(function(slide, idx) {
+            if (!slide.classList.contains('hidden')) {
+                currentIdx = idx;
+            }
+        });
+        var nextIdx = (currentIdx + dir + slides.length) % slides.length;
+        window.selectEkskul(nextIdx);
+    };
+
+    window.selectEkskul = function(targetIdx) {
+        if (window.Alpine) return;
+        var slides = document.querySelectorAll('.ekskul-slide-item');
+        var dots = document.querySelectorAll('.ekskul-dot-indicator');
+        var cards = document.querySelectorAll('.ekskul-card-item');
+
+        slides.forEach(function(slide, idx) {
+            if (idx === targetIdx) {
+                slide.classList.remove('hidden');
+            } else {
+                slide.classList.add('hidden');
+            }
+        });
+
+        dots.forEach(function(dot, idx) {
+            if (idx === targetIdx) {
+                dot.className = 'ekskul-dot-indicator h-1.5 rounded-full transition-all cursor-pointer w-5 bg-[#2A923F]';
+            } else {
+                dot.className = 'ekskul-dot-indicator h-1.5 rounded-full transition-all cursor-pointer w-1.5 bg-slate-300 hover:bg-slate-400';
+            }
+        });
+
+        cards.forEach(function(card, idx) {
+            var statusEl = card.querySelector('.ekskul-card-status');
+            if (idx === targetIdx) {
+                card.classList.add('border-[#2A923F]', 'bg-white', 'ring-2', 'ring-[#2A923F]/20', 'shadow-sm');
+                card.classList.remove('border-[#E7E3EA]', 'bg-[#FAF9FB]');
+                if (statusEl) {
+                    statusEl.classList.add('opacity-100', 'text-[#2A923F]', 'font-bold');
+                    statusEl.classList.remove('opacity-0', 'text-slate-400');
+                    var span = statusEl.querySelector('span');
+                    if (span) span.innerText = 'Aktif';
+                }
+            } else {
+                card.classList.remove('border-[#2A923F]', 'bg-white', 'ring-2', 'ring-[#2A923F]/20', 'shadow-sm');
+                card.classList.add('border-[#E7E3EA]', 'bg-[#FAF9FB]');
+                if (statusEl) {
+                    statusEl.classList.remove('opacity-100', 'text-[#2A923F]', 'font-bold');
+                    statusEl.classList.add('opacity-0', 'text-slate-400');
+                    var span = statusEl.querySelector('span');
+                    if (span) span.innerText = 'Pilih';
+                }
+            }
+        });
+    };
+</script>
+@endpush
 
 @endsection
