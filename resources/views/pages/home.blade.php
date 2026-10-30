@@ -585,6 +585,7 @@
                     selected: 0,
                     total: {{ max($extracurriculars->count(), 1) }},
                     timer: null,
+                    touchStartX: 0,
                     init() {
                         this.startAuto();
                     },
@@ -621,9 +622,11 @@
                  @mouseenter="stopAuto()"
                  @mouseleave="startAuto()">
                 
-                <!-- Left: Interactive Featured Extracurricular Card -->
-                <div class="md:col-span-6 flex justify-center w-full reveal-init reveal-left delay-100">
-                    <div class="w-full max-w-md bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-5 sm:p-8 px-8 sm:px-10 text-center space-y-4 sm:space-y-5 shadow-sm relative min-h-[460px] flex flex-col justify-between">
+                <!-- Left: Interactive Featured Extracurricular Card (Featured on Mobile & Desktop) -->
+                <div class="col-span-1 md:col-span-6 flex justify-center w-full reveal-init reveal-left delay-100">
+                    <div class="w-full max-w-md bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-5 sm:p-8 px-8 sm:px-10 text-center space-y-4 sm:space-y-5 shadow-sm relative min-h-[440px] sm:min-h-[460px] flex flex-col justify-between touch-pan-y select-none"
+                         @touchstart="touchStartX = $event.changedTouches[0].screenX"
+                         @touchend="if ($event.changedTouches[0].screenX < touchStartX - 40) next(); if ($event.changedTouches[0].screenX > touchStartX + 40) prev();">
                         
                         <!-- Side Navigation Arrows -->
                         <button type="button" 
@@ -733,8 +736,8 @@
                     </div>
                 </div>
 
-                <!-- Right: Dynamic Grid of All Extracurricular Activities from Filament -->
-                <div class="md:col-span-6 w-full space-y-3.5 reveal-init reveal-right delay-200">
+                <!-- Right: Dynamic Grid of All Extracurricular Activities from Filament (Desktop Only) -->
+                <div class="hidden md:block md:col-span-6 w-full space-y-3.5 reveal-init reveal-right delay-200">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                         @foreach($extracurriculars as $index => $item)
                             @php
