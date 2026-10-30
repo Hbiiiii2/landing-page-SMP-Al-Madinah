@@ -29,11 +29,20 @@ class FacilityForm
                 FileUpload::make('photo')
                     ->label('Foto Utama / Sampul Fasilitas')
                     ->image()
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '16:9',
+                        '4:3',
+                        '1:1',
+                    ])
                     ->disk('public')
                     ->directory('facilities')
                     ->visibility('public')
+                    ->openable()
+                    ->downloadable()
                     ->maxSize(5120)
-                    ->helperText('Format JPG, PNG, atau WebP (Maksimal 5MB). Foto utama yang tampil pada kartu fasilitas.'),
+                    ->helperText('Format JPG, PNG, atau WebP (Maksimal 5MB). Foto utama yang tampil pada kartu fasilitas. Klik ikon pensil untuk crop / edit foto.'),
                 FileUpload::make('gallery')
                     ->label('Foto-foto Fasilitas Lainnya (Galeri)')
                     ->multiple()

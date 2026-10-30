@@ -299,9 +299,20 @@ class SchoolProfileForm
                                             FileUpload::make('headmaster_photo')
                                                 ->label('Foto Formal Kepala Sekolah')
                                                 ->image()
+                                                ->imageEditor()
+                                                ->imageEditorAspectRatios([
+                                                    null,
+                                                    '1:1',
+                                                    '3:4',
+                                                    '4:5',
+                                                ])
+                                                ->disk('public')
                                                 ->directory('school/staff')
-                                                ->maxSize(2048)
-                                                ->helperText('Foto portrait/setengah badan formal berlatar rapi (maks. 2MB)'),
+                                                ->visibility('public')
+                                                ->openable()
+                                                ->downloadable()
+                                                ->maxSize(5120)
+                                                ->helperText('Foto portrait/setengah badan formal berlatar rapi (maks. 5MB). Klik ikon pensil untuk crop / edit foto.'),
                                         ]),
 
                                     Section::make('Profil & Kata Sambutan')

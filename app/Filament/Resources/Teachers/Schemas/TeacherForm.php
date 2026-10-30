@@ -54,15 +54,20 @@ class TeacherForm
                         FileUpload::make('photo')
                             ->label('Foto Resmi Guru / Asatidz')
                             ->image()
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                null,
+                                '1:1',
+                                '3:4',
+                                '4:5',
+                            ])
                             ->disk('public')
                             ->directory('teachers')
                             ->visibility('public')
-                            ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('1:1')
-                            ->imageResizeTargetWidth('600')
-                            ->imageResizeTargetHeight('600')
-                            ->maxSize(2048)
-                            ->helperText('Format JPG, JPEG, PNG, atau WebP (Maksimal 2MB). Disarankan rasio pas foto 1:1.'),
+                            ->openable()
+                            ->downloadable()
+                            ->maxSize(5120)
+                            ->helperText('Format JPG, JPEG, PNG, atau WebP (Maksimal 5MB). Klik ikon pensil untuk crop / edit foto.'),
 
                         Textarea::make('bio')
                             ->label('Profil Singkat / Bio')
