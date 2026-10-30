@@ -115,7 +115,7 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
             
             <!-- Left: Profil Thumbnail Card -->
-            <div class="md:col-span-5 flex justify-center">
+            <div class="md:col-span-5 flex justify-center reveal-init reveal-left">
                 <div class="w-full max-w-sm rounded-2xl border border-[#E7E3EA] p-4 bg-[#FAF9FB] shadow-sm space-y-3">
                     <div class="relative h-60 rounded-xl overflow-hidden bg-slate-100 border border-[#E7E3EA]">
                         <img src="{{ asset('images/banner-almadinah.png') }}" 
@@ -135,7 +135,7 @@
             </div>
 
             <!-- Right: Text Description & Action -->
-            <div class="md:col-span-7 space-y-4 text-left">
+            <div class="md:col-span-7 space-y-4 text-left reveal-init reveal-right delay-150">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
                         Profil Sekolah
@@ -170,7 +170,7 @@
 @if ($featuredPost)
 <section class="py-12 bg-[#FAF9FB] border-b border-[#E7E3EA]">
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-white rounded-3xl border border-[#E7E3EA] p-6 sm:p-8 shadow-sm">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-white rounded-3xl border border-[#E7E3EA] p-6 sm:p-8 shadow-sm reveal-init">
             
             <!-- Left: Content & Excerpt -->
             <div class="md:col-span-7 space-y-3.5">
@@ -222,7 +222,7 @@
             
             <!-- Kejuaraan -->
             <a href="#kejuaraan" 
-               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group">
+               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group reveal-init delay-100">
                 <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#EAF6EC] text-[#2A923F] flex items-center justify-center group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.982-3.172M15 4.5a3 3 0 11-6 0 3 3 0 016 0zm6 3a3 3 0 11-6 0 3 3 0 016 0zm-12 0a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 </div>
@@ -233,7 +233,7 @@
 
             <!-- Ekstrakurikuler -->
             <a href="#ekstrakurikuler" 
-               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group">
+               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group reveal-init delay-200">
                 <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#EDF4FC] text-[#4779B5] flex items-center justify-center group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
                 </div>
@@ -244,7 +244,7 @@
 
             <!-- Berita -->
             <a href="#berita" 
-               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group">
+               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group reveal-init delay-300">
                 <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#F4F0F7] text-[#9377AD] flex items-center justify-center group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/></svg>
                 </div>
@@ -255,7 +255,7 @@
 
             <!-- Agenda -->
             <a href="#agenda" 
-               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group">
+               class="flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl bg-white border border-[#E7E3EA] hover:border-[#2A923F] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all group reveal-init delay-400">
                 <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
                 </div>
@@ -275,7 +275,7 @@
 <section id="kejuaraan" class="py-16 bg-[#FAF9FB] border-b border-[#E7E3EA]">
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <!-- Section Heading -->
-        <div class="text-center space-y-2">
+        <div class="text-center space-y-2 reveal-init">
             <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
                 Kejuaraan & Rekam Jejak Prestasi
             </h2>
@@ -288,7 +288,7 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start max-w-5xl mx-auto">
             
             <!-- Left: Authentic Achievement Stats Card -->
-            <div class="md:col-span-5 flex justify-center">
+            <div class="md:col-span-5 flex justify-center reveal-init reveal-left delay-100">
                 <div class="w-full max-w-sm bg-gradient-to-br from-[#3E2B52] to-[#543A70] text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
 
@@ -333,7 +333,7 @@
             </div>
 
             <!-- Right: Interactive Dynamic Achievement Slider -->
-            <div class="md:col-span-7 w-full"
+            <div class="md:col-span-7 w-full reveal-init reveal-right delay-200"
                  id="achievements-carousel"
                  x-data="{
                     activeIndex: 0,
@@ -350,15 +350,22 @@
                         this.activeIndex = (this.activeIndex - 1 + this.total) % this.total;
                         this.restartAuto();
                     },
+                    select(idx) {
+                        this.activeIndex = idx;
+                        this.restartAuto();
+                    },
                     startAuto() {
                         if (this.total > 1) {
                             this.timer = setInterval(() => {
                                 this.activeIndex = (this.activeIndex + 1) % this.total;
-                            }, 6000);
+                            }, 5000);
                         }
                     },
                     stopAuto() {
-                        if (this.timer) clearInterval(this.timer);
+                        if (this.timer) {
+                            clearInterval(this.timer);
+                            this.timer = null;
+                        }
                     },
                     restartAuto() {
                         this.stopAuto();
@@ -372,9 +379,11 @@
                     @foreach($achievements as $index => $achieve)
                         <div id="achievement-item-{{ $index }}"
                              x-show="activeIndex === {{ $index }}"
-                             :class="{ 'hidden': activeIndex !== {{ $index }} }"
-                             x-cloak
-                             class="achievement-item-card bg-white rounded-3xl border border-[#E7E3EA] p-4 sm:p-7 shadow-sm space-y-4 relative {{ $index > 0 ? 'hidden' : '' }}">
+                             {{ $index > 0 ? 'x-cloak' : '' }}
+                             x-transition:enter="transition ease-out duration-400 transform"
+                             x-transition:enter-start="opacity-0 translate-y-3 scale-98"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             class="achievement-item-card bg-white rounded-3xl border border-[#E7E3EA] p-4 sm:p-7 shadow-sm space-y-4 relative">
                             
                             <!-- Card Header: Rank / Level Badge & Year -->
                             <div class="flex items-center justify-between gap-2">
@@ -420,20 +429,31 @@
                             </div>
 
                             <!-- Footer: Link & Dynamic Slider Controls -->
-                            <div class="pt-3 flex items-center justify-between border-t border-[#E7E3EA]">
+                            <div class="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[#E7E3EA]">
                                 <a href="{{ route('achievements') }}" class="text-xs font-bold text-[#2A923F] hover:underline flex items-center gap-1.5 group">
                                     <span>Lihat Semua Kejuaraan</span>
                                     <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </a>
 
                                 <div class="flex items-center gap-2">
+                                    <!-- Indicator Dots for Achievements -->
+                                    <div class="hidden sm:flex items-center gap-1 mr-1">
+                                        @foreach($achievements as $dotIdx => $dotItem)
+                                            <button type="button"
+                                                    @click="select({{ $dotIdx }})"
+                                                    :class="activeIndex === {{ $dotIdx }} ? 'w-5 bg-[#2A923F]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'"
+                                                    class="h-1.5 rounded-full transition-all duration-300 cursor-pointer"
+                                                    title="Prestasi {{ $dotIdx + 1 }}"
+                                                    aria-label="Prestasi {{ $dotIdx + 1 }}"></button>
+                                        @endforeach
+                                    </div>
+
                                     <span class="text-[11px] font-semibold text-[#66676B] bg-slate-100 px-2.5 py-0.5 rounded-md tabular-nums achievement-counter">
                                         {{ $index + 1 }} / {{ $achievements->count() }}
                                     </span>
 
                                     <button type="button" 
                                             @click="prev()" 
-                                            onclick="if(window.cycleAchievement) window.cycleAchievement(-1)"
                                             class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white hover:border-[#2A923F] transition-all text-xs cursor-pointer shadow-2xs" 
                                             title="Prestasi Sebelumnya" 
                                             aria-label="Prestasi Sebelumnya">
@@ -441,7 +461,6 @@
                                     </button>
                                     <button type="button" 
                                             @click="next()" 
-                                            onclick="if(window.cycleAchievement) window.cycleAchievement(1)"
                                             class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white hover:border-[#2A923F] transition-all text-xs cursor-pointer shadow-2xs" 
                                             title="Prestasi Berikutnya" 
                                             aria-label="Prestasi Berikutnya">
@@ -548,7 +567,7 @@
 
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-20">
         <!-- Section Heading -->
-        <div class="text-center space-y-2">
+        <div class="text-center space-y-2 reveal-init">
             <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
                 Ekstrakurikuler & Pengembangan Diri
             </h2>
@@ -564,20 +583,51 @@
                  id="ekstrakurikuler-container"
                  x-data="{
                     selected: 0,
-                    total: {{ $extracurriculars->count() }},
-                    next() { this.selected = (this.selected + 1) % this.total },
-                    prev() { this.selected = (this.selected - 1 + this.total) % this.total },
-                    select(idx) { this.selected = idx }
-                 }">
+                    total: {{ max($extracurriculars->count(), 1) }},
+                    timer: null,
+                    init() {
+                        this.startAuto();
+                    },
+                    next() {
+                        this.selected = (this.selected + 1) % this.total;
+                        this.restartAuto();
+                    },
+                    prev() {
+                        this.selected = (this.selected - 1 + this.total) % this.total;
+                        this.restartAuto();
+                    },
+                    select(idx) {
+                        this.selected = idx;
+                        this.restartAuto();
+                    },
+                    startAuto() {
+                        if (this.total > 1) {
+                            this.timer = setInterval(() => {
+                                this.selected = (this.selected + 1) % this.total;
+                            }, 5000);
+                        }
+                    },
+                    stopAuto() {
+                        if (this.timer) {
+                            clearInterval(this.timer);
+                            this.timer = null;
+                        }
+                    },
+                    restartAuto() {
+                        this.stopAuto();
+                        this.startAuto();
+                    }
+                 }"
+                 @mouseenter="stopAuto()"
+                 @mouseleave="startAuto()">
                 
                 <!-- Left: Interactive Featured Extracurricular Card -->
-                <div class="md:col-span-6 flex justify-center w-full">
+                <div class="md:col-span-6 flex justify-center w-full reveal-init reveal-left delay-100">
                     <div class="w-full max-w-md bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-5 sm:p-8 px-8 sm:px-10 text-center space-y-4 sm:space-y-5 shadow-sm relative min-h-[460px] flex flex-col justify-between">
                         
                         <!-- Side Navigation Arrows -->
                         <button type="button" 
                                 @click="prev()" 
-                                onclick="if(window.cycleEkskul) window.cycleEkskul(-1)"
                                 class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer z-10" 
                                 title="Ekstrakurikuler Sebelumnya" 
                                 aria-label="Ekstrakurikuler Sebelumnya">
@@ -585,7 +635,6 @@
                         </button>
                         <button type="button" 
                                 @click="next()" 
-                                onclick="if(window.cycleEkskul) window.cycleEkskul(1)"
                                 class="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer z-10" 
                                 title="Ekstrakurikuler Berikutnya" 
                                 aria-label="Ekstrakurikuler Berikutnya">
@@ -598,9 +647,11 @@
                             @endphp
                             <div id="ekskul-slide-{{ $index }}"
                                  x-show="selected === {{ $index }}"
-                                 :class="{ 'hidden': selected !== {{ $index }} }"
-                                 x-cloak
-                                 class="ekskul-slide-item space-y-4 flex-1 flex flex-col justify-center {{ $index > 0 ? 'hidden' : '' }}">
+                                 {{ $index > 0 ? 'x-cloak' : '' }}
+                                 x-transition:enter="transition ease-out duration-400 transform"
+                                 x-transition:enter-start="opacity-0 translate-y-3 scale-98"
+                                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                 class="ekskul-slide-item space-y-4 flex-1 flex flex-col justify-center">
 
                                 <!-- Photo / Icon Emblem -->
                                 @if(!empty($ekskul->image))
@@ -671,9 +722,8 @@
                                     <button type="button" 
                                             id="ekskul-dot-{{ $index }}"
                                             @click="select({{ $index }})" 
-                                            onclick="if(window.selectEkskul) window.selectEkskul({{ $index }})"
-                                            :class="selected === {{ $index }} ? 'w-5 bg-[#2A923F]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'"
-                                            class="ekskul-dot-indicator h-1.5 rounded-full transition-all cursor-pointer {{ $index === 0 ? 'w-5 bg-[#2A923F]' : 'w-1.5 bg-slate-300 hover:bg-slate-400' }}" 
+                                            :class="selected === {{ $index }} ? 'w-6 bg-[#2A923F] shadow-xs' : 'w-2 bg-slate-300 hover:bg-slate-400'"
+                                            class="ekskul-dot-indicator h-2 rounded-full transition-all duration-300 cursor-pointer" 
                                             title="{{ $ekskul->name }}"
                                             aria-label="{{ $ekskul->name }}"></button>
                                 @endforeach
@@ -683,21 +733,24 @@
                     </div>
                 </div>
 
-                <!-- Right: Dynamic Grid of Extracurricular Activities from Filament -->
-                <div class="md:col-span-6 w-full space-y-3.5">
+                <!-- Right: Dynamic Grid of All Extracurricular Activities from Filament -->
+                <div class="md:col-span-6 w-full space-y-3.5 reveal-init reveal-right delay-200">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
-                        @foreach($extracurriculars->take(6) as $index => $item)
+                        @foreach($extracurriculars as $index => $item)
                             @php
                                 $itemMeta = $getEkskulMeta($item->category, $item->name);
                             @endphp
                             <div id="ekskul-card-{{ $index }}"
                                  @click="select({{ $index }})"
-                                 onclick="if(window.selectEkskul) window.selectEkskul({{ $index }})"
-                                 :class="selected === {{ $index }} ? 'border-[#2A923F] bg-white ring-2 ring-[#2A923F]/20 shadow-sm' : 'border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white'"
-                                 class="ekskul-card-item p-4 rounded-2xl border transition-all space-y-2 group cursor-pointer text-left relative {{ $index === 0 ? 'border-[#2A923F] bg-white ring-2 ring-[#2A923F]/20 shadow-sm' : 'border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white' }}">
+                                 :class="{
+                                     'border-[#2A923F] bg-white ring-2 ring-[#2A923F]/30 shadow-md scale-[1.02] border-l-4 border-l-[#2A923F]': selected === {{ $index }},
+                                     'border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F]/50 hover:bg-white opacity-85 hover:opacity-100': selected !== {{ $index }}
+                                 }"
+                                 class="ekskul-card-item p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 space-y-2 group cursor-pointer text-left relative">
                                 
                                 <div class="flex items-center justify-between">
-                                    <div class="w-10 h-10 rounded-xl {{ $itemMeta['bg'] }} {{ $itemMeta['text'] }} flex items-center justify-center p-2">
+                                    <div class="w-10 h-10 rounded-xl {{ $itemMeta['bg'] }} {{ $itemMeta['text'] }} flex items-center justify-center p-2 transition-transform duration-300"
+                                         :class="selected === {{ $index }} ? 'scale-110 shadow-xs' : ''">
                                         @if(!empty($item->image))
                                             <img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-full h-full object-cover rounded-lg">
                                         @elseif($itemMeta['type'] === 'scout')
@@ -719,15 +772,17 @@
                                         @endif
                                     </div>
 
-                                    <span :class="selected === {{ $index }} ? 'opacity-100 text-[#2A923F] font-bold' : 'opacity-0 group-hover:opacity-100 text-slate-400'"
-                                          class="ekskul-card-status text-[10px] uppercase tracking-wider transition-opacity flex items-center gap-1 {{ $index === 0 ? 'opacity-100 text-[#2A923F] font-bold' : 'opacity-0 group-hover:opacity-100 text-slate-400' }}">
-                                        <span x-text="selected === {{ $index }} ? 'Aktif' : 'Pilih'">{{ $index === 0 ? 'Aktif' : 'Pilih' }}</span>
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                    </span>
+                                    <!-- Pill Status Highlight -->
+                                    <div :class="selected === {{ $index }} ? 'bg-[#2A923F] text-white shadow-xs font-bold ring-2 ring-[#2A923F]/20' : 'bg-slate-100 text-[#66676B] group-hover:bg-emerald-50 group-hover:text-[#2A923F] font-semibold'"
+                                         class="text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1 transition-all duration-200">
+                                        <span x-text="selected === {{ $index }} ? '✓ Aktif' : 'Pilih'"></span>
+                                        <svg class="w-3 h-3 transition-transform" :class="selected === {{ $index }} ? 'hidden' : 'group-hover:translate-x-0.5'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
                                 </div>
 
                                 <div>
-                                    <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors line-clamp-1">
+                                    <h4 :class="selected === {{ $index }} ? 'text-[#2A923F] font-black' : 'text-[#202124] group-hover:text-[#2A923F] font-bold'"
+                                        class="text-xs transition-colors line-clamp-1">
                                         {{ $item->name }}
                                     </h4>
                                     <p class="text-[11px] text-[#66676B] mt-0.5 line-clamp-1">
@@ -785,7 +840,7 @@
 <section id="berita" class="py-16 bg-[#FAF9FB] border-b border-[#E7E3EA]">
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <!-- Section Heading -->
-        <div class="text-center space-y-2">
+        <div class="text-center space-y-2 reveal-init">
             <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
                 Berita & Warta
             </h2>
@@ -798,7 +853,7 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
             
             <!-- Left: Editorial Highlights Card (Dinamis dari Warta / Featured Post) -->
-            <div class="md:col-span-5 flex justify-center">
+            <div class="md:col-span-5 flex justify-center reveal-init reveal-left delay-100">
                 <div class="w-full max-w-sm rounded-3xl bg-white border border-[#E7E3EA] p-6 shadow-sm space-y-4">
                     <div class="flex items-center gap-2 text-xs font-bold text-[#2A923F]">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
@@ -854,7 +909,7 @@
             </div>
 
             <!-- Right: Numbered 1-5 News List (Dinamis dari Filament CMS) -->
-            <div class="md:col-span-7 space-y-3">
+            <div class="md:col-span-7 space-y-3 reveal-init reveal-right delay-200">
                 @php
                     $listPosts = $posts->count() > 1 ? $posts->skip(1)->take(5) : $posts->take(5);
                 @endphp
@@ -937,7 +992,7 @@
 <section class="py-16 bg-white border-b border-[#E7E3EA]">
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <!-- Section Heading -->
-        <div class="text-center space-y-2">
+        <div class="text-center space-y-2 reveal-init">
             <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
                 Postingan
             </h2>
@@ -946,7 +1001,7 @@
 
         <!-- 3 Columns Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            @forelse ($gridPosts as $postItem)
+            @forelse ($gridPosts as $postIndex => $postItem)
                 @php
                     $postCat = $postItem->categories->first()?->name ?? 'Warta Sekolah';
                     $postImg = $postItem->featured_image 
@@ -954,7 +1009,7 @@
                         : 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80';
                     $postUrl = route('news.show', $postItem->slug ?: $postItem->id);
                 @endphp
-                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs hover:shadow-md hover:border-[#2A923F] transition-all flex flex-col justify-between group">
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs hover:shadow-md hover:border-[#2A923F] transition-all flex flex-col justify-between group reveal-init delay-{{ ($postIndex + 1) * 100 }}">
                     <div>
                         <div class="h-44 bg-slate-100 relative overflow-hidden">
                             <img src="{{ $postImg }}" 
@@ -984,15 +1039,15 @@
                     </div>
                 </div>
             @empty
-                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3">
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3 reveal-init delay-100">
                     <span class="inline-block bg-[#2A923F] text-white px-3 py-1 rounded-full text-[10px] font-bold">DANA BOSP</span>
                     <h4 class="text-xs font-bold text-[#202124]">Laporan Rekapitulasi dan Realisasi Penggunaan Dana BOS</h4>
                 </div>
-                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3">
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3 reveal-init delay-200">
                     <span class="inline-block bg-[#2A923F] text-white px-3 py-1 rounded-full text-[10px] font-bold">AKADEMIK</span>
                     <h4 class="text-xs font-bold text-[#202124]">Upacara Peringatan Hari Pendidikan dan Prestasi Santri</h4>
                 </div>
-                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3">
+                <div class="bg-white rounded-2xl border border-[#E7E3EA] overflow-hidden shadow-xs p-5 text-center space-y-3 reveal-init delay-300">
                     <span class="inline-block bg-[#2A923F] text-white px-3 py-1 rounded-full text-[10px] font-bold">KEISLAMAN</span>
                     <h4 class="text-xs font-bold text-[#202124]">Tasmi' Akbar dan Ujian Munaqasyah Tahfidz Al-Qur'an</h4>
                 </div>
@@ -1000,7 +1055,7 @@
         </div>
 
         <!-- Pill Button: Lihat Semua -->
-        <div class="text-center pt-2">
+        <div class="text-center pt-2 reveal-init">
             <a href="{{ route('news') }}" 
                class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#2A923F] text-[#2A923F] hover:bg-[#2A923F] hover:text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xs">
                 <span>Lihat Semua Postingan</span>
@@ -1016,7 +1071,7 @@
      ======================================================== -->
 <section class="py-10 bg-[#FAF9FB] border-b border-[#E7E3EA]">
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center justify-center gap-2.5 max-w-4xl mx-auto">
+        <div class="flex flex-wrap items-center justify-center gap-2.5 max-w-4xl mx-auto reveal-init">
             @php
                 $tags = [
                     'Pramuka', 'Tahfidz Al-Qur\'an', 'OSIS', 'Sains & Robotik', 'Bilingual Class', 
@@ -1045,7 +1100,7 @@
     <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#202124_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
 
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="max-w-4xl mx-auto bg-white rounded-3xl border border-[#E7E3EA] shadow-lg p-5 sm:p-10">
+        <div class="max-w-4xl mx-auto bg-white rounded-3xl border border-[#E7E3EA] shadow-lg p-5 sm:p-10 reveal-init">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                 
                 <!-- Left: Contact Form -->
@@ -1132,17 +1187,13 @@
         if (!cards.length) return;
         var currentIdx = 0;
         cards.forEach(function(card, idx) {
-            if (!card.classList.contains('hidden')) {
+            if (card.style.display !== 'none' && !card.classList.contains('hidden')) {
                 currentIdx = idx;
             }
         });
         var nextIdx = (currentIdx + dir + cards.length) % cards.length;
         cards.forEach(function(card, idx) {
-            if (idx === nextIdx) {
-                card.classList.remove('hidden');
-            } else {
-                card.classList.add('hidden');
-            }
+            card.style.display = (idx === nextIdx) ? 'block' : 'none';
         });
     };
 
@@ -1152,7 +1203,7 @@
         if (!slides.length) return;
         var currentIdx = 0;
         slides.forEach(function(slide, idx) {
-            if (!slide.classList.contains('hidden')) {
+            if (slide.style.display !== 'none' && !slide.classList.contains('hidden')) {
                 currentIdx = idx;
             }
         });
@@ -1167,38 +1218,30 @@
         var cards = document.querySelectorAll('.ekskul-card-item');
 
         slides.forEach(function(slide, idx) {
-            if (idx === targetIdx) {
-                slide.classList.remove('hidden');
-            } else {
-                slide.classList.add('hidden');
-            }
+            slide.style.display = (idx === targetIdx) ? 'block' : 'none';
         });
 
         dots.forEach(function(dot, idx) {
             if (idx === targetIdx) {
-                dot.className = 'ekskul-dot-indicator h-1.5 rounded-full transition-all cursor-pointer w-5 bg-[#2A923F]';
+                dot.className = 'ekskul-dot-indicator h-2 rounded-full transition-all duration-300 cursor-pointer w-6 bg-[#2A923F] shadow-xs';
             } else {
-                dot.className = 'ekskul-dot-indicator h-1.5 rounded-full transition-all cursor-pointer w-1.5 bg-slate-300 hover:bg-slate-400';
+                dot.className = 'ekskul-dot-indicator h-2 rounded-full transition-all duration-300 cursor-pointer w-2 bg-slate-300 hover:bg-slate-400';
             }
         });
 
         cards.forEach(function(card, idx) {
             var statusEl = card.querySelector('.ekskul-card-status');
             if (idx === targetIdx) {
-                card.classList.add('border-[#2A923F]', 'bg-white', 'ring-2', 'ring-[#2A923F]/20', 'shadow-sm');
-                card.classList.remove('border-[#E7E3EA]', 'bg-[#FAF9FB]');
+                card.classList.add('border-[#2A923F]', 'bg-white', 'ring-2', 'ring-[#2A923F]/30', 'shadow-md', 'scale-[1.02]', 'border-l-4', 'border-l-[#2A923F]');
+                card.classList.remove('border-[#E7E3EA]', 'bg-[#FAF9FB]', 'opacity-85');
                 if (statusEl) {
-                    statusEl.classList.add('opacity-100', 'text-[#2A923F]', 'font-bold');
-                    statusEl.classList.remove('opacity-0', 'text-slate-400');
                     var span = statusEl.querySelector('span');
-                    if (span) span.innerText = 'Aktif';
+                    if (span) span.innerText = '✓ Aktif';
                 }
             } else {
-                card.classList.remove('border-[#2A923F]', 'bg-white', 'ring-2', 'ring-[#2A923F]/20', 'shadow-sm');
-                card.classList.add('border-[#E7E3EA]', 'bg-[#FAF9FB]');
+                card.classList.remove('border-[#2A923F]', 'bg-white', 'ring-2', 'ring-[#2A923F]/30', 'shadow-md', 'scale-[1.02]', 'border-l-4', 'border-l-[#2A923F]');
+                card.classList.add('border-[#E7E3EA]', 'bg-[#FAF9FB]', 'opacity-85');
                 if (statusEl) {
-                    statusEl.classList.remove('opacity-100', 'text-[#2A923F]', 'font-bold');
-                    statusEl.classList.add('opacity-0', 'text-slate-400');
                     var span = statusEl.querySelector('span');
                     if (span) span.innerText = 'Pilih';
                 }

@@ -98,9 +98,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 
-    <!-- Alpine.js Cloak Prevention Style -->
+    <!-- Alpine.js Cloak & Scroll Reveal Styles -->
     <style>
         [x-cloak] { display: none !important; }
+
+        /* Smooth Scroll Reveal Animations */
+        .reveal-init {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .reveal-init.reveal-left {
+            transform: translateX(-24px);
+        }
+        .reveal-init.reveal-right {
+            transform: translateX(24px);
+        }
+        .reveal-init.reveal-scale {
+            transform: scale(0.95);
+        }
+        .reveal-init.is-revealed {
+            opacity: 1 !important;
+            transform: translateY(0) translateX(0) scale(1) !important;
+        }
+
+        .delay-100 { transition-delay: 100ms; }
+        .delay-150 { transition-delay: 150ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+        .delay-400 { transition-delay: 400ms; }
+        .delay-500 { transition-delay: 500ms; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-init {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
     </style>
 
     <!-- Styles & Scripts (Tailwind CSS v4 via Vite) -->
@@ -152,5 +188,34 @@
     </div>
 
     @stack('scripts')
+
+    <!-- Native Scroll Reveal Engine -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var reveals = document.querySelectorAll('.reveal-init');
+            if (!reveals.length) return;
+            if (!('IntersectionObserver' in window)) {
+                reveals.forEach(function(el) { el.classList.add('is-revealed'); });
+                return;
+            }
+
+            var observer = new IntersectionObserver(function(entries, obs) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-revealed');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: '0px 0px -40px 0px',
+                threshold: 0.08
+            });
+
+            reveals.forEach(function(el) {
+                observer.observe(el);
+            });
+        });
+    </script>
 </body>
 </html>
