@@ -40,7 +40,7 @@ services:
     depends_on:
       - app
     networks:
-      smp_network:
+      smart-network:
         aliases:
           - smp-almadinah-web
           - landingpage_smp
@@ -72,7 +72,7 @@ services:
       db:
         condition: service_healthy
     networks:
-      smp_network:
+      smart-network:
         aliases:
           - smp-almadinah-app
           - app
@@ -106,7 +106,7 @@ services:
       retries: 10
       start_period: 10s
     networks:
-      smp_network:
+      smart-network:
         aliases:
           - smp-almadinah-db
           - db
@@ -137,7 +137,7 @@ services:
       app:
         condition: service_started
     networks:
-      smp_network:
+      smart-network:
         aliases:
           - smp-almadinah-queue
           - queue
@@ -168,7 +168,7 @@ services:
       app:
         condition: service_started
     networks:
-      smp_network:
+      smart-network:
         aliases:
           - smp-almadinah-scheduler
           - scheduler
@@ -190,7 +190,7 @@ services:
     depends_on:
       - web
     networks:
-      smp_network:
+      smart-network:
         aliases:
           - smp-almadinah-tunnel
           - tunnel
@@ -207,6 +207,6 @@ volumes:
     driver: local
 
 networks:
-  smp_network:
-    name: smp-almadinah-network
-    driver: bridge
+  smart-network:
+    name: smart-network
+    external: true
