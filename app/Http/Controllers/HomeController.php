@@ -31,6 +31,7 @@ class HomeController extends Controller
         $teachers = collect();
         $posts = collect();
         $categories = collect();
+        $nationalAchievementsCount = 0;
 
         try {
             if (Schema::hasTable('school_profiles')) {
@@ -48,8 +49,9 @@ class HomeController extends Controller
             if (Schema::hasTable('achievements')) {
                 $achievements = Achievement::orderByDesc('is_featured')
                     ->orderByDesc('year')
-                    ->take(6)
+                    ->take(10)
                     ->get();
+                $nationalAchievementsCount = Achievement::whereIn('level', ['nasional', 'internasional'])->count();
             }
 
             if (Schema::hasTable('facilities')) {
@@ -57,7 +59,10 @@ class HomeController extends Controller
             }
 
             if (Schema::hasTable('extracurriculars')) {
-                $extracurriculars = Extracurricular::orderBy('order')->take(8)->get();
+                $extracurriculars = Extracurricular::where('is_active', true)->orderBy('order')->get();
+                if ($extracurriculars->isEmpty()) {
+                    $extracurriculars = Extracurricular::orderBy('order')->get();
+                }
             }
 
             if (Schema::hasTable('school_events')) {
@@ -106,7 +111,8 @@ class HomeController extends Controller
             'announcements',
             'teachers',
             'posts',
-            'categories'
+            'categories',
+            'nationalAchievementsCount'
         ));
     }
 }

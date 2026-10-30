@@ -93,6 +93,7 @@ class AchievementForm
                             FileUpload::make('photo')
                                 ->label('Foto Penyerahan Piala / Dokumentasi')
                                 ->image()
+                                ->imageEditor()
                                 ->directory('achievements/photos')
                                 ->maxSize(2048),
 

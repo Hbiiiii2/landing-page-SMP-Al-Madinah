@@ -33,4 +33,35 @@ class Extracurricular extends Model
     {
         return $query->where('is_active', true)->orderBy('order');
     }
+
+    /**
+     * Get image URL with safe public asset fallback
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!empty($this->image)) {
+            if (Str::startsWith($this->image, ['http://', 'https://'])) {
+                return $this->image;
+            }
+            return asset('storage/' . $this->image);
+        }
+        return null;
+    }
+
+    /**
+     * Human-friendly category label
+     */
+    public function getCategoryLabelAttribute(): string
+    {
+        return match (strtolower($this->category ?? '')) {
+            'wajib' => 'Ekstrakurikuler Wajib',
+            'keagamaan' => 'Keagamaan & Tahfidz',
+            'sains', 'sains_it' => 'Sains & Robotika',
+            'olahraga' => 'Olahraga & Beladiri',
+            'bahasa' => 'Bahasa & Public Speaking',
+            'seni' => 'Seni & Multimedia',
+            'pengembangan_diri' => 'Pengembangan Diri (PMR/UKS)',
+            default => !empty($this->category) ? ucfirst($this->category) : 'Pengembangan Bakat',
+        };
+    }
 }

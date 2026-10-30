@@ -270,24 +270,24 @@
 
 <!-- ========================================================
      05. KEJUARAAN (ACHIEVEMENTS WITH REAL PHOTO & METRICS)
-     Anti AI-Slop: Tidak menggunakan gambar kartun stick-figure
+     Dinamis dari Filament Resource: App\Models\Achievement
      ======================================================== -->
 <section id="kejuaraan" class="py-16 bg-[#FAF9FB] border-b border-[#E7E3EA]">
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <!-- Section Heading -->
         <div class="text-center space-y-2">
             <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
-                Kejuaraan & Prestasi
+                Kejuaraan & Rekam Jejak Prestasi
             </h2>
             <div class="w-14 h-1 bg-[#2A923F] rounded-full mx-auto"></div>
             <p class="text-xs sm:text-sm text-[#66676B] max-w-xl mx-auto">
-                Membina potensi santri berprestasi dalam bidang tahfidz Al-Qur'an, sains, riset teknologi, dan olahraga.
+                Membina potensi santri berprestasi dalam bidang tahfidz Al-Qur'an, sains, riset teknologi, bahasa, dan olahraga.
             </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
             
-            <!-- Left: Authentic Achievement Stats Card (Anti-AI-Slop) -->
+            <!-- Left: Authentic Achievement Stats Card -->
             <div class="md:col-span-5 flex justify-center">
                 <div class="w-full max-w-sm bg-gradient-to-br from-[#3E2B52] to-[#543A70] text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
@@ -298,18 +298,22 @@
                         </div>
                         <div>
                             <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-200">REKAM JEJAK PRESTASI</span>
-                            <h3 class="text-base font-black text-white">SMP Al-Madinah</h3>
+                            <h3 class="text-base font-black text-white">{{ $profile->name ?? 'SMP Al-Madinah' }}</h3>
                         </div>
                     </div>
 
-                    <!-- Metrics Grid -->
+                    <!-- Metrics Grid (Dynamic from Database / Profile) -->
                     <div class="grid grid-cols-2 gap-2.5 sm:gap-3.5 pt-2">
                         <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white/10 border border-white/10 text-center">
-                            <div class="text-xl sm:text-2xl font-black text-white">45+</div>
-                            <div class="text-[10px] sm:text-[11px] text-white/80 mt-0.5">Juara Kota & Provinsi</div>
+                            <div class="text-xl sm:text-2xl font-black text-white">
+                                {{ $profile->statistic_achievements ?? ($achievements->count() > 0 ? $achievements->count() . '+' : '45+') }}
+                            </div>
+                            <div class="text-[10px] sm:text-[11px] text-white/80 mt-0.5">Juara Kota & Daerah</div>
                         </div>
                         <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white/10 border border-white/10 text-center">
-                            <div class="text-xl sm:text-2xl font-black text-emerald-300">12+</div>
+                            <div class="text-xl sm:text-2xl font-black text-emerald-300">
+                                {{ ($nationalAchievementsCount ?? 0) > 0 ? $nationalAchievementsCount . '+' : '12+' }}
+                            </div>
                             <div class="text-[10px] sm:text-[11px] text-white/80 mt-0.5">Tingkat Nasional</div>
                         </div>
                         <div class="p-2.5 sm:p-3.5 rounded-2xl bg-white/10 border border-white/10 text-center">
@@ -323,57 +327,145 @@
                     </div>
 
                     <p class="text-xs text-white/80 leading-relaxed italic">
-                        "Membentuk santri berakhlak mulia dengan prestasi akademik dan Al-Qur'an yang unggul."
+                        {{ $profile->motto ?? '"Membentuk santri berakhlak mulia dengan prestasi akademik dan Al-Qur\'an yang unggul."' }}
                     </p>
                 </div>
             </div>
 
-            <!-- Right: Interactive Achievement Card -->
-            <div class="md:col-span-7">
-                @php
-                    $firstAchieve = $achievements->first();
-                @endphp
-                <div class="bg-white rounded-3xl border border-[#E7E3EA] p-4 sm:p-8 shadow-sm space-y-4 relative">
-                    <div class="flex items-center justify-between">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#2A923F] text-white">
-                            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
-                            <span>{{ $firstAchieve?->category ?? 'Prestasi Santri' }}</span>
-                        </span>
-                        <span class="text-xs font-semibold text-[#66676B]">
-                            Tahun {{ $firstAchieve?->year ?? date('Y') }}
-                        </span>
-                    </div>
+            <!-- Right: Interactive Dynamic Achievement Slider -->
+            <div class="md:col-span-7"
+                 x-data="{
+                    activeIndex: 0,
+                    total: {{ max($achievements->count(), 1) }},
+                    timer: null,
+                    init() {
+                        this.startAuto();
+                    },
+                    next() {
+                        this.activeIndex = (this.activeIndex + 1) % this.total;
+                        this.restartAuto();
+                    },
+                    prev() {
+                        this.activeIndex = (this.activeIndex - 1 + this.total) % this.total;
+                        this.restartAuto();
+                    },
+                    startAuto() {
+                        if (this.total > 1) {
+                            this.timer = setInterval(() => {
+                                this.activeIndex = (this.activeIndex + 1) % this.total;
+                            }, 6000);
+                        }
+                    },
+                    stopAuto() {
+                        if (this.timer) clearInterval(this.timer);
+                    },
+                    restartAuto() {
+                        this.stopAuto();
+                        this.startAuto();
+                    }
+                 }"
+                 @mouseenter="stopAuto()"
+                 @mouseleave="startAuto()">
 
-                    <div class="h-44 sm:h-56 rounded-2xl overflow-hidden bg-slate-100 border border-[#E7E3EA] relative">
-                        <img src="{{ !empty($firstAchieve?->photo) ? (Str::startsWith($firstAchieve->photo, ['http://', 'https://']) ? $firstAchieve->photo : asset('storage/' . $firstAchieve->photo)) : 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=700&q=80' }}" 
-                             alt="{{ $firstAchieve?->title ?? 'Prestasi Santri' }}" 
-                             class="w-full h-full object-cover">
-                    </div>
+                @if($achievements->isNotEmpty())
+                    @foreach($achievements as $index => $achieve)
+                        <div x-show="activeIndex === {{ $index }}"
+                             x-transition:enter="transition ease-out duration-300 transform"
+                             x-transition:enter-start="opacity-0 translate-y-2 scale-98"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-cloak
+                             class="bg-white rounded-3xl border border-[#E7E3EA] p-4 sm:p-7 shadow-sm space-y-4 relative">
+                            
+                            <!-- Card Header: Rank / Level Badge & Year -->
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#2A923F] text-white">
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
+                                    <span>{{ $achieve->rank ? $achieve->rank . ' • ' : '' }}{{ $achieve->level_label }}</span>
+                                </span>
+                                <span class="text-xs font-semibold text-[#66676B] bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200">
+                                    Tahun {{ $achieve->year }}
+                                </span>
+                            </div>
 
-                    <div class="space-y-1">
-                        <h4 class="text-base sm:text-lg font-black text-[#202124] leading-snug">
-                            {{ $firstAchieve?->title ?? 'Juara Umum Tahfidz & Lomba Sains Madrasah' }}
-                        </h4>
-                        <p class="text-xs text-[#66676B]">
-                            Peraih: <strong>{{ $firstAchieve?->student_name ?? 'Santri SMP Islam Al-Madinah BSD' }}</strong>
+                            <!-- Photo Showcase -->
+                            <div class="h-44 sm:h-56 rounded-2xl overflow-hidden bg-slate-100 border border-[#E7E3EA] relative group">
+                                <img src="{{ $achieve->photo_url }}" 
+                                     alt="{{ $achieve->title }}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
+                                @if(!empty($achieve->category))
+                                    <span class="absolute bottom-3 left-3 px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-[10px] font-semibold text-white uppercase tracking-wider">
+                                        {{ $achieve->category_label }}
+                                    </span>
+                                @endif
+                            </div>
+
+                            <!-- Title, Student & Details -->
+                            <div class="space-y-1.5">
+                                <h4 class="text-base sm:text-lg font-black text-[#202124] leading-snug line-clamp-2">
+                                    {{ $achieve->title }}
+                                </h4>
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#66676B]">
+                                    <span>Peraih: <strong class="text-[#202124]">{{ $achieve->student_name }}</strong></span>
+                                    @if(!empty($achieve->organizer))
+                                        <span class="hidden sm:inline text-slate-300">•</span>
+                                        <span class="text-slate-500 italic">{{ $achieve->organizer }}</span>
+                                    @endif
+                                </div>
+                                @if(!empty($achieve->description))
+                                    <p class="text-xs text-[#66676B] line-clamp-2 leading-relaxed pt-0.5">
+                                        {{ $achieve->description }}
+                                    </p>
+                                @endif
+                            </div>
+
+                            <!-- Footer: Link & Dynamic Slider Controls -->
+                            <div class="pt-3 flex items-center justify-between border-t border-[#E7E3EA]">
+                                <a href="{{ route('achievements') }}" class="text-xs font-bold text-[#2A923F] hover:underline flex items-center gap-1.5 group">
+                                    <span>Lihat Semua Kejuaraan</span>
+                                    <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[11px] font-semibold text-[#66676B] bg-slate-100 px-2 py-0.5 rounded-md tabular-nums">
+                                        {{ $index + 1 }} / {{ $achievements->count() }}
+                                    </span>
+
+                                    <button type="button" 
+                                            @click="prev()" 
+                                            class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white hover:border-[#2A923F] transition-all text-xs cursor-pointer shadow-2xs" 
+                                            title="Prestasi Sebelumnya" 
+                                            aria-label="Prestasi Sebelumnya">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    </button>
+                                    <button type="button" 
+                                            @click="next()" 
+                                            class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white hover:border-[#2A923F] transition-all text-xs cursor-pointer shadow-2xs" 
+                                            title="Prestasi Berikutnya" 
+                                            aria-label="Prestasi Berikutnya">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <!-- Fallback State -->
+                    <div class="bg-white rounded-3xl border border-[#E7E3EA] p-6 sm:p-8 shadow-sm space-y-4 text-center">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 text-[#2A923F] flex items-center justify-center">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                        </div>
+                        <h4 class="text-base font-bold text-[#202124]">Belum Ada Data Prestasi</h4>
+                        <p class="text-xs text-[#66676B] max-w-sm mx-auto">
+                            Data prestasi dan kejuaraan santri dapat ditambahkan langsung melalui panel admin Filament.
                         </p>
-                    </div>
-
-                    <div class="pt-2 flex items-center justify-between border-t border-[#E7E3EA]">
-                        <a href="{{ route('achievements') }}" class="text-xs font-bold text-[#2A923F] hover:underline flex items-center gap-1.5">
-                            <span>Lihat Semua Kejuaraan</span>
+                        <a href="{{ route('achievements') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2A923F] hover:underline">
+                            <span>Buka Etalase Prestasi</span>
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
-                        <div class="flex items-center gap-2">
-                            <a href="{{ route('achievements') }}" class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white transition-all text-xs" title="Sebelumnya">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            </a>
-                            <a href="{{ route('achievements') }}" class="w-8 h-8 rounded-full border border-[#E7E3EA] flex items-center justify-center text-[#202124] hover:bg-[#2A923F] hover:text-white transition-all text-xs" title="Berikutnya">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </a>
-                        </div>
                     </div>
-                </div>
+                @endif
+
             </div>
 
         </div>
@@ -382,8 +474,68 @@
 
 <!-- ========================================================
      06. EKSTRAKURIKULER (WITH ORGANIC CURVED WAVE CONTAINER)
-     Anti AI-Slop: Visual bersih dengan icon open-source & fotografi nyata
+     Dinamis dari Filament Resource: App\Models\Extracurricular
      ======================================================== -->
+@php
+    $getEkskulMeta = function ($category, $name = '') {
+        $text = strtolower(($category ?? '') . ' ' . ($name ?? ''));
+        if (str_contains($text, 'wajib') || str_contains($text, 'pramuka') || str_contains($text, 'scout')) {
+            return [
+                'bg' => 'bg-[#EBF5EE]',
+                'text' => 'text-[#2A923F]',
+                'type' => 'scout',
+            ];
+        }
+        if (str_contains($text, 'qur') || str_contains($text, 'tahfidz') || str_contains($text, 'agama') || str_contains($text, 'hifdz')) {
+            return [
+                'bg' => 'bg-[#EAF6EC]',
+                'text' => 'text-[#2A923F]',
+                'type' => 'quran',
+            ];
+        }
+        if (str_contains($text, 'robot') || str_contains($text, 'sains') || str_contains($text, 'it') || str_contains($text, 'cod') || str_contains($text, 'stem')) {
+            return [
+                'bg' => 'bg-[#EDF4FC]',
+                'text' => 'text-[#4779B5]',
+                'type' => 'tech',
+            ];
+        }
+        if (str_contains($text, 'futsal') || str_contains($text, 'bola') || str_contains($text, 'panah') || str_contains($text, 'olahraga') || str_contains($text, 'archery') || str_contains($text, 'silat') || str_contains($text, 'bela diri')) {
+            return [
+                'bg' => 'bg-[#F4F0F7]',
+                'text' => 'text-[#9377AD]',
+                'type' => 'sport',
+            ];
+        }
+        if (str_contains($text, 'pmr') || str_contains($text, 'uks') || str_contains($text, 'sehat') || str_contains($text, 'relawan') || str_contains($text, 'medis')) {
+            return [
+                'bg' => 'bg-red-50',
+                'text' => 'text-red-600',
+                'type' => 'health',
+            ];
+        }
+        if (str_contains($text, 'bahasa') || str_contains($text, 'speech') || str_contains($text, 'inggris') || str_contains($text, 'arab') || str_contains($text, 'english')) {
+            return [
+                'bg' => 'bg-amber-50',
+                'text' => 'text-amber-600',
+                'type' => 'language',
+            ];
+        }
+        if (str_contains($text, 'seni') || str_contains($text, 'desain') || str_contains($text, 'multi') || str_contains($text, 'jurnalistik') || str_contains($text, 'kreatif')) {
+            return [
+                'bg' => 'bg-purple-50',
+                'text' => 'text-purple-600',
+                'type' => 'art',
+            ];
+        }
+        return [
+            'bg' => 'bg-emerald-50',
+            'text' => 'text-[#2A923F]',
+            'type' => 'default',
+        ];
+    };
+@endphp
+
 <section id="ekstrakurikuler" class="relative py-16 lg:py-20 bg-white overflow-hidden">
     <!-- Top Curved Wave Separator -->
     <div class="absolute top-0 left-0 right-0 h-10 overflow-hidden leading-none z-10 pointer-events-none">
@@ -396,102 +548,218 @@
         <!-- Section Heading -->
         <div class="text-center space-y-2">
             <h2 class="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">
-                Ekstrakurikuler
+                Ekstrakurikuler & Pengembangan Diri
             </h2>
             <div class="w-14 h-1 bg-[#2A923F] rounded-full mx-auto"></div>
             <p class="text-xs sm:text-sm text-[#66676B] max-w-xl mx-auto">
-                Wadah penyaluran bakat, kepemimpinan, seni, olahraga, dan kecintaan terhadap sains santri.
+                Wadah bakat, karakter, kepemimpinan, dan kecintaan terhadap Al-Qur'an serta sains santri.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
-            
-            <!-- Left: Featured Ekskul Card with Navigation Arrows -->
-            <div class="md:col-span-6 flex justify-center">
-                <div class="w-full max-w-md bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-5 sm:p-8 px-8 sm:px-10 text-center space-y-4 sm:space-y-5 shadow-sm relative">
-                    <!-- Navigation Arrows on Sides -->
-                    <a href="{{ route('programs') }}" class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs" title="Sebelumnya">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    </a>
-                    <a href="{{ route('programs') }}" class="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs" title="Berikutnya">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </a>
+        @if($extracurriculars->isNotEmpty())
+            <!-- Dynamic Interactive Component connecting Left Featured Card and Right Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto"
+                 x-data="{
+                    selected: 0,
+                    total: {{ $extracurriculars->count() }},
+                    next() { this.selected = (this.selected + 1) % this.total },
+                    prev() { this.selected = (this.selected - 1 + this.total) % this.total },
+                    select(idx) { this.selected = idx }
+                 }">
+                
+                <!-- Left: Interactive Featured Extracurricular Card -->
+                <div class="md:col-span-6 flex justify-center w-full">
+                    <div class="w-full max-w-md bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-5 sm:p-8 px-8 sm:px-10 text-center space-y-4 sm:space-y-5 shadow-sm relative min-h-[420px] flex flex-col justify-between">
+                        
+                        <!-- Side Navigation Arrows -->
+                        <button type="button" 
+                                @click="prev()" 
+                                class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer z-10" 
+                                title="Ekstrakurikuler Sebelumnya" 
+                                aria-label="Ekstrakurikuler Sebelumnya">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button type="button" 
+                                @click="next()" 
+                                class="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#E7E3EA] text-[#202124] hover:bg-[#2A923F] hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer z-10" 
+                                title="Ekstrakurikuler Berikutnya" 
+                                aria-label="Ekstrakurikuler Berikutnya">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
 
-                    <!-- Open-Source Extracurricular Compass Emblem -->
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-white border border-[#E7E3EA] p-2.5 sm:p-3 shadow-xs flex items-center justify-center text-[#2A923F]">
-                        <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M18.364 5.636l-3.536 8.486-8.485 3.535 3.535-8.485 8.486-3.536z"/></svg>
+                        @foreach($extracurriculars as $index => $ekskul)
+                            @php
+                                $meta = $getEkskulMeta($ekskul->category, $ekskul->name);
+                            @endphp
+                            <div x-show="selected === {{ $index }}"
+                                 x-transition:enter="transition ease-out duration-300 transform"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-cloak
+                                 class="space-y-4 flex-1 flex flex-col justify-center">
+
+                                <!-- Photo / Icon Emblem -->
+                                @if(!empty($ekskul->image))
+                                    <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-2xl overflow-hidden border-2 border-white shadow-sm bg-white">
+                                        <img src="{{ $ekskul->image_url }}" alt="{{ $ekskul->name }}" class="w-full h-full object-cover">
+                                    </div>
+                                @else
+                                    <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-white border border-[#E7E3EA] p-3 sm:p-4 shadow-2xs flex items-center justify-center {{ $meta['text'] }}">
+                                        @if($meta['type'] === 'scout')
+                                            <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18.364 5.636l-3.536 8.486-8.485 3.535 3.535-8.485 8.486-3.536z"/></svg>
+                                        @elseif($meta['type'] === 'quran')
+                                            <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                        @elseif($meta['type'] === 'tech')
+                                            <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                        @elseif($meta['type'] === 'sport')
+                                            <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/></svg>
+                                        @elseif($meta['type'] === 'health')
+                                            <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                        @elseif($meta['type'] === 'language')
+                                            <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                        @elseif($meta['type'] === 'art')
+                                            <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 21a4 4 0 01-4-4 4 4 0 014-4h14a4 4 0 014 4 4 4 0 01-4 4H7zm0 0a4 4 0 01-4-4 4 4 0 014-4 4 4 0 014 4 4 4 0 01-4 4zM7 5a2 2 0 100-4 2 2 0 000 4z"/></svg>
+                                        @else
+                                            <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                        @endif
+                                    </div>
+                                @endif
+
+                                <div class="space-y-1.5">
+                                    <h3 class="text-lg sm:text-xl font-black text-[#202124] uppercase tracking-wide">
+                                        {{ $ekskul->name }}
+                                    </h3>
+                                    <p class="text-xs text-[#2A923F] font-bold">
+                                        {{ $ekskul->category_label }} • SMP Al-Madinah
+                                    </p>
+                                    
+                                    @if(!empty($ekskul->coach_name) || !empty($ekskul->schedule))
+                                        <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[#66676B] bg-white py-1 px-3 rounded-full border border-[#E7E3EA] inline-flex max-w-xs mx-auto">
+                                            @if(!empty($ekskul->coach_name))
+                                                <span><strong>Pelatih:</strong> {{ $ekskul->coach_name }}</span>
+                                            @endif
+                                            @if(!empty($ekskul->schedule))
+                                                <span><strong>Jadwal:</strong> {{ $ekskul->schedule }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    <p class="text-xs text-[#66676B] leading-relaxed max-w-xs mx-auto line-clamp-3">
+                                        {{ $ekskul->description ?? 'Membina kemandirian, karakter tangguh, dan potensi santri berlandaskan nilai-nilai Islam.' }}
+                                    </p>
+                                </div>
+                            </div>
+                        @endforeach
+
+                        <!-- Bottom Action & Dots -->
+                        <div class="pt-2 space-y-3">
+                            <div>
+                                <a href="{{ route('programs') }}" 
+                                   class="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#2A923F] text-[#2A923F] hover:bg-[#2A923F] hover:text-white font-bold text-xs uppercase tracking-wider transition-all shadow-2xs">
+                                    <span>Lihat Semua Program & Ekskul</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+
+                            <!-- Indicator Dots -->
+                            <div class="flex items-center justify-center gap-1.5 pt-1">
+                                @foreach($extracurriculars as $index => $ekskul)
+                                    <button type="button" 
+                                            @click="select({{ $index }})" 
+                                            :class="selected === {{ $index }} ? 'w-5 bg-[#2A923F]' : 'w-1.5 bg-slate-300 hover:bg-slate-400'"
+                                            class="h-1.5 rounded-full transition-all cursor-pointer" 
+                                            title="{{ $ekskul->name }}"
+                                            aria-label="{{ $ekskul->name }}"></button>
+                                @endforeach
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Right: Dynamic Grid of Extracurricular Activities from Filament -->
+                <div class="md:col-span-6 space-y-3.5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                        @foreach($extracurriculars->take(6) as $index => $item)
+                            @php
+                                $itemMeta = $getEkskulMeta($item->category, $item->name);
+                            @endphp
+                            <div @click="select({{ $index }})"
+                                 :class="selected === {{ $index }} ? 'border-[#2A923F] bg-white ring-2 ring-[#2A923F]/20 shadow-sm' : 'border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white'"
+                                 class="p-4 rounded-2xl border transition-all space-y-2 group cursor-pointer text-left relative">
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="w-10 h-10 rounded-xl {{ $itemMeta['bg'] }} {{ $itemMeta['text'] }} flex items-center justify-center p-2">
+                                        @if(!empty($item->image))
+                                            <img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-full h-full object-cover rounded-lg">
+                                        @elseif($itemMeta['type'] === 'scout')
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18.364 5.636l-3.536 8.486-8.485 3.535 3.535-8.485 8.486-3.536z"/></svg>
+                                        @elseif($itemMeta['type'] === 'quran')
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                        @elseif($itemMeta['type'] === 'tech')
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                        @elseif($itemMeta['type'] === 'sport')
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/></svg>
+                                        @elseif($itemMeta['type'] === 'health')
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                        @elseif($itemMeta['type'] === 'language')
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                        @elseif($itemMeta['type'] === 'art')
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 21a4 4 0 01-4-4 4 4 0 014-4h14a4 4 0 014 4 4 4 0 01-4 4H7zm0 0a4 4 0 01-4-4 4 4 0 014-4 4 4 0 014 4 4 4 0 01-4 4zM7 5a2 2 0 100-4 2 2 0 000 4z"/></svg>
+                                        @else
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                        @endif
+                                    </div>
+
+                                    <span :class="selected === {{ $index }} ? 'opacity-100 text-[#2A923F] font-bold' : 'opacity-0 group-hover:opacity-100 text-slate-400'"
+                                          class="text-[10px] uppercase tracking-wider transition-opacity flex items-center gap-1">
+                                        <span x-text="selected === {{ $index }} ? 'Aktif' : 'Pilih'"></span>
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors line-clamp-1">
+                                        {{ $item->name }}
+                                    </h4>
+                                    <p class="text-[11px] text-[#66676B] mt-0.5 line-clamp-1">
+                                        {{ $item->schedule ?? $item->coach_name ?? $item->category_label }}
+                                    </p>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 
-                    <div class="space-y-1.5">
-                        <h3 class="text-lg sm:text-xl font-black text-[#202124] uppercase tracking-wide">
-                            PRAMUKA
-                        </h3>
-                        <p class="text-xs text-[#2A923F] font-bold">
-                            Gugus Depan SMP Islam Al-Madinah BSD
-                        </p>
-                        <p class="text-xs text-[#66676B] leading-relaxed max-w-xs mx-auto">
-                            Membina kedisiplinan, kepemimpinan tangguh, kemandirian santri, dan kepekaan sosial berlandaskan Dasa Darma.
-                        </p>
-                    </div>
-
-                    <div class="pt-2">
-                        <a href="{{ route('programs') }}" 
-                           class="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#2A923F] text-[#2A923F] hover:bg-[#2A923F] hover:text-white font-bold text-xs uppercase tracking-wider transition-all">
-                            <span>Selengkapnya</span>
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <!-- Right Column Bottom Link -->
+                    <div class="pt-2 flex items-center justify-between border-t border-[#E7E3EA]/80">
+                        <span class="text-[11px] text-[#66676B]">
+                            Tersedia {{ $extracurriculars->count() }} kegiatan ekstrakurikuler santri
+                        </span>
+                        <a href="{{ route('programs') }}" class="text-xs font-bold text-[#2A923F] hover:underline flex items-center gap-1 group">
+                            <span>Buka Halaman Program</span>
+                            <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
                     </div>
                 </div>
+
             </div>
-
-            <!-- Right: Grid of Other Extracurricular Activities (Anti-AI-Slop) -->
-            <div class="md:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
-                <!-- Tahfidz Club -->
-                <div class="p-4 rounded-2xl border border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white transition-all space-y-2 group">
-                    <div class="w-10 h-10 rounded-xl bg-[#EAF6EC] text-[#2A923F] flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">Klub Tahfidz</h4>
-                        <p class="text-[11px] text-[#66676B] mt-0.5">Munaqasyah & Tilawah Qur'an</p>
-                    </div>
+        @else
+            <!-- Fallback State -->
+            <div class="max-w-md mx-auto bg-[#FAF9FB] rounded-3xl border border-[#E7E3EA] p-8 text-center space-y-4">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 text-[#2A923F] flex items-center justify-center">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 </div>
-
-                <!-- Robotic & Coding -->
-                <div class="p-4 rounded-2xl border border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white transition-all space-y-2 group">
-                    <div class="w-10 h-10 rounded-xl bg-[#EDF4FC] text-[#4779B5] flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">Robotik & IT</h4>
-                        <p class="text-[11px] text-[#66676B] mt-0.5">Sains Terapan & Pemrograman</p>
-                    </div>
-                </div>
-
-                <!-- Futsal & Olahraga -->
-                <div class="p-4 rounded-2xl border border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white transition-all space-y-2 group">
-                    <div class="w-10 h-10 rounded-xl bg-[#F4F0F7] text-[#9377AD] flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">Futsal & Panahan</h4>
-                        <p class="text-[11px] text-[#66676B] mt-0.5">Kebugaran & Olahraga Sunnah</p>
-                    </div>
-                </div>
-
-                <!-- PMR & Relawan -->
-                <div class="p-4 rounded-2xl border border-[#E7E3EA] bg-[#FAF9FB] hover:border-[#2A923F] hover:bg-white transition-all space-y-2 group">
-                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors">PMR & UKS</h4>
-                        <p class="text-[11px] text-[#66676B] mt-0.5">Kesehatan & Pertolongan Pertama</p>
-                    </div>
-                </div>
+                <h4 class="text-base font-bold text-[#202124]">Belum Ada Data Ekstrakurikuler</h4>
+                <p class="text-xs text-[#66676B]">
+                    Kelola dan tambahkan kegiatan ekstrakurikuler santri melalui menu Filament di panel admin.
+                </p>
+                <a href="{{ route('programs') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2A923F] hover:underline">
+                    <span>Lihat Halaman Program</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
             </div>
+        @endif
 
-        </div>
     </div>
 
     <!-- Bottom Curved Wave Separator -->
