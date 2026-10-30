@@ -789,7 +789,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
             
-            <!-- Left: Editorial Highlights Card (Anti-AI-Slop) -->
+            <!-- Left: Editorial Highlights Card (Dinamis dari Warta / Featured Post) -->
             <div class="md:col-span-5 flex justify-center">
                 <div class="w-full max-w-sm rounded-3xl bg-white border border-[#E7E3EA] p-6 shadow-sm space-y-4">
                     <div class="flex items-center gap-2 text-xs font-bold text-[#2A923F]">
@@ -797,37 +797,64 @@
                         <span>PUBLIKASI TERVERIFIKASI</span>
                     </div>
 
-                    <div class="h-44 rounded-2xl overflow-hidden bg-slate-100 border border-[#E7E3EA]">
-                        <img src="{{ asset('images/banner-almadinah.png') }}" 
-                             alt="Warta SMP Islam Al-Madinah BSD" 
-                             class="w-full h-full object-cover">
+                    @php
+                        $editorialPost = $featuredPost ?? $posts->first();
+                        $editorialImg = !empty($editorialPost?->featured_image) 
+                            ? (Str::startsWith($editorialPost->featured_image, ['http://', 'https://']) ? $editorialPost->featured_image : asset('storage/' . $editorialPost->featured_image)) 
+                            : asset('images/banner-almadinah.png');
+                        $editorialUrl = $editorialPost ? route('news.show', $editorialPost->slug ?: $editorialPost->id) : route('news');
+                    @endphp
+
+                    <div class="h-44 rounded-2xl overflow-hidden bg-slate-100 border border-[#E7E3EA] relative group">
+                        <img src="{{ $editorialImg }}" 
+                             alt="{{ $editorialPost?->title ?? 'Warta SMP Islam Al-Madinah BSD' }}" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        @if($editorialPost && $editorialPost->categories->isNotEmpty())
+                            <span class="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-[10px] font-semibold text-white uppercase tracking-wider">
+                                {{ $editorialPost->categories->first()->name }}
+                            </span>
+                        @endif
                     </div>
 
                     <div class="space-y-1.5">
-                        <span class="text-[10px] text-[#66676B]">Humas SMP Islam Al-Madinah BSD</span>
-                        <h4 class="text-sm font-black text-[#202124] leading-snug">
-                            Laporan Kegiatan Akademik & Pembiasaan Adab Santri
+                        <div class="flex items-center justify-between text-[10px] text-[#66676B]">
+                            <span>{{ $editorialPost?->author?->name ?? 'Humas SMP Islam Al-Madinah BSD' }}</span>
+                            @if($editorialPost?->published_at)
+                                <span>{{ $editorialPost->published_at->translatedFormat('d M Y') }}</span>
+                            @endif
+                        </div>
+                        <h4 class="text-sm font-black text-[#202124] leading-snug line-clamp-2">
+                            <a href="{{ $editorialUrl }}" class="hover:text-[#2A923F] transition-colors">
+                                {{ $editorialPost?->title ?? 'Laporan Kegiatan Akademik & Pembiasaan Adab Santri' }}
+                            </a>
                         </h4>
                         <p class="text-xs text-[#66676B] leading-relaxed line-clamp-2">
-                            Mendokumentasikan seluruh dinamika kelas dan tahfidz untuk transparansi wali santri.
+                            {{ $editorialPost?->excerpt ?: (strip_tags($editorialPost?->content ?? '') ?: 'Mendokumentasikan seluruh dinamika kelas dan tahfidz untuk transparansi wali santri.') }}
                         </p>
                     </div>
 
-                    <div class="pt-2">
-                        <a href="{{ route('news') }}" class="text-xs font-bold text-[#2A923F] hover:underline flex items-center gap-1.5">
-                            <span>Buka Arsip Warta</span>
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <div class="pt-2 flex items-center justify-between border-t border-[#E7E3EA]">
+                        <a href="{{ $editorialUrl }}" class="text-xs font-bold text-[#2A923F] hover:underline flex items-center gap-1.5 group">
+                            <span>Baca Selengkapnya</span>
+                            <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                        <a href="{{ route('news') }}" class="text-[11px] font-semibold text-[#66676B] hover:text-[#2A923F] transition-colors">
+                            Buka Arsip Warta
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Numbered 1-5 News List with Open-Source Icons -->
+            <!-- Right: Numbered 1-5 News List (Dinamis dari Filament CMS) -->
             <div class="md:col-span-7 space-y-3">
-                @forelse ($recentNews as $newsItem)
+                @php
+                    $listPosts = $posts->count() > 1 ? $posts->skip(1)->take(5) : $posts->take(5);
+                @endphp
+                @forelse ($listPosts as $newsItem)
                     @php
                         $newsUrl = route('news.show', $newsItem->slug ?: $newsItem->id);
                         $itemDate = $newsItem->published_at?->translatedFormat('d M Y') ?? $newsItem->created_at?->translatedFormat('d M Y');
+                        $itemCat = $newsItem->categories->first()?->name ?? 'Warta Sekolah';
                     @endphp
                     <div class="bg-white rounded-2xl border border-[#E7E3EA] p-3.5 sm:p-4 shadow-2xs hover:border-[#2A923F] hover:shadow-xs transition-all flex items-center gap-3.5 group">
                         <!-- Square Numbered Badge -->
@@ -842,32 +869,52 @@
                                     {{ $newsItem->title }}
                                 </a>
                             </h4>
-                            <div class="flex items-center gap-1.5 text-[10px] text-[#66676B] mt-0.5">
-                                <svg class="w-3 h-3 text-[#2A923F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                <span>{{ $itemDate }}</span>
+                            <div class="flex items-center gap-2 text-[10px] text-[#66676B] mt-1">
+                                <span class="font-semibold text-[#2A923F]">{{ $itemCat }}</span>
+                                <span class="text-slate-300">•</span>
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 text-[#2A923F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span>{{ $itemDate }}</span>
+                                </div>
                             </div>
                         </div>
 
-                        <a href="{{ $newsUrl }}" class="text-[#66676B] group-hover:text-[#2A923F] transition-colors shrink-0 p-1">
+                        <a href="{{ $newsUrl }}" class="text-[#66676B] group-hover:text-[#2A923F] transition-colors shrink-0 p-1" title="Buka warta">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
                     </div>
                 @empty
-                    @for ($i = 1; $i <= 5; $i++)
+                    @php
+                        $fallbackNews = [
+                            ['title' => 'Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran Baru Resmi Dibuka', 'cat' => 'PPDB Online'],
+                            ['title' => 'Santri SMP Islam Al-Madinah Raih Juara 1 Olimpiade Sains & Riset Tingkat Provinsi', 'cat' => 'Prestasi Santri'],
+                            ['title' => 'Tasmi\' Akbar 3 Juz Sekali Duduk dan Munaqasyah Tahfidz Al-Qur\'an Angkatan X', 'cat' => 'Keagamaan & Tahfidz'],
+                            ['title' => 'Laporan Rekapitulasi dan Transparansi Realisasi Penggunaan Dana BOSP Sekolah', 'cat' => 'Akademik & BOS'],
+                            ['title' => 'Workshop Robotika & Coding: Membangun Pemikiran Komputasional Santri di Era AI', 'cat' => 'Sains & Teknologi'],
+                        ];
+                    @endphp
+                    @foreach ($fallbackNews as $index => $item)
                         <div class="bg-white rounded-2xl border border-[#E7E3EA] p-3.5 sm:p-4 shadow-2xs hover:border-[#2A923F] transition-all flex items-center gap-3.5 group">
                             <div class="w-10 h-10 rounded-xl border border-[#E7E3EA] bg-[#FAF9FB] group-hover:bg-[#2A923F] group-hover:text-white group-hover:border-[#2A923F] text-[#202124] font-black text-sm flex items-center justify-center shrink-0 transition-colors">
-                                {{ sprintf('%02d', $i) }}
+                                {{ sprintf('%02d', $index + 1) }}
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-xs sm:text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors leading-snug truncate">
+                                <h4 class="text-xs sm:text-sm font-bold text-[#202124] group-hover:text-[#2A923F] transition-colors leading-snug line-clamp-2">
                                     <a href="{{ route('news') }}" class="hover:underline">
-                                        Laporan Publikasi & Catatan Dinamika Santri SMP Islam Al-Madinah BSD (Bagian {{ $i }})
+                                        {{ $item['title'] }}
                                     </a>
                                 </h4>
-                                <span class="text-[10px] text-[#66676B]">Warta Sekolah</span>
+                                <div class="flex items-center gap-2 text-[10px] text-[#66676B] mt-1">
+                                    <span class="font-semibold text-[#2A923F]">{{ $item['cat'] }}</span>
+                                    <span class="text-slate-300">•</span>
+                                    <span>Warta Sekolah</span>
+                                </div>
                             </div>
+                            <a href="{{ route('news') }}" class="text-[#66676B] group-hover:text-[#2A923F] transition-colors shrink-0 p-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
                         </div>
-                    @endfor
+                    @endforeach
                 @endforelse
             </div>
 

@@ -89,6 +89,13 @@ class HomeController extends Controller
                     ->latest('published_at')
                     ->take(9)
                     ->get();
+
+                if ($posts->isEmpty()) {
+                    $posts = CmsPost::with(['categories', 'author'])
+                        ->latest('created_at')
+                        ->take(9)
+                        ->get();
+                }
             }
 
             if (Schema::hasTable('tallcms_categories')) {

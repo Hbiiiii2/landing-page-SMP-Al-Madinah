@@ -52,6 +52,13 @@ if [ "$1" = "php-fpm" ]; then
     echo "Running database migrations..."
     php artisan migrate --force || true
 
+    # Seed initial data on first deployment if not seeded yet
+    if [ ! -f /var/www/html/storage/.seeded ]; then
+        echo "Seeding initial school data..."
+        php artisan db:seed --class=SchoolDataSeeder --force || true
+        touch /var/www/html/storage/.seeded || true
+    fi
+
     echo "Publishing Filament assets..."
     php artisan filament:assets || true
 
@@ -63,6 +70,8 @@ if [ "$1" = "php-fpm" ]; then
         php artisan view:cache || true
         php artisan event:cache || true
         php artisan filament:cache-components || true
+        php artisan tallcms:install || true
+
     else
         echo "Clearing cache for environment: $APP_ENV..."
         php artisan config:clear || true
