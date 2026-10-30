@@ -137,6 +137,18 @@
                 transition: none !important;
             }
         }
+
+        /* Extracurriculars responsive grid: Mobile hide, Desktop show */
+        @media (max-width: 767.98px) {
+            .ekskul-desktop-grid {
+                display: none !important;
+            }
+        }
+        @media (min-width: 768px) {
+            .ekskul-desktop-grid {
+                display: block !important;
+            }
+        }
     </style>
 
     <!-- Styles & Scripts (Tailwind CSS v4 via Vite) -->

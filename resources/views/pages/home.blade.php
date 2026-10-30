@@ -737,7 +737,7 @@
                 </div>
 
                 <!-- Right: Dynamic Grid of All Extracurricular Activities from Filament (Desktop Only) -->
-                <div class="hidden md:block md:col-span-6 w-full space-y-3.5 reveal-init reveal-right delay-200">
+                <div class="ekskul-desktop-grid hidden md:block md:col-span-6 w-full space-y-3.5 reveal-init reveal-right delay-200">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                         @foreach($extracurriculars as $index => $item)
                             @php
